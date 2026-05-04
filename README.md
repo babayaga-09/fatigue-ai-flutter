@@ -1,16 +1,26 @@
-# fatigue_predictor_app
+# Fatigue AI — Flutter App
 
-A new Flutter project.
+Mobile dashboard for the Fatigue AI footballer performance predictor.
 
-## Getting Started
+## Features
+- League → Team → Player drill-down (Top 5 European leagues)
+- AI prediction card: pass accuracy, fitness score, fatigue level
+- Injury risk gauge (XGBoost) + form momentum bar (GBM)
+- FPL-style fixture difficulty rating (5-block bar)
+- Position heatmap drawn with CustomPainter
+- Match rating timeline chart (fl_chart)
+- Season stats: goals, assists, yellows, reds
+- Side-by-side player comparison
+- Dark / light mode toggle
 
-This project is a starting point for a Flutter application.
+## Stack
+Flutter · Dart · fl_chart · flutter_svg · percent_indicator
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Setup
+```bash
+flutter pub get
+# Set API base URL in lib/services/api_service.dart
+# Android emulator: http://10.0.2.2:8000
+# Physical device: http://YOUR_LAN_IP:8000
+flutter run
+```
