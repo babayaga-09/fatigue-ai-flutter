@@ -32,7 +32,10 @@ def _rating_at(history: pd.DataFrame, club: int, when: pd.Timestamp, default: fl
 
 
 def league_snapshot(league, teams, matches, ratings, history, params: EloParams,
-                    model: MatchModel, today: pd.Timestamp, n_sims: int = 10000):
+                    model: MatchModel, today: pd.Timestamp, n_sims: int = 10000,
+                    history_until: pd.Timestamp | None = None):
+    """history_until: last date already in the Elo history; finished matches on or before it
+    count for the table and form but are not replayed into Elo (no double counting)."""
     ids = [int(c) for c in teams.club_id]
     ratings = dict(ratings)
     known = [ratings[c] for c in ids if c in ratings]
@@ -53,6 +56,8 @@ def league_snapshot(league, teams, matches, ratings, history, params: EloParams,
                           "competition_id": league, "home_club_id": played.home,
                           "away_club_id": played.away, "home_goals": played.home_goals,
                           "away_goals": played.away_goals})
+    if history_until is not None:
+        games = games[games.date > history_until]
     res = run_elo(games, params, start=start)
     now = res.ratings
     hist = pd.concat([history[history.club_id.isin(ids)], res.history]).sort_values("date")
@@ -86,7 +91,10 @@ def league_snapshot(league, teams, matches, ratings, history, params: EloParams,
     pre = res.pre.set_index("game_id")
     recent = played[played.utc >= today - pd.Timedelta(days=7)]
     for r in recent.itertuples(index=False):
-        d = pre.loc[r.fd_match_id, "elo_home"] - pre.loc[r.fd_match_id, "elo_away"]
+        if r.fd_match_id in pre.index:
+            d = pre.loc[r.fd_match_id, "elo_home"] - pre.loc[r.fd_match_id, "elo_away"]
+        else:
+            d = start[r.home] - start[r.away]
         fixtures.append(_fixture(r, league, model, d, [int(r.home_goals), int(r.away_goals)]))
     soon = remaining[(remaining.utc >= today) & (remaining.utc <= today + pd.Timedelta(days=14))]
     for r in soon.itertuples(index=False):
@@ -115,7 +123,8 @@ def build_current_season(fd, tm_clubs, elo_res: EloResult, params, model, season
         matches["home"] = matches.home_fd.map(idmap)
         matches["away"] = matches.away_fd.map(idmap)
         c, f = league_snapshot(league, teams, matches, elo_res.ratings, elo_res.history,
-                               params, model, today, n_sims)
+                               params, model, today, n_sims,
+                               history_until=elo_res.history.date.max())
         clubs += c
         fixtures += f
     return clubs, fixtures

@@ -35,3 +35,9 @@ def test_sanitize_handles_pandas_missing_markers():
     import pandas as pd
     out = sanitize({"a": pd.NA, "b": pd.NaT, "c": pd.Timestamp("2026-01-02")})
     assert out == {"a": None, "b": None, "c": "2026-01-02"}
+
+
+def test_eur_rounds_to_int_or_none():
+    from touchline.export.bundle import eur
+    assert eur(2400000.0) == 2400000 and isinstance(eur(2400000.0), int)
+    assert eur(float("nan")) is None and eur(None) is None

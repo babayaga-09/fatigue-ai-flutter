@@ -30,6 +30,13 @@ def sanitize(obj):
     return obj
 
 
+def eur(x) -> int | None:
+    """Money is whole euros in the bundle; missing stays null."""
+    if x is None or x is pd.NA or (isinstance(x, float) and math.isnan(x)):
+        return None
+    return int(round(float(x)))
+
+
 def validate_bundle(b: dict) -> None:
     for k in REQUIRED:
         if k not in b:

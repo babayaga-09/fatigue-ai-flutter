@@ -12,10 +12,11 @@ import pandas as pd
 from dotenv import load_dotenv
 
 from touchline import config
-from touchline.export.bundle import sanitize, write_bundle
+from touchline.export.bundle import eur, sanitize, write_bundle
 from touchline.features.players import (
     add_prev_season,
     build_player_rows,
+    display_population,
     enrich_appearances,
     season_stats,
 )
@@ -57,6 +58,24 @@ def check_gates(metrics: dict) -> list[str]:
     return fails
 
 
+def use_live_clubs(offline: bool, token: str) -> bool:
+    """Offline mode only when asked for; a missing token must fail the run, not silently
+    publish a degraded bundle."""
+    if offline:
+        return False
+    if not token:
+        raise SystemExit("FOOTBALL_API_KEY is not set (use --offline to build without it)")
+    return True
+
+
+def latest_complete_season(games: pd.DataFrame) -> int:
+    """Latest top-5 season whose league games run into May of the following year."""
+    lg = games[games.competition_id.isin(list(config.LEAGUES))]
+    last = lg.groupby("season").date.max()
+    done = [s for s, d in last.items() if d >= pd.Timestamp(int(s) + 1, 5, 1)]
+    return int(max(done))
+
+
 def _season_label(s: int) -> str:
     return f"{s}/{str(s + 1)[-2:]}"
 
@@ -83,7 +102,7 @@ def main(argv=None) -> int:
     games, players, vals = tm["games"], tm["players"], tm["valuations"].sort_values("date")
     leagues = list(config.LEAGUES)
     lg_games = games[games.competition_id.isin(leagues)]
-    test_season = int(lg_games.season.max())
+    test_season = latest_complete_season(games)
     log.info("test season %s", test_season)
     metrics: dict = {}
 
@@ -110,7 +129,7 @@ def main(argv=None) -> int:
     # Clubs + M3 season projection
     token = os.environ.get("FOOTBALL_API_KEY", "").strip()
     today = pd.Timestamp.now(tz="UTC")
-    if args.offline or not token:
+    if not use_live_clubs(args.offline, token):
         clubs, fixtures = offline_clubs(games, tm["clubs"], elo_res, test_season), []
         clubs_through = _fmt(lg_games.date.max())
     else:
@@ -129,8 +148,7 @@ def main(argv=None) -> int:
     # M4 — valuator; display population = players at a top-5 club with test-season stats
     val_model, metrics["valuator"] = valuator.run_valuator(rows, test_season)
     log.info("M4 %s", metrics["valuator"])
-    cur = players[players.league.isin(leagues) & (players.last_season >= test_season)]
-    disp = stats[(stats.season == test_season) & stats.player_id.isin(cur.player_id)]
+    disp = display_population(stats, players, test_season)
     disp_rows = build_player_rows(disp, players, vals, elo_res.history,
                                   min_league_minutes=config.MIN_DISPLAY_MINUTES,
                                   with_target=False)
@@ -181,20 +199,22 @@ def main(argv=None) -> int:
              transfers[transfers.player_id.isin(disp.player_id)].groupby("player_id")}
     l5_by = {p: g for p, g in last5.groupby("player_id")}
     now_naive = today.tz_localize(None)
+    club_names = dict(zip(tm["clubs"].club_id, tm["clubs"].name, strict=True))
     out_players = []
     for pid in disp.player_id:
         p, s = pinfo.loc[pid], st.loc[pid]
         qualified = s.minutes >= config.MIN_DISPLAY_MINUTES
         fv = fair.get(pid) if qualified else None
-        mv = float(p.market_value) if pd.notna(p.market_value) else None
+        mv = eur(p.market_value)
         w = wl.loc[pid] if pid in wl.index else None
         out_players.append({
             "id": int(pid), "name": p["name"], "img": p.image_url,
             "club": int(p.current_club_id) if pd.notna(p.current_club_id) else None,
-            "league": p.league, "pos": p.position, "sub_pos": p.sub_position,
+            "club_name": club_names.get(p.current_club_id),
+            "league": s.league, "pos": p.position, "sub_pos": p.sub_position,
             "age": round((now_naive - p.dob).days / 365.25, 1) if pd.notna(p.dob) else None,
             "nat": p.nationality, "foot": p.foot, "height": p.height,
-            "market_value": mv, "fair_value": round(float(fv), -5) if fv else None,
+            "market_value": mv, "fair_value": eur(round(float(fv), -5)) if fv else None,
             "value_gap_pct": (fv - mv) / mv if (fv and mv) else None,
             "value_why": why.get(pid) if fv else None,
             "season": {"apps": int(s.apps), "minutes": int(s.minutes), "goals": int(s.goals),
@@ -208,10 +228,10 @@ def main(argv=None) -> int:
                 "index": int(w["index"]), "band": w.band, "acwr": round(float(w.acwr), 2),
                 "season_minutes": int(w.season_minutes), "congested_apps": int(w.congested_apps),
                 "flag": bool(w.flag), "as_of": _fmt(w.ref_date)},
-            "value_history": [[_fmt(r.date), int(r.value)] for r in hist_by[pid].itertuples()]
+            "value_history": [[_fmt(r.date), eur(r.value)] for r in hist_by[pid].itertuples()]
             if pid in hist_by else [],
             "transfers": [{"date": _fmt(r.date), "from": r.from_club, "to": r.to_club,
-                           "fee": r.fee} for r in tr_by[pid].itertuples()]
+                           "fee": eur(r.fee)} for r in tr_by[pid].itertuples()]
             if pid in tr_by else [],
             "similar": sim.get(int(pid), []),
             "trend": {"score": trend.loc[pid, "trend_score"],

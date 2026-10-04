@@ -10,3 +10,22 @@ def test_gates_pass_and_fail():
     bad = {**ok, "valuator": {"mae_eur": 7e6, "baseline_mae_eur": 6e6}}
     fails = check_gates(bad)
     assert len(fails) == 1 and "valuator" in fails[0]
+
+
+def test_missing_token_without_offline_flag_fails_loudly():
+    import pytest
+
+    from touchline.run import use_live_clubs
+    assert use_live_clubs(offline=False, token="abc") is True
+    assert use_live_clubs(offline=True, token="") is False
+    with pytest.raises(SystemExit):
+        use_live_clubs(offline=False, token="")
+
+
+def test_latest_complete_season_skips_partial_season():
+    import pandas as pd
+
+    from touchline.run import latest_complete_season
+    games = pd.DataFrame({"competition_id": ["GB1"] * 3, "season": [2024, 2024, 2025],
+                          "date": pd.to_datetime(["2024-08-10", "2025-05-25", "2025-09-01"])})
+    assert latest_complete_season(games) == 2024

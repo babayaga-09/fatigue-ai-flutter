@@ -26,7 +26,7 @@ pytest -q
 ## Models
 
 All results below are on the **2025/26 season, held out from training** (time-based split; seasons
-up to 2024/25 used for fitting).
+up to 2024/25 used for fitting). The evaluation season is always the latest *complete* season.
 
 | # | Model | What it predicts | Method | Result | Baseline |
 |---|---|---|---|---|---|
@@ -34,13 +34,17 @@ up to 2024/25 used for fitting).
 | M2 | Match predictor | Home / draw / away probabilities and expected goals | Poisson goal model driven by the Elo gap, with Dixon–Coles low-score correction | RPS **0.203**, log-loss **0.996** (1,752 games) | Historical base rates: RPS 0.229, log-loss 1.072 |
 | M3 | Season projector | Title / top-4 / relegation odds | 10,000 Monte Carlo simulations of the remaining fixtures using M2 | — | — |
 | M4 | Player valuator | Fair market value | LightGBM on performance, age, role, league and club strength; per-player TreeSHAP explanations | Typical error **€4.7M**, median error **29%**, R² (log) **0.85** | Median by age × position × league: €10.9M, 60% |
-| M5 | Form forecast (deep learning) | Goal involvements in the next 5 games | GRU over the last 10 appearances plus position and age, Poisson loss; compared on validation with a Poisson GLM, and the better one ships | Poisson deviance **1.164**, MAE 0.78 | Recent average × 5: 2.716 · Poisson GLM: 1.196 |
+| M5 | Form forecast (deep learning) | Goal involvements in the next 5 games | GRU over the last 10 appearances plus position and age, Poisson loss; compared on validation with a Poisson GLM, and the better one ships | MAE **0.779**, Poisson deviance **1.165** | Poisson GLM: MAE 0.795, deviance 1.196 · Shrunk recent average: MAE 0.828, deviance 1.421 |
 | M6 | Workload index | Load risk band (not injury probability) | Season minutes, congested appearances and the acute:chronic workload ratio; an Isolation Forest flags unusual loads | — | — |
 | M7 | Similar players | "Plays like X" | k-NN on standardised per-90 profiles within a position group | — | — |
 | M8 | Transfer budget planner | Best signings for a budget | 0/1 integer programme (SciPy MILP) maximising fair value within budget and positional needs | Always ≥ greedy | Greedy by value-per-euro |
 
-The GRU's lead over the classical GLM is small (1.164 vs 1.196 deviance), and it's reported here
-as it is. The big gain is over naive averaging.
+How to read M5: the GRU beats the naive recent-average baseline by 18% on deviance (6% on MAE),
+but its lead over a well-specified Poisson GLM is small (about 3% on deviance, 2% on MAE). Football
+scoring is noisy, and the honest takeaway is that sequence modelling helps a bit, not a lot. The
+naive baseline is shrunk toward the population scoring rate, so players without recent output are
+not predicted ~0 (that would make it a strawman). Windows are split by the dates of their *target*
+games, so no outcome is shared between train, validation and test.
 
 ## Layout
 

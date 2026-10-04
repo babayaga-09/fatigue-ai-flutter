@@ -79,3 +79,11 @@ def test_missing_player_fields_do_not_crash():
     rows = build_player_rows(add_prev_season(stats), players, empty_vals, empty_hist,
                              min_league_minutes=100, with_target=False)
     assert len(rows) == 1 and np.isnan(rows.iloc[0].age)
+
+
+def test_display_population_uses_played_league_and_current_players():
+    from touchline.features.players import display_population
+    stats = pd.DataFrame({"player_id": [1, 2, 3], "season": [2025] * 3,
+                          "league": ["GB1", None, "ES1"]})
+    players = pd.DataFrame({"player_id": [1, 2, 3], "last_season": [2025, 2025, 2023]})
+    assert list(display_population(stats, players, 2025).player_id) == [1]

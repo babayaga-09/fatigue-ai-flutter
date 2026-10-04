@@ -61,3 +61,20 @@ def test_run_form_trains_and_reports_without_leakage():
     assert m["poisson_deviance"] < m["baseline_poisson_deviance"] * 1.2
     preds = model.predict(data.subset(data.end_date >= np.datetime64(test_start)))
     assert (preds > 0).all()
+
+
+def test_naive_baseline_is_shrunk_not_near_zero():
+    from touchline.models.form import SeqData, _naive
+    d = SeqData(np.zeros((2, L, len(SEQ_FEATS)), np.float32), np.zeros((2, 5), np.float32),
+                np.zeros(2, np.float32), np.zeros(2, "datetime64[ns]"), np.arange(2),
+                np.zeros(2, "datetime64[ns]"))
+    assert np.allclose(_naive(d, prior=0.24), 5 * 0.24 * 2 / 12)
+
+
+def test_split_purges_windows_whose_targets_cross_boundaries():
+    feats, players = _feats()
+    data = build_sequences(feats, players, pool_ids=set(range(60)), stride=3)
+    val_start, test_start = pd.Timestamp("2024-06-01"), pd.Timestamp("2025-01-01")
+    _, m = run_form(data, val_start, test_start, epochs=1)
+    assert m["train_target_end_max"] < str(val_start.date())
+    assert m["val_target_end_max"] < str(test_start.date())

@@ -34,5 +34,6 @@ def trending(df: pd.DataFrame, min_minutes: int = 900) -> pd.DataFrame:
              + 0.3 * _z(e.forecast_ga5.fillna(0)))
     d["trend_score"] = np.nan
     d.loc[ok, "trend_score"] = score
-    d["reasons"] = [_reasons(r) for r in d.itertuples(index=False)]
+    d["reasons"] = [_reasons(r) if q else []
+                    for r, q in zip(d.itertuples(index=False), ok, strict=True)]
     return d[["player_id", "trend_score", "reasons"]]

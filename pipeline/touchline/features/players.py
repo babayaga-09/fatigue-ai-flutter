@@ -66,6 +66,13 @@ def add_prev_season(stats: pd.DataFrame) -> pd.DataFrame:
     return stats.merge(prev, on=["player_id", "season"], how="left")
 
 
+def display_population(stats: pd.DataFrame, players: pd.DataFrame, season: int) -> pd.DataFrame:
+    """Players who played top-5 league football that season and are still in the dataset."""
+    current = players.loc[players.last_season >= season, "player_id"]
+    return stats[(stats.season == season) & stats.league.notna()
+                 & stats.player_id.isin(current)]
+
+
 def build_player_rows(stats, players, valuations, history, min_league_minutes: int = 450,
                       with_target: bool = True) -> pd.DataFrame:
     rows = stats[stats.league_minutes >= min_league_minutes].copy()

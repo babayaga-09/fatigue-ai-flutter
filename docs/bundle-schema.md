@@ -28,7 +28,10 @@ its cached bundle.
     "xg": [1.62, 1.08]                                // expected goals from the match model
   }],
   "players": [{
-    "id": 342229, "name": "…", "img": "https://…", "club": 11, "league": "GB1",
+    "id": 342229, "name": "…", "img": "https://…",
+    "club": 11,                      // current club id; may be absent from clubs[] (e.g. relegated since)
+    "club_name": "Arsenal FC",       // always present — use this when club is not in clubs[]
+    "league": "GB1",                 // league the player played in during player_season
     "pos": "Attack", "sub_pos": "Centre-Forward", "age": 24.3, "nat": "England",
     "foot": "right", "height": 185,
     "market_value": 80000000,
@@ -49,5 +52,6 @@ its cached bundle.
 }
 ```
 
-Money is EUR. Dates are ISO `YYYY-MM-DD`, timestamps ISO UTC with `Z`. `null` always means
+Money is whole EUR (integers). "Not enough data" is judged on total minutes in `player_season`
+(< 900 → `fair_value`, `forecast_ga5`, `trend.score` null and `trend.reasons` empty). Dates are ISO `YYYY-MM-DD`, timestamps ISO UTC with `Z`. `null` always means
 "not enough data" — the app must render a friendly empty state, never `0`.

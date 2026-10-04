@@ -49,3 +49,17 @@ def test_offline_clubs_uses_last_tm_season(league_games):
     clubs = offline_clubs(league_games, tm_clubs, res, 2022)
     assert len(clubs) == 6 and clubs[0]["proj"] is None
     assert sorted(c["table"]["pos"] for c in clubs) == list(range(1, 7))
+
+
+def test_matches_already_in_history_are_not_replayed_in_elo():
+    today = pd.Timestamp("2026-10-04", tz="UTC")
+    hist = pd.DataFrame({"date": pd.to_datetime(["2026-05-01"] * 2), "club_id": [11, 31],
+                         "rating": [1700.0, 1650.0]})
+    args = ("GB1", _teams(), _matches(today), {11: 1700.0, 31: 1650.0}, hist, EloParams(),
+            MODEL, today)
+    replay, _ = league_snapshot(*args, n_sims=50)
+    cutoff = (today - pd.Timedelta(days=1)).tz_localize(None)
+    skip, _ = league_snapshot(*args, n_sims=50, history_until=cutoff)
+    by = {c["id"]: c for c in skip}
+    assert by[11]["elo"] == 1700.0 and by[11]["table"]["points"] == 3  # table still counts it
+    assert {c["id"]: c for c in replay}[11]["elo"] != 1700.0

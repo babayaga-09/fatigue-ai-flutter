@@ -39,13 +39,14 @@ class SeqData:
     seq: np.ndarray
     static: np.ndarray
     y: np.ndarray
-    end_date: np.ndarray
+    end_date: np.ndarray       # date of the last input appearance
     player_id: np.ndarray
+    target_end: np.ndarray     # date of the last target appearance
 
     def subset(self, mask) -> "SeqData":
         mask = np.asarray(mask)
         return SeqData(self.seq[mask], self.static[mask], self.y[mask], self.end_date[mask],
-                       self.player_id[mask])
+                       self.player_id[mask], self.target_end[mask])
 
     def __len__(self):
         return len(self.y)
@@ -58,7 +59,7 @@ def _static(position, dob, when) -> list[float]:
 
 def _collect(feats, players, ids, windows_fn) -> SeqData:
     meta = players.set_index("player_id")[["position", "dob"]]
-    seqs, stats, ys, ends, pids = [], [], [], [], []
+    seqs, stats, ys, ends, pids, tends = [], [], [], [], [], []
     for pid, g in feats[feats.player_id.isin(ids)].groupby("player_id", sort=True):
         x = g[SEQ_FEATS].to_numpy(np.float32)
         ga = g["ga"].to_numpy(np.float32)
@@ -71,10 +72,12 @@ def _collect(feats, players, ids, windows_fn) -> SeqData:
             ys.append(target)
             ends.append(dates[e - 1])
             pids.append(pid)
+            tends.append(dates[min(e + H, len(g)) - 1])
     n_s = len(POS_GROUPS) + 1
     return SeqData(np.asarray(seqs, np.float32).reshape(-1, L, len(SEQ_FEATS)),
                    np.asarray(stats, np.float32).reshape(-1, n_s), np.asarray(ys, np.float32),
-                   np.asarray(ends, dtype="datetime64[ns]"), np.asarray(pids))
+                   np.asarray(ends, dtype="datetime64[ns]"), np.asarray(pids),
+                   np.asarray(tends, dtype="datetime64[ns]"))
 
 
 def build_sequences(feats, players, pool_ids, stride: int = 5) -> SeqData:
@@ -122,9 +125,11 @@ class FormForecaster:
         return self.glm.predict(_glm_x(d))
 
 
-def _naive(d: SeqData) -> np.ndarray:
+def _naive(d: SeqData, prior: float, k: float = 2.0) -> np.ndarray:
+    """Recent average x H, shrunk toward the population rate with k pseudo-appearances so a
+    player without recent output is not predicted ~0 (which would make the baseline a strawman)."""
     ga = d.seq[:, :, _GA[0]] + d.seq[:, :, _GA[1]]
-    return np.clip(ga.mean(1) * H, 1e-3, None)
+    return H * (ga.sum(1) + prior * k) / (L + k)
 
 
 def _train_gru(train: SeqData, val: SeqData, epochs, seed, batch=512, patience=2) -> FormGRU:
@@ -161,10 +166,14 @@ def _train_gru(train: SeqData, val: SeqData, epochs, seed, batch=512, patience=2
 def run_form(data: SeqData, val_start, test_start, epochs: int = 15,
              seed: int = 0) -> tuple[FormForecaster, dict]:
     vs, ts = np.datetime64(val_start, "ns"), np.datetime64(test_start, "ns")
-    train = data.subset(data.end_date < vs)
-    val = data.subset((data.end_date >= vs) & (data.end_date < ts))
+    # Purge windows whose *targets* cross a boundary, so no outcome is shared across splits.
+    train = data.subset(data.target_end < vs)
+    val = data.subset((data.end_date >= vs) & (data.target_end < ts))
     test = data.subset(data.end_date >= ts)
-    assert train.end_date.max() < vs and val.end_date.max() < ts
+    if len(train) == 0 or len(val) == 0 or len(test) == 0:
+        raise ValueError("form split produced an empty train/val/test set")
+    if train.target_end.max() >= vs or val.target_end.max() >= ts:
+        raise ValueError("form split leaks targets across boundaries")
 
     gru = FormForecaster("gru", gru=_train_gru(train, val, epochs, seed))
     glm = FormForecaster("poisson_glm",
@@ -175,14 +184,17 @@ def run_form(data: SeqData, val_start, test_start, epochs: int = 15,
         return float(mean_poisson_deviance(d.y, np.clip(pred, 1e-6, None)))
 
     chosen = gru if dev(gru.predict(val), val) <= dev(glm.predict(val), val) else glm
-    pg, pl, pn = gru.predict(test), glm.predict(test), _naive(test)
+    prior = float(np.mean(train.seq[:, :, _GA[0]] + train.seq[:, :, _GA[1]]))
+    pg, pl, pn = gru.predict(test), glm.predict(test), _naive(test, prior)
     metrics = {"n_train": len(train), "n_val": len(val), "n_test": len(test),
                "gru_poisson_deviance": dev(pg, test), "glm_poisson_deviance": dev(pl, test),
                "naive_poisson_deviance": dev(pn, test),
                "gru_mae": float(mean_absolute_error(test.y, pg)),
                "glm_mae": float(mean_absolute_error(test.y, pl)),
                "naive_mae": float(mean_absolute_error(test.y, pn)),
-               "chosen": chosen.kind}
+               "chosen": chosen.kind,
+               "train_target_end_max": str(train.target_end.max())[:10],
+               "val_target_end_max": str(val.target_end.max())[:10]}
     key = "gru" if chosen.kind == "gru" else "glm"
     metrics["poisson_deviance"] = metrics[f"{key}_poisson_deviance"]
     metrics["baseline_poisson_deviance"] = metrics["naive_poisson_deviance"]
