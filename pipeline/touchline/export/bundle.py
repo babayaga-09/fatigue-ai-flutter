@@ -23,7 +23,7 @@ def sanitize(obj):
     if isinstance(obj, (float, np.floating)):
         f = float(obj)
         return None if math.isnan(f) or math.isinf(f) else f
-    if obj is pd.NaT:
+    if obj is pd.NaT or obj is pd.NA:
         return None
     if isinstance(obj, pd.Timestamp):
         return obj.strftime("%Y-%m-%d")

@@ -29,3 +29,9 @@ def test_validate_names_missing_key():
     bad = {k: v for k, v in MIN.items() if k != "clubs"}
     with pytest.raises(ValueError, match="clubs"):
         validate_bundle(bad)
+
+
+def test_sanitize_handles_pandas_missing_markers():
+    import pandas as pd
+    out = sanitize({"a": pd.NA, "b": pd.NaT, "c": pd.Timestamp("2026-01-02")})
+    assert out == {"a": None, "b": None, "c": "2026-01-02"}
