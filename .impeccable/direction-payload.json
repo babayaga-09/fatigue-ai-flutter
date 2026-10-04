@@ -1,0 +1,107 @@
+{
+  "title": "Choose Touchline's visual world",
+  "question": "The roll assigned The Terrace Scarf. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "The Terrace Scarf",
+      "kicker": "THE ROLL",
+      "lineage": "knitted bar scarves held up on the terraces, half-and-half matchday scarves",
+      "thesis": "Every prediction is knitted into a scarf: a fixture is a half-and-half scarf whose seam sits at the win split, a club's season is a bar scarf of its results.",
+      "palette": ["#0F3D2E", "#F2A7C3", "#EDEDE8", "#16181D", "#C8102E", "#F5C518"],
+      "materials": ["jacquard knit bars", "stitch-grid lettering", "wool-dyed club colour pairs"],
+      "viewport": "Standard Material shell: top bar with league chips, 4-tab navigation bar (Home, Clubs, Players, Scout). Home leads with the weekend's big fixture as a full-width half-and-half scarf: home colours left, away right, draw as a neutral knit band in the middle, each band's width = its probability, the favourite's % set monumental. Below: Trending players, Clubs in form (each a short bar scarf of W/D/L), Power rankings, Bargains, Overworked watch.",
+      "risk": "Club colours are not in the data yet: the pipeline must add a two-tone colour pair per club (crest-derived plus a hand-checked override table). Knit texture must stay a whisper or it becomes a costume.",
+      "raised": [
+        {"from": "challenger-emission-rail", "raise": "Result and risk states carry shape, not just hue: won bars knit solid, draws in a cross-stitch, losses as a dropped-stitch gap, so colour is never the only signal."},
+        {"from": "challenger-catalog-sleeve", "raise": "One graphic owns each screen: a single hero scarf per view, everything else quiet type on a calm ground."},
+        {"from": "challenger-bitmap-specimen", "raise": "Scarf lettering is a true stitch-grid display face, used only at whole-grid sizes for club names and the hero number, never for body text."},
+        {"from": "challenger-acetate-manual", "raise": "Elevation discipline: only bottom sheets float; cards sit flat on the ground with tonal surfaces, no stray shadows."}
+      ]
+    },
+    {
+      "id": "model-pick",
+      "label": "The Pink Paper",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "La Gazzetta dello Sport and the pink Saturday results editions",
+      "thesis": "The app as Monday's pink sports paper: results and verdicts in condensed headline type on salmon-pink newsprint, tables in tight column rhythm.",
+      "palette": ["#F4D3CF", "#1A1A1A", "#C8102E", "#FFFFFF"],
+      "materials": ["salmon newsprint", "condensed headline type", "column rules"],
+      "viewport": "Same Material shell on a pink ground; Home leads with a headline verdict ('City and Arsenal level at 49%') over a dense power table.",
+      "risk": "It is the most familiar direction here and leans toward broadsheet-editorial styling, which on a working screen can read as a newspaper instead of an app."
+    },
+    {
+      "id": "challenger-airport-yellow",
+      "label": "Terminal Yellow",
+      "verdict": "competitive",
+      "lineage": "airport wayfinding: yellow overhead bands, monumental gate numbers",
+      "thesis": "Each card answers one question at monumental scale, like a gate sign: one message per band, the key number huge.",
+      "palette": ["#FFC917", "#111111", "#FFFFFF", "#2B2B2B"],
+      "materials": ["saturated sign panels", "humanist sans", "pictogram insets"],
+      "viewport": "Home as a stack of yellow bands: 'Arsenal v Leeds · 71% home win', 'Running hot: Watkins · 8 G/A in 5'.",
+      "case": "Holds product clarity (glance-first, one answer per band) but fans don't identify with airport signage, so it loses on audience identification.",
+      "risk": "Can feel like a utility, not a fan's app; yellow everywhere tires the eye."
+    },
+    {
+      "id": "challenger-emission-rail",
+      "label": "Emission-Line Rail",
+      "verdict": "declined",
+      "lineage": "glass spectrograms on a light box",
+      "palette": ["#1E1F22", "#E8E4D8", "#F5C518"],
+      "materials": ["charcoal continuum", "hairline colour lines"],
+      "case": "Loses both: no football resonance, and hairline states are too subtle for a 30-second glance.",
+      "kept": "State carried by form (solid, cross-stitch, dropped stitch), not hue alone."
+    },
+    {
+      "id": "challenger-catalog-sleeve",
+      "label": "Catalogue Sleeve",
+      "verdict": "declined",
+      "lineage": "Factory Records numbered sleeves",
+      "palette": ["#0B0B0B", "#FFFFFF", "#E4572E"],
+      "materials": ["matte black", "coded colour strips"],
+      "case": "Loses both: coded labels hide the answer, the opposite of answer-first.",
+      "kept": "One graphic owns each screen."
+    },
+    {
+      "id": "challenger-bitmap-specimen",
+      "label": "Bitmap Specimen",
+      "verdict": "declined",
+      "lineage": "Emigre bitmap type specimens",
+      "palette": ["#FFFFFF", "#000000", "#FF3B1F"],
+      "materials": ["pixel letterforms", "halftone"],
+      "case": "Loses both on its own, but knitted scarf lettering IS a bitmap.",
+      "kept": "A stitch-grid display face at whole-grid sizes only."
+    },
+    {
+      "id": "challenger-acetate-manual",
+      "label": "Acetate Manual",
+      "verdict": "declined",
+      "lineage": "boxed-software manuals with tab dividers",
+      "palette": ["#F2C230", "#E9E6DF", "#2F6FB0"],
+      "materials": ["milk acetate", "tab rail"],
+      "case": "Loses both: no fan resonance, and its stepped motion fights Material motion.",
+      "kept": "Only sheets float; ply is the only rank."
+    },
+    {
+      "id": "challenger-doujin-catalog",
+      "label": "Event Catalogue",
+      "verdict": "declined",
+      "lineage": "convention circle catalogues on newsprint",
+      "palette": ["#EDEAE2", "#111111", "#2E8BC0"],
+      "materials": ["stamp-size thumbnails", "biro circles"],
+      "case": "Loses both: dense stamp grids overwhelm a casual glance.",
+      "kept": "Player browse repacks in whole uniform cells."
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "What FotMob and Sofascore ship: dark navy cards, a green accent, dense stat lists, executed impeccably.",
+    "palette": ["#0E1621", "#1A2433", "#00C853", "#FFFFFF"],
+    "materials": ["dark cards", "stat rows", "crest thumbnails"],
+    "viewport": "Fixture list with crests and percentages, league tabs, cards stacked down the screen.",
+    "risk": "Indistinguishable from the apps fans already have, by design."
+  },
+  "steer": true
+}
