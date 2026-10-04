@@ -1,0 +1,8 @@
+.superpowers/
+.env
+*.jks
+*.keystore
+key.properties
+.DS_Store
+.idea/
+.vscode/
