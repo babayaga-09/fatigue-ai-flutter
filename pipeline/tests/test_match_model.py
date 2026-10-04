@@ -2,8 +2,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from touchline.models.match_model import (brier, evaluate, fit_match_model, log_loss,
-                                          outcome_index, rps)
+from touchline.models.match_model import (
+    brier,
+    evaluate,
+    fit_match_model,
+    log_loss,
+    outcome_index,
+    rps,
+)
 
 
 def _synthetic(n=4000, seed=1):

@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -13,14 +13,26 @@ from dotenv import load_dotenv
 
 from touchline import config
 from touchline.export.bundle import sanitize, write_bundle
-from touchline.features.players import (add_prev_season, build_player_rows, enrich_appearances,
-                                        season_stats)
+from touchline.features.players import (
+    add_prev_season,
+    build_player_rows,
+    enrich_appearances,
+    season_stats,
+)
 from touchline.ingest.club_map import load_overrides
 from touchline.ingest.download import download_tables
 from touchline.ingest.football_data import FootballData
 from touchline.ingest.load import load_tm
-from touchline.models import (budget, elo, form, match_model, similarity, trending, valuator,
-                              workload)
+from touchline.models import (
+    budget,
+    elo,
+    form,
+    match_model,
+    similarity,
+    trending,
+    valuator,
+    workload,
+)
 from touchline.season import build_current_season, offline_clubs
 
 log = logging.getLogger("touchline")
@@ -122,8 +134,8 @@ def main(argv=None) -> int:
     disp_rows = build_player_rows(disp, players, vals, elo_res.history,
                                   min_league_minutes=config.MIN_DISPLAY_MINUTES,
                                   with_target=False)
-    fair = dict(zip(disp_rows.player_id, val_model.predict(disp_rows)))
-    why = dict(zip(disp_rows.player_id, val_model.explain(disp_rows)))
+    fair = dict(zip(disp_rows.player_id, val_model.predict(disp_rows), strict=True))
+    why = dict(zip(disp_rows.player_id, val_model.explain(disp_rows), strict=True))
 
     # M5 — form forecast
     feats = form.appearance_features(eapps, elo_res.pre)
@@ -135,12 +147,12 @@ def main(argv=None) -> int:
         epochs=3 if args.fast else 15)
     log.info("M5 %s", metrics["form"])
     latest = form.latest_windows(feats, players, set(disp.player_id))
-    forecast = dict(zip(latest.player_id, form_model.predict(latest)))
+    forecast = dict(zip(latest.player_id, form_model.predict(latest), strict=True))
 
     # M6 — workload
     wl = workload.workload_table(tm["appearances"], players, pd.Timestamp(test_season, 7, 1),
                                  set(disp.player_id)).set_index("player_id")
-    metrics["workload"] = {"n": int(len(wl)), "bands": wl.band.value_counts().to_dict(),
+    metrics["workload"] = {"n": len(wl), "bands": wl.band.value_counts().to_dict(),
                            "flagged": int(wl.flag.sum())}
 
     # M7 — similarity among qualified players
@@ -223,7 +235,7 @@ def main(argv=None) -> int:
 
     bundle = {
         "schema_version": config.SCHEMA_VERSION,
-        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "generated_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "data_through": {"players": _fmt(tm["appearances"].date.max()), "clubs": clubs_through},
         "player_season": _season_label(test_season),
         "leagues": [{"id": k, "fd": v[0], "name": v[1]} for k, v in config.LEAGUES.items()],

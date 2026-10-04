@@ -1,8 +1,13 @@
 import numpy as np
 import pandas as pd
 
-from touchline.features.players import (add_prev_season, build_player_rows, enrich_appearances,
-                                        season_ref_date, season_stats)
+from touchline.features.players import (
+    add_prev_season,
+    build_player_rows,
+    enrich_appearances,
+    season_ref_date,
+    season_stats,
+)
 
 
 def _games():

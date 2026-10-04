@@ -88,7 +88,7 @@ def run_valuator(rows: pd.DataFrame, test_season: int, seed: int = 42) -> tuple[
     m, mb = _metrics(y, p), _metrics(y, b)
     ly = np.log(y)
     r2 = 1 - np.sum((ly - np.log(p)) ** 2) / np.sum((ly - ly.mean()) ** 2)
-    return final, {"test_season": test_season, "n_test": int(len(test)),
+    return final, {"test_season": test_season, "n_test": len(test),
                    "train_seasons_max": int(fit_rows.season.max()), "best_iter": best,
                    **m, "r2_log": float(r2),
                    "baseline_mae_eur": mb["mae_eur"], "baseline_mdape": mb["mdape"]}

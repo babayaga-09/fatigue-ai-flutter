@@ -20,8 +20,7 @@ def download_tables(dest: Path = RAW_DIR, tables: list[str] = TM_TABLES, force: 
                 with client.stream("GET", f"{base}/{t}.csv.gz") as r:
                     r.raise_for_status()
                     with open(tmp, "wb") as f:
-                        for chunk in r.iter_bytes(1 << 20):
-                            f.write(chunk)
+                        f.writelines(r.iter_bytes(1 << 20))
                 tmp.replace(path)
             paths.append(path)
     finally:

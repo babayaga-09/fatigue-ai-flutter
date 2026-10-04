@@ -59,12 +59,13 @@ def league_snapshot(league, teams, matches, ratings, history, params: EloParams,
 
     table = league_table(ids, played).set_index("club_id")
     remaining = matches[~matches.status.isin(_DONE | _DEAD)].reset_index(drop=True)
-    d_rem = np.array([now[h] - now[a] for h, a in zip(remaining.home, remaining.away)], float)
+    pairs = zip(remaining.home, remaining.away, strict=True)
+    d_rem = np.array([now[h] - now[a] for h, a in pairs], float)
     mats = model.score_matrices(d_rem) if len(remaining) else np.zeros((0, 11, 11))
     sim = simulate_season(ids, played, remaining, mats, n_sims=n_sims).set_index("club_id")
 
-    name = dict(zip(teams.club_id, teams.short))
-    crest = dict(zip(teams.club_id, teams.crest))
+    name = dict(zip(teams.club_id, teams.short, strict=True))
+    crest = dict(zip(teams.club_id, teams.crest, strict=True))
     month_ago = (today - pd.Timedelta(days=30)).tz_localize(None)
     clubs = []
     for c in ids:
@@ -110,7 +111,7 @@ def build_current_season(fd, tm_clubs, elo_res: EloResult, params, model, season
         matches = fd.season_matches(code, season)
         mapping = map_clubs(teams.assign(tm_league=league), tm_clubs, overrides)
         teams["club_id"] = [mapping.get(int(f), -int(f)) for f in teams.fd_id]
-        idmap = dict(zip(teams.fd_id, teams.club_id))
+        idmap = dict(zip(teams.fd_id, teams.club_id, strict=True))
         matches["home"] = matches.home_fd.map(idmap)
         matches["away"] = matches.away_fd.map(idmap)
         c, f = league_snapshot(league, teams, matches, elo_res.ratings, elo_res.history,
@@ -122,7 +123,7 @@ def build_current_season(fd, tm_clubs, elo_res: EloResult, params, model, season
 
 def offline_clubs(games, tm_clubs, elo_res: EloResult, season: int) -> list[dict]:
     clubs = []
-    names = dict(zip(tm_clubs.club_id, tm_clubs.name))
+    names = dict(zip(tm_clubs.club_id, tm_clubs.name, strict=True))
     for league in LEAGUES:
         lg = games[(games.season == season) & (games.competition_id == league)]
         if lg.empty:

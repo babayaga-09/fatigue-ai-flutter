@@ -27,3 +27,7 @@ markers = ["slow: needs the real downloaded dataset"]
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["B008"]  # frozen-dataclass defaults (EloParams()) are immutable and safe

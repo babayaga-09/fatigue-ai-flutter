@@ -96,7 +96,7 @@ def evaluate(model: MatchModel, train, test) -> dict:
     base = np.bincount(outcome_index(train.home_goals, train.away_goals),
                        minlength=3) / len(train)
     pb = np.tile(base, (len(test), 1))
-    return {"n_test": int(len(test)), "rps": rps(p, y), "log_loss": log_loss(p, y),
+    return {"n_test": len(test), "rps": rps(p, y), "log_loss": log_loss(p, y),
             "brier": brier(p, y), "baseline_rps": rps(pb, y),
             "baseline_log_loss": log_loss(pb, y), "baseline_brier": brier(pb, y),
             "rho": model.rho}

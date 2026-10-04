@@ -97,6 +97,6 @@ def evaluate_favourites(games, pre, season: int, home_adv: float) -> dict:
     dec = lg[lg.home_goals != lg.away_goals].merge(pre, on="game_id")
     home_won = (dec.home_goals > dec.away_goals).to_numpy()
     pick_home = (dec.elo_home + home_adv >= dec.elo_away).to_numpy()
-    return {"test_season": season, "n": int(len(dec)),
+    return {"test_season": season, "n": len(dec),
             "favourite_accuracy": float((pick_home == home_won).mean()) if len(dec) else 0.0,
             "baseline_home_pick_accuracy": float(home_won.mean()) if len(dec) else 0.0}

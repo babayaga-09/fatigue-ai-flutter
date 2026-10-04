@@ -1,8 +1,14 @@
 import numpy as np
 import pandas as pd
 
-from touchline.models.form import (L, SEQ_FEATS, appearance_features, build_sequences,
-                                   latest_windows, run_form)
+from touchline.models.form import (
+    SEQ_FEATS,
+    L,
+    appearance_features,
+    build_sequences,
+    latest_windows,
+    run_form,
+)
 
 
 def _feats(n_players=60, n_apps=60, seed=0):

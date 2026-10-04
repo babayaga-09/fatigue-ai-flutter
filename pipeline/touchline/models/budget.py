@@ -21,7 +21,7 @@ def plan_signings(cands: pd.DataFrame, budget: float, needs: dict[str, int]) -> 
                bounds=Bounds(0, 1), constraints=LinearConstraint(np.vstack(rows), lo, hi))
     if not res.success:
         return []
-    return [int(p) for p, x in zip(c.player_id, res.x) if x > 0.5]
+    return [int(p) for p, x in zip(c.player_id, res.x, strict=True) if x > 0.5]
 
 
 def greedy_signings(cands: pd.DataFrame, budget: float, needs: dict[str, int]) -> list[int]:

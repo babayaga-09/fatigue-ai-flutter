@@ -32,7 +32,7 @@ def workload_table(apps: pd.DataFrame, players: pd.DataFrame, season_start: pd.T
         return w.assign(age=[], index=[], band=[], flag=[])
     dob = players.set_index("player_id")["dob"]
     w["age"] = [(r - dob.get(p)).days / 365.25 if pd.notna(dob.get(p)) else np.nan
-                for p, r in zip(w.player_id, w.ref_date)]
+                for p, r in zip(w.player_id, w.ref_date, strict=True)]
 
     def pct(s):
         return s.rank(pct=True)
