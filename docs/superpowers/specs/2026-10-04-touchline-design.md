@@ -37,8 +37,10 @@ and model layer entirely.
   `competitions`, `transfers`, `game_lineups`.
 - **Upcoming fixtures:** football-data.org (existing token, stored as a GitHub Actions secret —
   never shipped in the app).
-- **Scope:** top 5 European leagues (PL, LaLiga, Bundesliga, Serie A, Ligue 1), last ~6 seasons
-  for training, current season for display.
+- **Scope:** top 5 European leagues (PL, LaLiga, Bundesliga, Serie A, Ligue 1), seasons 2012+.
+- **Freshness (verified 2026-10-04):** the Transfermarkt dataset ends at 2025/26. Club side
+  (table, Elo, predictions, projections) is live via football-data.org; player side shows the
+  latest season in the dataset, labelled in-app, and advances automatically when the dataset does.
 - **Known gap, stated in-app and README:** no injury records → workload is a *risk index*, not an
   injury probability.
 
@@ -71,11 +73,11 @@ the only contract between pipeline and app.
 
 | # | Model | Target | Method | Baseline it must beat |
 |---|---|---|---|---|
-| M1 | **Club power rating** | Strength rating per club | Elo with home advantage + margin-of-victory, tuned on history | Static league-table points |
-| M2 | **Match predictor** | P(home / draw / away), expected goals each side | Dixon–Coles Poisson using M1 ratings + attack/defence strengths | Bookmaker-free baseline: historical home/draw/away rates |
+| M1 | **Club power rating** | Strength rating per club | Elo with home advantage + margin-of-victory, tuned on history | "Home team wins" pick (favourite accuracy on decisive games) |
+| M2 | **Match predictor** | P(home / draw / away), expected goals each side | Poisson goals driven by the M1 Elo gap + Dixon–Coles low-score correction | Historical home/draw/away base rates |
 | M3 | **Season projector** | Final position / title / top-4 / relegation % | Monte Carlo (10k sims) over remaining fixtures using M2 | Current table order |
 | M4 | **Player valuator** | Fair market value | LightGBM on age, position, minutes, G+A/90, league, club strength, value trend; SHAP explanations | Median value by age × position × league |
-| M5 | **Form forecast** (deep learning) | Goal involvements over next 5 apps | GRU over last 10 appearance sequences + static player embedding | Poisson regression on rolling averages |
+| M5 | **Form forecast** (deep learning) | Goal involvements over next 5 apps | GRU over last 10 appearances + static position/age; compared on validation with a Poisson GLM and the better one ships | Naive "recent average × 5" (GLM also reported) |
 | M6 | **Workload index** | Load risk band | ACWR (acute:chronic workload) on minutes + congestion + age; Isolation Forest flags anomalous loads | — (rule-based index; documented, not "accuracy") |
 | M7 | **Player similarity** | "Plays like X, costs less" | Standardised per-90 profile → embedding → k-NN | — |
 | M8 | **Transfer budget planner** | Best signings within budget | Integer programming (knapsack with position constraints) maximising M4-value-adjusted output | Greedy by value-per-euro |
