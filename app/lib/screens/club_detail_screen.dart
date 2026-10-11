@@ -7,7 +7,8 @@ import '../state/app_state.dart';
 import '../widgets/crest.dart';
 import '../widgets/empty_note.dart';
 import '../widgets/rows.dart';
-import '../widgets/scarf.dart';
+import '../theme/theme.dart';
+import '../widgets/print.dart';
 import '../widgets/section.dart';
 import '../widgets/stat_bar.dart';
 import 'routes.dart';
@@ -35,12 +36,16 @@ class ClubDetailScreen extends StatelessWidget {
       ..sort((a, x) => ((x.workload!.flag ? 1000 : 0) + x.workload!.index)
           .compareTo((a.workload!.flag ? 1000 : 0) + a.workload!.index));
     final change = c.eloChange30d;
+    final accent = clubColors(c).first.computeLuminance() > 0.7
+        ? scheme.onSurface : clubColors(c).first;
+    final boss = b.managerByClub[c.id];
+    final sheet = teamSheet(b, c.id);
     return Scaffold(
       appBar: AppBar(title: Text(c.name)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         children: [
-          ClubScarf(club: c),
+          ClubBand(club: c),
           const SizedBox(height: 16),
           Row(children: [
             Crest(club: c, size: 44),
@@ -53,7 +58,7 @@ class ClubDetailScreen extends StatelessWidget {
               style: tt.bodyMedium!.copyWith(color: scheme.onSurfaceVariant)),
           const SectionHeading('Form', padded: false),
           Row(children: [
-            FormScarf(form: c.form),
+            FormBoxes(form: c.form),
             const SizedBox(width: 12),
             Expanded(child: Text(formVerdict(c.form), style: tt.bodyMedium)),
           ]),
@@ -61,13 +66,40 @@ class ClubDetailScreen extends StatelessWidget {
           if (p == null)
             const EmptyNote('Odds appear once the live season has loaded.')
           else ...[
-            ShareBar(label: 'Title', value: p.pTitle, colors: clubColors(c)),
-            ShareBar(label: 'Top four', value: p.pTop4, colors: clubColors(c)),
-            ShareBar(label: 'Bottom three', value: p.pReleg, colors: clubColors(c)),
+            ShareBar(label: 'Title', value: p.pTitle, colors: [accent]),
+            ShareBar(label: 'Top four', value: p.pTop4, colors: [accent]),
+            ShareBar(label: 'Bottom three', value: p.pReleg, colors: [accent]),
             const SizedBox(height: 6),
             Text('Expected finish ${ordinal(p.expPos.round())} on about '
                 '${p.expPoints.round()} points.', style: tt.bodyMedium),
           ],
+          SectionHeading('Manager', padded: false,
+              note: 'Luck-adjusted. ${managerTrust(b.managerSplitHalf)}'),
+          if (boss == null)
+            const EmptyNote('No manager on record for this club.')
+          else ...[
+            Text(boss.name.toUpperCase(), style: masthead(30, scheme.onSurface)),
+            const SizedBox(height: 4),
+            Text('${managerLine(boss.per38)}: ${signed(boss.per38)} points per 38 games '
+                'over ${boss.games} games since ${monthYear(boss.since)}.',
+                style: tt.bodyMedium),
+          ],
+          const SectionHeading("Who they lean on", padded: false,
+              note: 'Points per game against expectation with him, minus without him. '
+                  'A description of this season, not a cause.'),
+          if (sheet.isEmpty)
+            const EmptyNote('Nobody has missed enough games to compare yet.')
+          else
+            for (final (i, pl) in sheet.indexed)
+              TeamSheetRow(
+                number: i + 1,
+                title: pl.name,
+                subtitle: '${dependencyLine(pl.dependency!.index)} · played '
+                    '${pl.dependency!.played}, missed ${pl.dependency!.missed}',
+                trailing: Text(signed(pl.dependency!.index, digits: 2),
+                    style: tabular(tt.titleMedium!)),
+                onTap: () => openPlayer(context, pl.id),
+              ),
           const SectionHeading('Power rating', padded: false),
           Text('${c.elo.round()}, ${change >= 0 ? 'up' : 'down'} '
               '${change.abs().round()} this month', style: tt.titleMedium),

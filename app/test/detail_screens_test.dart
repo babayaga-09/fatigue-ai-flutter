@@ -56,22 +56,25 @@ void main() {
     expect(find.byTooltip('Remove from your players'), findsOneWidget);
   });
 
-  testWidgets('club detail shows the scarf, odds and squad', (tester) async {
+  testWidgets('club detail shows its colours, manager, odds and squad', (tester) async {
     final b = fixtureBundle();
     final c = b.clubs.firstWhere((c) => c.proj != null && b.players.any((p) => p.club == c.id));
     await pumpApp(tester, ClubDetailScreen(clubId: c.id));
-    expect(find.bySemanticsLabel('${c.name} scarf'), findsOneWidget);
-    expect(find.text('Season odds'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Squad'), 300);
-    expect(find.text('Squad'), findsOneWidget);
+    expect(find.bySemanticsLabel('${c.name} colours'), findsOneWidget);
+    expect(find.bySemanticsLabel('Season odds'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('MANAGER'), 300,
+        scrollable: find.byType(Scrollable).first);
+    await tester.scrollUntilVisible(find.bySemanticsLabel('Squad'), 300,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.bySemanticsLabel('Squad'), findsOneWidget);
   });
 
   testWidgets('club page has a workload watch for its squad', (tester) async {
     final b = fixtureBundle();
     final c = b.clubs.firstWhere((c) => b.players.any((p) => p.club == c.id && p.workload != null));
     await pumpApp(tester, ClubDetailScreen(clubId: c.id));
-    await tester.scrollUntilVisible(find.text('Workload watch'), 300);
-    expect(find.text('Workload watch'), findsOneWidget);
+    await tester.scrollUntilVisible(find.bySemanticsLabel('Workload watch'), 300);
+    expect(find.bySemanticsLabel('Workload watch'), findsOneWidget);
   });
 
   testWidgets('unknown ids show a friendly note instead of crashing', (tester) async {
@@ -79,5 +82,25 @@ void main() {
     expect(find.textContaining('no longer in the data'), findsOneWidget);
     await pumpApp(tester, const ClubDetailScreen(clubId: -42));
     expect(find.textContaining('no longer in the data'), findsOneWidget);
+  });
+
+  testWidgets('player page shows the career curve and the with/without line', (tester) async {
+    final p = fixtureBundle().players.firstWhere((p) =>
+        p.career != null && p.dependency != null && p.valueHistory.length > 2);
+    await pumpApp(tester, PlayerDetailScreen(playerId: p.id));
+    await tester.scrollUntilVisible(find.textContaining('usual curve'), 300,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.textContaining('Likely peak'), findsOneWidget);
+    await tester.scrollUntilVisible(find.textContaining('Played ${p.dependency!.played}'), 300,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.textContaining('missed ${p.dependency!.missed}'), findsOneWidget);
+  });
+
+  testWidgets('player without a forecast says so instead of drawing one', (tester) async {
+    final p = fixtureBundle().players.firstWhere((p) => p.career == null && !p.qualified);
+    await pumpApp(tester, PlayerDetailScreen(playerId: p.id));
+    await tester.scrollUntilVisible(find.text('Not enough minutes yet for a forecast.'), 300,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.text('Not enough minutes yet for a forecast.'), findsWidgets);
   });
 }

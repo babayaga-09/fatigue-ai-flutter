@@ -60,3 +60,53 @@ String clubVerdict(Club c) {
   if (p.pReleg >= 0.2) return 'Looking over their shoulder.';
   return 'Mid-table and comfortable.';
 }
+
+String signed(double v, {int digits = 1}) {
+  final s = v.abs().toStringAsFixed(digits);
+  if (double.parse(s) == 0) return s; // no sign on a zero
+  return '${v > 0 ? '+' : '−'}$s';
+}
+
+/// Plain words for a manager's luck-adjusted record.
+String managerLine(double per38) => per38.abs() < 1
+    ? 'Getting about what the squad should'
+    : per38 > 0
+        ? 'Getting more than the squad should'
+        : 'Getting less than the squad should';
+
+/// Plain words for results with and without a player.
+String dependencyLine(double index) => index.abs() < 0.1
+    ? 'Results barely change without him'
+    : index > 0
+        ? 'Results drop when he misses out'
+        : 'Results hold up, even improve, without him';
+
+/// The sacking-bounce finding in plain words, decided by the numbers and their interval.
+String bounceVerdict(Bounce b) {
+  final lead = 'Points per game against what the squad should have taken, across '
+      '${b.changes} mid-season sackings in the top five leagues since 2014.';
+  final c = b.control;
+  if (c == null) return lead;
+  final gap = b.first10 - c;
+  final ci = b.gapCi;
+  final drift = '$lead Clubs on an equally bad run that kept their manager bounced back '
+      'too: most of the "new-manager bounce" is a team drifting back to its level.';
+  if (ci == null || (ci[0] <= 0 && ci[1] >= 0)) {
+    return '$drift New managers did ${signed(gap, digits: 2)} a game better than that, '
+        'which is within the noise.';
+  }
+  return ci[0] > 0
+      ? '$drift New managers added a small real edge on top: ${signed(gap, digits: 2)} '
+          'a game.'
+      : '$drift Clubs that sacked did ${signed(gap, digits: 2)} a game worse than those '
+          'that kept theirs.';
+}
+
+/// How much to trust a manager figure, from the split-half check.
+String managerTrust(double? r) => r == null || r < 0.05
+    ? "Mostly luck: a manager's odd and even games don't agree."
+    : r < 0.3
+        ? "Mostly luck with some skill underneath: a manager's odd and even games agree "
+            'only weakly (r = ${r.toStringAsFixed(2)}).'
+        : "A real but noisy signal: a manager's odd and even games agree "
+            '(r = ${r.toStringAsFixed(2)}).';

@@ -7,8 +7,11 @@ import '../data/bundle.dart';
 import '../data/selectors.dart';
 import '../format.dart';
 import '../state/app_state.dart';
+import '../theme/theme.dart';
+import '../widgets/career_chart.dart';
 import '../widgets/empty_note.dart';
 import '../widgets/player_avatar.dart';
+import '../widgets/print.dart';
 import '../widgets/rows.dart';
 import '../widgets/section.dart';
 import '../widgets/stat_bar.dart';
@@ -51,12 +54,13 @@ class PlayerDetailScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            PlayerAvatar(player: p, size: 84),
+          Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+            PlayerAvatar(player: p, size: 120),
             const SizedBox(width: 16),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(p.name, style: tt.titleLarge),
+                Text(p.name.toUpperCase(), style: masthead(34, scheme.onSurface)),
+                const SizedBox(height: 4),
                 if (p.clubName != null)
                   InkWell(
                     onTap: p.club != null && b.clubById.containsKey(p.club)
@@ -85,8 +89,23 @@ class PlayerDetailScreen extends StatelessWidget {
           ..._form(context, p),
           const SectionHeading('Workload', padded: false),
           ..._workload(context, p),
-          const SectionHeading('Market value over time', padded: false),
-          ValueChart(points: p.valueHistory),
+          const SectionHeading('Career curve', padded: false,
+              note: 'Market value forecast by a neural network trained on careers since 2012. '
+                  'In testing, 80% of outcomes landed inside the band. It forecasts price, '
+                  'not ability.'),
+          ..._career(context, p),
+          const SectionHeading('With and without him', padded: false,
+              note: 'His club\'s points per game against expectation, with him minus without '
+                  'him, this season. A description, not a cause: it barely repeats from one '
+                  'half-season to the next.'),
+          if (p.dependency == null)
+            const EmptyNote('He hasn\'t missed enough games to compare.')
+          else ...[
+            Text('${dependencyLine(p.dependency!.index)}: '
+                '${signed(p.dependency!.index, digits: 2)} points per game.',
+                style: tt.titleMedium),
+            Text('Played ${p.dependency!.played} · missed ${p.dependency!.missed}', style: muted),
+          ],
           const SectionHeading('Transfers', padded: false),
           if (p.transfers.isEmpty)
             const EmptyNote('No transfers on record.')
@@ -146,6 +165,37 @@ class PlayerDetailScreen extends StatelessWidget {
         Text('What moves his value', style: tt.titleSmall),
         for (final w in why) EffectBar(label: w.label, effect: w.effectPct, maxAbs: maxAbs),
       ],
+    ];
+  }
+
+  List<Widget> _career(BuildContext context, Player p) {
+    final tt = Theme.of(context).textTheme;
+    final c = p.career;
+    if (c == null) {
+      return [
+        ValueChart(points: p.valueHistory),
+        const SizedBox(height: 4),
+        const EmptyNote('Not enough minutes yet for a forecast.'),
+      ];
+    }
+    final b = AppScope.of(context).bundle!;
+    final club = p.club == null ? null : b.clubById[p.club];
+    final colour = clubColors(club).first;
+    final accent = colour.computeLuminance() > 0.6 ? Theme.of(context).colorScheme.primary
+        : colour;
+    final curve = switch (c.vsCurve) {
+      'ahead' => 'Ahead of the usual curve for his position and age.',
+      'behind' => 'Behind the usual curve for his position and age.',
+      _ => 'Right on the usual curve for his position and age.',
+    };
+    return [
+      CareerChart(history: p.valueHistory, career: c, accent: accent),
+      const SizedBox(height: 10),
+      Text(curve, style: tt.titleMedium),
+      Text('Likely peak ${money(c.peakValue)}'
+          '${c.peakAge == null ? '' : ' around age ${c.peakAge!.round()}'}. '
+          'By ${c.seasons.last}: ${money(c.p10.last)} to ${money(c.p90.last)}.',
+          style: tt.bodyMedium),
     ];
   }
 

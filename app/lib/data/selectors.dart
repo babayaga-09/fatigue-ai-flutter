@@ -130,3 +130,15 @@ List<Player> searchPlayers(Bundle b, PlayerQuery q) {
   }
   return list;
 }
+
+/// Current managers in a league (all leagues when null), best luck-adjusted record first.
+List<Manager> managersIn(Bundle b, String? league) =>
+    b.managers.where((m) => league == null || m.league == league).toList()
+      ..sort((a, x) => x.pae.compareTo(a.pae));
+
+/// Squad players with a with/without record, biggest drop without them first.
+List<Player> teamSheet(Bundle b, int clubId, {int n = 5}) =>
+    (b.players.where((p) => p.club == clubId && p.dependency != null).toList()
+          ..sort((a, x) => x.dependency!.index.compareTo(a.dependency!.index)))
+        .take(n)
+        .toList();

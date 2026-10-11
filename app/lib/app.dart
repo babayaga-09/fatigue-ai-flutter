@@ -22,6 +22,7 @@ class TouchlineApp extends StatelessWidget {
             theme: buildTheme(Brightness.light),
             darkTheme: buildTheme(Brightness.dark),
             themeMode: AppScope.of(context).themeMode,
+            builder: (context, child) => _PageWidth(child: child!),
             home: const Shell(),
           ),
         ),
@@ -41,7 +42,7 @@ class _ShellState extends State<Shell> {
     (Icons.stadium_outlined, Icons.stadium_rounded, 'Home'),
     (Icons.shield_outlined, Icons.shield_rounded, 'Clubs'),
     (Icons.person_search_outlined, Icons.person_search_rounded, 'Players'),
-    (Icons.travel_explore_outlined, Icons.travel_explore_rounded, 'Scout'),
+    (Icons.travel_explore_outlined, Icons.travel_explore_rounded, 'Scouting'),
   ];
 
   @override
@@ -95,6 +96,32 @@ class _ShellState extends State<Shell> {
                 ],
               ),
             ),
+    );
+  }
+}
+
+/// On wide screens the programme keeps a printed page's width, centred on the stock colour,
+/// instead of stretching one column across a monitor.
+class _PageWidth extends StatelessWidget {
+  const _PageWidth({required this.child});
+  final Widget child;
+  static const maxWidth = 960.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    if (mq.size.width <= maxWidth) return child;
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.surfaceContainer,
+      child: Center(
+        child: SizedBox(
+          width: maxWidth,
+          child: MediaQuery(
+            data: mq.copyWith(size: Size(maxWidth, mq.size.height)),
+            child: child,
+          ),
+        ),
+      ),
     );
   }
 }

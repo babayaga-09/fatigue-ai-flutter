@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../format.dart';
 import '../theme/theme.dart';
-import 'scarf.dart';
+import 'print.dart';
 
 /// Signed effect bar centred at zero ("+35%" pushes right, "−12%" left).
 class EffectBar extends StatelessWidget {
@@ -42,8 +42,7 @@ class EffectBar extends StatelessWidget {
                       left: positive ? half : half - w,
                       width: w, top: 1, bottom: 1,
                       child: DecoratedBox(decoration: BoxDecoration(
-                          color: positive ? scheme.primary : scheme.tertiary,
-                          borderRadius: BorderRadius.circular(2))),
+                          color: positive ? scheme.secondary : scheme.primary)),
                     ),
                   ]),
                 );
@@ -65,7 +64,7 @@ class ShareBar extends StatelessWidget {
   final String label;
   final double value;
 
-  /// Knit colours for the filled part; the theme's primary when null.
+  /// Printing colour for the filled part (first entry); the theme's primary when null.
   final List<Color>? colors;
 
   @override
@@ -80,39 +79,14 @@ class ShareBar extends StatelessWidget {
           child: Row(children: [
             SizedBox(width: 96, child: Text(label, style: tt.bodyMedium)),
             Expanded(
-              child: ShareScarf(value: value, colors: colors ?? [scheme.primary], height: 14),
+              child: ShareTrack(value: value, color: colors?.first ?? scheme.primary,
+                  height: 12),
             ),
             SizedBox(width: 52,
                 child: Text(pct(value), textAlign: TextAlign.end,
                     style: tabular(tt.labelLarge!))),
           ]),
         ),
-      ),
-    );
-  }
-}
-
-/// A probability knitted as a scarf: the share in [colors], the rest a dropped stitch.
-class ShareScarf extends StatelessWidget {
-  const ShareScarf({super.key, required this.value, required this.colors, this.height = 8});
-
-  final double value;
-  final List<Color> colors;
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    final v = value.clamp(0.0, 1.0);
-    return ExcludeSemantics(
-      child: Scarf(
-        height: height,
-        stripeWidth: 6,
-        semanticLabel: '',
-        bands: [
-          ScarfBand(flex: v, colors: colors),
-          ScarfBand(flex: 1 - v, colors: [Theme.of(context).colorScheme.outlineVariant],
-              knit: Knit.dropped),
-        ],
       ),
     );
   }

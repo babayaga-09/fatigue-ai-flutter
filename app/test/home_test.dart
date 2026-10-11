@@ -7,16 +7,17 @@ import 'package:touchline/state/app_state.dart';
 import 'helpers.dart';
 
 void main() {
-  testWidgets('home leads with the hero scarf and has every section', (tester) async {
+  testWidgets('home leads with the cover and has every inside page', (tester) async {
     await tester.binding.setSurfaceSize(const Size(412, 915));
     await pumpApp(tester, const HomeScreen());
     expect(find.text('TOUCHLINE'), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp(r'win \d+%, draw \d+%')), findsWidgets);
-    for (final h in ['Running hot', 'This week', 'Clubs in form', 'Power rankings', 'Bargains',
-        'Overworked watch']) {
-      await tester.scrollUntilVisible(find.text(h), 400,
+    expect(find.byType(MatchCover), findsOneWidget);
+    for (final h in ['Running hot', 'Ready for the Big Five', 'Does sacking the manager work?',
+        'This week', 'Clubs in form', 'Power rankings', 'Bargains', 'Overworked watch']) {
+      await tester.scrollUntilVisible(find.bySemanticsLabel(h), 400,
           scrollable: find.byType(Scrollable).first);
-      expect(find.text(h), findsOneWidget, reason: h);
+      expect(find.bySemanticsLabel(h), findsOneWidget, reason: h);
     }
   });
 
@@ -29,10 +30,10 @@ void main() {
 
   testWidgets('tapping the hero opens the match breakdown', (tester) async {
     await pumpApp(tester, const HomeScreen());
-    await tester.tap(find.byType(HeroFixture));
+    await tester.tap(find.byType(MatchCover));
     await tester.pumpAndSettle();
     expect(find.textContaining('Expected goals'), findsWidgets);
-    expect(find.text('Draw'), findsOneWidget);
+    expect(find.text('Draw'), findsWidgets);
   });
 
   testWidgets('a quiet week says so instead of collapsing', (tester) async {
@@ -54,6 +55,14 @@ void main() {
     expect(tester.getSemantics(find.bySemanticsLabel('Built-in data from 11 Oct')),
         isSemantics(isButton: true, hasTapAction: true));
     expect(find.text('Offline'), findsNothing);
+  });
+
+  testWidgets('the Big Five page says it is ranked by price', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(412, 915));
+    await pumpApp(tester, const HomeScreen());
+    await tester.scrollUntilVisible(find.bySemanticsLabel('Ready for the Big Five'), 400,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.textContaining("couldn't beat"), findsOneWidget);
   });
 
   test('fixture bundle has fixtures around fixtureNow', () {

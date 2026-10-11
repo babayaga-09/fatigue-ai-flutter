@@ -4,6 +4,7 @@ import '../data/bundle.dart';
 import '../data/selectors.dart';
 import '../format.dart';
 import '../state/app_state.dart';
+import '../widgets/brand.dart';
 import '../widgets/empty_note.dart';
 import '../widgets/league_chips.dart';
 import '../widgets/rows.dart';
@@ -92,7 +93,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         maxAge: maxAge, maxPrice: maxPrice, sort: sort));
     final extra = (maxAge != null ? 1 : 0) + (maxPrice != null ? 1 : 0);
     return Scaffold(
-      appBar: AppBar(title: const Text('Players')),
+      appBar: AppBar(title: const ScreenTitle('Players')),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),

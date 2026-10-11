@@ -8,8 +8,9 @@ import '../theme/theme.dart';
 import '../widgets/crest.dart';
 import '../widgets/empty_note.dart';
 import '../widgets/league_chips.dart';
-import '../widgets/scarf.dart';
-import '../widgets/stat_bar.dart';
+import '../copy/voice.dart';
+import '../widgets/brand.dart';
+import '../widgets/print.dart';
 import 'routes.dart';
 
 class ClubsScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class ClubsScreen extends StatefulWidget {
 
 class _ClubsScreenState extends State<ClubsScreen> {
   String? league;
-  bool odds = false;
+  int view = 0; // 0 table, 1 odds, 2 managers
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +30,7 @@ class _ClubsScreenState extends State<ClubsScreen> {
     final lg = league ?? s.league ?? b.leagues.first.id;
     final rows = leagueTable(b, lg);
     final hasOdds = rows.any((c) => c.proj != null);
+    final odds = view == 1;
     final tt = Theme.of(context).textTheme;
     final muted = tt.labelMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
 
@@ -45,7 +47,7 @@ class _ClubsScreenState extends State<ClubsScreen> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
               Text(v == null ? '–' : pct(v), style: tabular(tt.bodyMedium!)),
               const SizedBox(height: 3),
-              if (v != null) ShareScarf(value: v, colors: clubColors(c), height: 6),
+              if (v != null) ShareTrack(value: v, color: clubColors(c).first, height: 6),
             ]),
           ),
         );
@@ -82,7 +84,7 @@ class _ClubsScreenState extends State<ClubsScreen> {
     final n = rows.length;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Clubs'),
+        title: const ScreenTitle('Clubs'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(52),
           child: LeagueChips(allowAll: false, selected: lg,
@@ -92,17 +94,20 @@ class _ClubsScreenState extends State<ClubsScreen> {
       body: ListView(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-          child: SegmentedButton<bool>(
+          child: SegmentedButton<int>(
+            showSelectedIcon: false,
             segments: const [
-              ButtonSegment(value: false, label: Text('Table'),
-                  icon: Icon(Icons.format_list_numbered_rounded)),
-              ButtonSegment(value: true, label: Text('Odds'), icon: Icon(Icons.insights_rounded)),
+              ButtonSegment(value: 0, label: Text('Table')),
+              ButtonSegment(value: 1, label: Text('Odds')),
+              ButtonSegment(value: 2, label: Text('Managers')),
             ],
-            selected: {odds},
-            onSelectionChanged: (v) => setState(() => odds = v.first),
+            selected: {view},
+            onSelectionChanged: (v) => setState(() => view = v.first),
           ),
         ),
-        if (odds && !hasOdds)
+        if (view == 2)
+          ..._managers(context, lg)
+        else if (odds && !hasOdds)
           const Padding(padding: EdgeInsets.all(16),
               child: EmptyNote('Odds need the live season. Connect and refresh from Home.'))
         else ...[
@@ -122,11 +127,40 @@ class _ClubsScreenState extends State<ClubsScreen> {
         ],
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-          child: Text(odds ? 'From 10,000 simulations of the rest of the season.'
+          child: Text(view == 2 ? 'Managers from the 2025/26 season, tenure to date.'
+              : odds ? 'From 10,000 simulations of the rest of the season.'
               : 'Live table. Thick lines mark the top four and the bottom three.',
               style: tt.bodySmall),
         ),
       ]),
     );
+  }
+
+  List<Widget> _managers(BuildContext context, String league) {
+    final b = AppScope.of(context).bundle!;
+    final tt = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final ms = managersIn(b, league);
+    if (ms.isEmpty) {
+      return const [Padding(padding: EdgeInsets.all(16),
+          child: EmptyNote('No manager records for this league.'))];
+    }
+    return [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        child: Text(
+            'Points above what each squad should have taken, per 38 games, luck-adjusted. '
+            '${managerTrust(b.managerSplitHalf)}',
+            style: tt.bodySmall!.copyWith(color: scheme.onSurfaceVariant)),
+      ),
+      for (final (i, m) in ms.indexed)
+        TeamSheetRow(
+          number: i + 1,
+          title: m.name,
+          subtitle: '${b.clubById[m.club]?.name ?? ''} · ${m.games} games',
+          trailing: Text(signed(m.per38), style: tabular(tt.titleMedium!)),
+          onTap: b.clubById[m.club] == null ? null : () => openClub(context, m.club),
+        ),
+    ];
   }
 }

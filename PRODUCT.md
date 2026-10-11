@@ -33,12 +33,13 @@ Every number is a model output that was tested against a simple baseline on a se
 
 ## Capabilities and Constraints
 
-- Four areas: Home (dashboard feed), Clubs, Players, Scout (budget planner + "find similar for less"). Player comparison and local favourites. Settings shows data freshness and model notes.
+- Four areas: Home (matchday cover + inside pages), Clubs (table, odds, managers), Players, Scouting (Ready for the Big Five, budget planner, "find similar for less"). Player comparison and local favourites. "How this works" shows data freshness and every model's tested result.
+- v2 analytics and how each may be presented: the **career curve** (GRU, quantile range) ships as a forecast with its range; **Ready for the Big Five** is ranked by the price-only model because the ML model lost to price, and the app says so; the **manager effect** is labelled by its split-half agreement (weak); **with/without** is a description of this season, never a ranking of importance; the **sacking bounce** is stated against clubs that kept their manager, worded by its interval.
 - `null` in the bundle always means "not enough data" and must render as a friendly empty state, never 0.
 - Workload is a risk index; it must never be presented as injury probability.
 - Market values are crowd-sourced consensus estimates (Transfermarkt), not transfer fees.
 - Crests come from football-data.org URLs and player photos from Transfermarkt URLs; both can be missing and need graceful fallbacks.
-- "Ask the Scout" LLM chat is deferred to v2; the Scout tab ships the non-LLM planner in v1.
+- "Ask the Scout" LLM chat is deferred; the Scouting tab ships the non-LLM planner.
 - The budget planner runs on-device and must match the pipeline's golden cases (`pipeline/data/out/budget_cases.json`).
 
 ## Brand Commitments

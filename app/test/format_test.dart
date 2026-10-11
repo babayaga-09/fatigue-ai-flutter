@@ -29,4 +29,8 @@ void main() {
     expect([1, 2, 3, 4, 11, 12, 13, 21, 22, 23].map(ordinal),
         ['1st', '2nd', '3rd', '4th', '11th', '12th', '13th', '21st', '22nd', '23rd']);
   });
+
+  test('monthYear keeps the year', () {
+    expect(monthYear(DateTime(2019, 12, 22)), 'Dec 2019');
+  });
 }

@@ -15,7 +15,7 @@ void main() {
     await tester.tap(find.text('Find the signings'));
     await tester.pump();
     await tester.pump();
-    expect(find.text('Your window'), findsOneWidget);
+    expect(find.bySemanticsLabel('Your window'), findsOneWidget);
     expect(find.textContaining('Spend'), findsOneWidget);
   });
 

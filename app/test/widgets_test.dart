@@ -5,7 +5,7 @@ import 'package:touchline/widgets/crest.dart';
 import 'package:touchline/widgets/empty_note.dart';
 import 'package:touchline/widgets/player_avatar.dart';
 import 'package:touchline/widgets/rows.dart';
-import 'package:touchline/widgets/scarf.dart';
+import 'package:touchline/widgets/print.dart';
 import 'package:touchline/widgets/value_chart.dart';
 
 import 'helpers.dart';
@@ -17,29 +17,38 @@ Club _club(String? crest) => Club.fromJson({
     });
 
 void main() {
-  testWidgets('fixture scarf announces the split in words', (tester) async {
+  testWidgets('result strip announces the split in words', (tester) async {
     final b = fixtureBundle();
     final f = b.fixtures.firstWhere((f) => !f.finished);
-    await pumpApp(tester, Scaffold(body: FixtureScarf(
+    await pumpApp(tester, Scaffold(body: ResultStrip(
         fixture: f, home: b.clubById[f.home], away: b.clubById[f.away], hero: true)));
     final home = b.clubById[f.home]!.name;
     expect(find.bySemanticsLabel(RegExp('^$home win \\d+%, draw \\d+%, .+ win \\d+%\$')),
         findsOneWidget);
   });
 
-  testWidgets('scarves skip the knit-in when animations are disabled', (tester) async {
-    await pumpApp(tester, const MediaQuery(
-        data: MediaQueryData(disableAnimations: true),
-        child: Scaffold(body: FormScarf(form: ['W', 'D', 'L']))));
-    final paint = tester.widget<CustomPaint>(find.descendant(
-        of: find.byType(Scarf), matching: find.byType(CustomPaint)).first);
-    expect((paint.painter! as ScarfPainter).progress, 1.0);
+  testWidgets('form boxes carry letters, not just colour', (tester) async {
+    await pumpApp(tester, const Scaffold(body: FormBoxes(form: ['W', 'D', 'L'])));
     expect(find.bySemanticsLabel('Form: won, drew, lost'), findsOneWidget);
+    for (final r in ['W', 'D', 'L']) {
+      expect(find.text(r), findsOneWidget);
+    }
   });
 
   testWidgets('empty form says so', (tester) async {
-    await pumpApp(tester, const Scaffold(body: FormScarf(form: [])));
+    await pumpApp(tester, const Scaffold(body: FormBoxes(form: [])));
     expect(find.text('No games yet'), findsOneWidget);
+  });
+
+  test('clashing club colours fall back to the away second colour', () {
+    final red = Club.fromJson({
+      'id': 2, 'name': 'Reds', 'crest': null, 'league': 'GB1', 'elo': 1800,
+      'elo_change_30d': 0, 'form': [], 'colors': ['#DB0007', '#FFFFFF'], 'proj': null,
+      'table': {'pos': 1, 'played': 0, 'points': 0, 'gd': 0, 'gf': 0, 'ga': 0},
+    });
+    final (h, a) = matchColors(red, red);
+    expect(h, const Color(0xFFDB0007));
+    expect(a, const Color(0xFFFFFFFF));
   });
 
   testWidgets('crest falls back to a stitched monogram (null and failed URL)', (tester) async {

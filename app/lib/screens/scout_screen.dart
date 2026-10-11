@@ -6,10 +6,12 @@ import '../data/planner.dart';
 import '../data/selectors.dart';
 import '../format.dart';
 import '../state/app_state.dart';
+import '../widgets/brand.dart';
 import '../widgets/empty_note.dart';
 import '../widgets/league_chips.dart';
 import '../widgets/rows.dart';
 import '../widgets/section.dart';
+import 'big_five_screen.dart';
 import 'routes.dart';
 
 typedef Solver = Future<Plan?> Function(
@@ -75,11 +77,32 @@ class _ScoutScreenState extends State<ScoutScreen> {
     final t = target == null ? null : b.playerById[target];
     final p = plan;
     return Scaffold(
-      appBar: AppBar(title: const Text('Scout')),
+      appBar: AppBar(title: const ScreenTitle('Scouting')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         children: [
-          Text('Build my window', style: tt.titleLarge),
+          if (b.prospects.isNotEmpty) ...[
+            SectionHeading('Ready for the Big Five', padded: false, note: bigFiveNote(b)),
+            Transform.translate(
+              offset: const Offset(-16, 0),
+              child: SizedBox(
+                width: MediaQuery.sizeOf(context).width,
+                child: Column(children: [
+                  for (final (i, pr) in b.prospects.take(3).indexed)
+                    ProspectRow(number: i + 1, prospect: pr),
+                ]),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const BigFiveScreen())),
+                child: Text('See all ${b.prospects.length}, filter by league and position'),
+              ),
+            ),
+          ],
+          const SectionHeading('Build my window', padded: false),
           Text('The most player for your money, judged on ${b.playerSeason} numbers.',
               style: muted),
           const SizedBox(height: 16),

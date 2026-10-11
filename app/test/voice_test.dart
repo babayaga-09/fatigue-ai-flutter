@@ -31,4 +31,24 @@ void main() {
       expect(playerVerdict(p), isNotEmpty);
     }
   });
+
+  test('bounce verdict follows the interval, not a hunch', () {
+    Bounce b(List<double>? ci) => Bounce(changes: 271, before: -0.36, first10: 0.06,
+        next20: 0.17, control: 0.0, gapCi: ci);
+    expect(bounceVerdict(b([-0.05, 0.17])), contains('within the noise'));
+    expect(bounceVerdict(b([0.01, 0.12])), contains('small real edge'));
+    expect(bounceVerdict(b(null)), contains('drifting back'));
+  });
+
+  test('manager trust is graded by the split-half correlation', () {
+    expect(managerTrust(-0.1), startsWith('Mostly luck:'));
+    expect(managerTrust(0.14), contains('some skill'));
+    expect(managerTrust(0.5), startsWith('A real but noisy'));
+  });
+
+  test('signed numbers never print a minus zero', () {
+    expect(signed(-0.0008, digits: 2), '0.00');
+    expect(signed(0.06, digits: 2), '+0.06');
+    expect(signed(-0.36, digits: 2), '−0.36');
+  });
 }
