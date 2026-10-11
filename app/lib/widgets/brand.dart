@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../format.dart';
 import '../state/app_state.dart';
 import '../theme/theme.dart';
+import '../theme/tokens.dart';
 
 class Wordmark extends StatelessWidget {
   const Wordmark({super.key});
@@ -13,7 +14,7 @@ class Wordmark extends StatelessWidget {
         label: 'Touchline',
         child: ExcludeSemantics(
           child: Text('TOUCHLINE',
-              style: masthead(36, Theme.of(context).colorScheme.primary)),
+              style: masthead(36, TL.red)),
         ),
       );
 }

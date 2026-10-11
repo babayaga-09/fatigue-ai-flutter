@@ -136,9 +136,11 @@ List<Manager> managersIn(Bundle b, String? league) =>
     b.managers.where((m) => league == null || m.league == league).toList()
       ..sort((a, x) => x.pae.compareTo(a.pae));
 
-/// Squad players with a with/without record, biggest drop without them first.
+/// Squad players with a with/without record, the most-played first. Deliberately not ordered
+/// by the figure itself: it barely repeats from one half-season to the next, so it must not
+/// read as a ranking.
 List<Player> teamSheet(Bundle b, int clubId, {int n = 5}) =>
     (b.players.where((p) => p.club == clubId && p.dependency != null).toList()
-          ..sort((a, x) => x.dependency!.index.compareTo(a.dependency!.index)))
+          ..sort((a, x) => x.dependency!.played.compareTo(a.dependency!.played)))
         .take(n)
         .toList();

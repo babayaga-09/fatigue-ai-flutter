@@ -9,6 +9,7 @@ import '../theme/theme.dart';
 import '../theme/tokens.dart';
 import '../widgets/brand.dart';
 import '../widgets/empty_note.dart';
+import '../widgets/halftone.dart';
 import '../widgets/league_chips.dart';
 import '../widgets/player_avatar.dart';
 import '../widgets/print.dart';
@@ -190,21 +191,30 @@ class MatchCover extends StatelessWidget {
           color: colour,
           height: portraitH,
           child: Stack(fit: StackFit.expand, children: [
+            // the star printed straight onto the club's half, edge to edge
             if (star != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 44),
-                child: LayoutBuilder(builder: (context, c) => Align(
-                  alignment: Alignment.topCenter,
-                  child: PlayerAvatar(player: star, club: club, field: colour,
-                      size: c.maxWidth.clamp(0, c.maxHeight * 3 / 4).toDouble()),
-                )),
+              Positioned.fill(
+                bottom: 64,
+                child: HalftonePortrait(
+                  url: star.img, ink: inkOnField(club, colour), paper: colour, columns: 44,
+                  fallback: const SizedBox.shrink()),
               ),
             Positioned(
               left: 10, right: 10, bottom: 8,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: align,
-                child: Text(name.toUpperCase(), style: masthead(34, onColor(colour))),
+              child: Column(
+                crossAxisAlignment: align == Alignment.bottomLeft
+                    ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                children: [
+                  if (star != null)
+                    Text(star.name.toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall!
+                            .copyWith(color: onColor(colour), letterSpacing: 0.8)),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: align,
+                    child: Text(name.toUpperCase(), style: masthead(34, onColor(colour))),
+                  ),
+                ],
               ),
             ),
           ]),
@@ -214,8 +224,10 @@ class MatchCover extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '$hn v $an, ${kickoffLabel(f.kickoff, s.now)}. ${fixtureVerdict(hn, an, f.p)}',
+      label: '$hn v $an, ${kickoffLabel(f.kickoff, s.now)}. $hn win ${pct(f.p[0])}, '
+          'draw ${pct(f.p[1])}, $an win ${pct(f.p[2])}. ${fixtureVerdict(hn, an, f.p)}',
       onTap: () => showMatchSheet(context, f),
+      excludeSemantics: true,
       child: InkWell(
         onTap: () => showMatchSheet(context, f),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [

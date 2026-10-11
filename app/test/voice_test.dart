@@ -37,7 +37,10 @@ void main() {
         next20: 0.17, control: 0.0, gapCi: ci);
     expect(bounceVerdict(b([-0.05, 0.17])), contains('within the noise'));
     expect(bounceVerdict(b([0.01, 0.12])), contains('small real edge'));
-    expect(bounceVerdict(b(null)), contains('drifting back'));
+    expect(bounceVerdict(b(null)), allOf(contains('drifting back'), isNot(contains('noise'))));
+    final noDrift = Bounce(changes: 10, before: -0.1, first10: 0.4, next20: null, control: -0.05,
+        gapCi: const [0.2, 0.6]);
+    expect(bounceVerdict(noDrift), isNot(contains('drifting back')));
   });
 
   test('manager trust is graded by the split-half correlation', () {

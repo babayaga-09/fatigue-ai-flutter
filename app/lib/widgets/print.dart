@@ -50,18 +50,16 @@ class ResultStrip extends StatelessWidget {
           decoration: BoxDecoration(color: c, border: edge(c)),
           alignment: side == 'away' ? Alignment.centerRight
               : side == 'home' ? Alignment.centerLeft : Alignment.center,
-          padding: EdgeInsets.symmetric(horizontal: hero ? 10 : 6),
-          child: v >= (hero ? 0.12 : 0.16)
-              ? FittedBox(fit: BoxFit.scaleDown, child: Text(pct(v), style: style))
-              : null,
+          // every band carries its figure; narrow bands set it smaller rather than drop it
+          padding: EdgeInsets.symmetric(horizontal: v < 0.15 ? 3 : hero ? 10 : 6),
+          child: FittedBox(fit: BoxFit.scaleDown, child: Text(pct(v), style: style)),
         ),
       );
     }
 
     final tt = Theme.of(context).textTheme;
-    Widget label(double v, String text, TextAlign align) => Expanded(
-          flex: (v * 1000).round().clamp(1, 1000),
-          child: Text(text, textAlign: align, maxLines: 1, overflow: TextOverflow.clip,
+    Widget label(String text, TextAlign align) => Expanded(
+          child: Text(text, textAlign: align, maxLines: 1, overflow: TextOverflow.ellipsis,
               style: tt.labelMedium),
         );
     return Semantics(
@@ -79,11 +77,9 @@ class ResultStrip extends StatelessWidget {
           if (hero) ...[
             const SizedBox(height: 6),
             Row(children: [
-              label(p[0], hn, TextAlign.start),
-              const SizedBox(width: 2),
-              label(p[1], p[1] >= 0.12 ? 'Draw' : '', TextAlign.center),
-              const SizedBox(width: 2),
-              label(p[2], p[2] >= 0.12 ? an : '', TextAlign.end),
+              label(hn, TextAlign.start),
+              label('Draw', TextAlign.center),
+              label(an, TextAlign.end),
             ]),
           ],
         ]),
@@ -160,10 +156,14 @@ class ShareTrack extends StatelessWidget {
 
 /// A numbered line of a team sheet: programme number, name, note, trailing figure.
 class TeamSheetRow extends StatelessWidget {
-  const TeamSheetRow({super.key, required this.number, required this.title, this.subtitle,
-      this.trailing, this.onTap, this.leading});
+  const TeamSheetRow({super.key, this.number, required this.title, this.subtitle,
+      this.trailing, this.onTap, this.leading, this.inset = 16});
 
-  final int number;
+  /// Programme number; null for lines that are not a ranking.
+  final int? number;
+
+  /// Horizontal padding; 0 inside a parent that already sets the page gutter.
+  final double inset;
   final String title;
   final String? subtitle;
   final Widget? trailing;
@@ -178,12 +178,14 @@ class TeamSheetRow extends StatelessWidget {
       onTap: onTap,
       child: Container(
         constraints: const BoxConstraints(minHeight: 56),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: inset, vertical: 8),
         decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: scheme.outlineVariant))),
         child: Row(children: [
-          SizedBox(width: 32,
-              child: Text('$number', style: masthead(26, scheme.primary))),
+          if (number != null)
+            SizedBox(width: 44,
+                child: FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft,
+                    child: Text('$number', style: masthead(26, scheme.primary)))),
           if (leading != null) ...[leading!, const SizedBox(width: 12)],
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

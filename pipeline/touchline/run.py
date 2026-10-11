@@ -213,8 +213,10 @@ def main(argv=None) -> int:
     pmodel, metrics["prospects"] = prospects.run_prospects(prow, test_season)
     conv = prospects.conversion(prow)
     metrics["prospects"]["conversion"] = conv
+    # a prospect has never played top-five league football (Osimhen at Galatasaray is not one)
+    proven = set(top5[top5.minutes > 0].player_id)
     cur_feeder = set(players[players.league.isin(list(prospects.FEEDERS))
-                             & (players.last_season >= test_season)].player_id)
+                             & (players.last_season >= test_season)].player_id) - proven
     pc = prow[(prow.season == test_season) & prow.player_id.isin(cur_feeder)].copy()
     pc["p"] = pmodel.predict(pc)
     pc["why"] = pmodel.explain(pc)

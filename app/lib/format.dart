@@ -12,7 +12,12 @@ String money(int? eur) {
 
 String signedMoney(int eur) => '${eur >= 0 ? '+' : '−'}${money(eur.abs())}';
 
-String pct(double p) => '${(p * 100).round()}%';
+/// A share as a whole percentage; never prints a certainty the simulation didn't show.
+String pct(double p) => p > 0 && p < 0.005
+    ? '<1%'
+    : p < 1 && p > 0.995
+        ? '>99%'
+        : '${(p * 100).round()}%';
 
 String shortDate(DateTime d) => '${d.day} ${_months[d.month - 1]}';
 

@@ -10,11 +10,11 @@ void main() {
     final b = fixtureBundle();
     await pumpApp(tester, const BigFiveScreen());
     expect(find.text(bigFiveNote(b)), findsOneWidget);
-    final all = find.byType(ProspectRow).evaluate().length;
     final lg = b.prospects.first; // its chip is first in the row, so on screen
     await tester.tap(find.widgetWithText(ChoiceChip, lg.leagueName));
     await tester.pump();
-    final n = b.prospects.where((p) => p.league == lg.league).length;
-    expect(find.byType(ProspectRow), findsNWidgets(n < all ? n : all));
+    final shown = tester.widgetList<ProspectRow>(find.byType(ProspectRow)).toList();
+    expect(shown, isNotEmpty);
+    expect(shown.every((r) => r.prospect.league == lg.league), isTrue);
   });
 }

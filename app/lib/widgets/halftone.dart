@@ -121,19 +121,29 @@ class _HalftonePortraitState extends State<HalftonePortrait>
     _stream = ResizeImage(NetworkImage(url), width: widget.columns * 4,
             policy: ResizeImagePolicy.fit)
         .resolve(ImageConfiguration.empty);
-    _listener = ImageStreamListener((info, _) => _onImage(info.image),
-        onError: (_, _) => mounted ? setState(() => _failed = true) : null);
+    _listener = ImageStreamListener((info, _) {
+      _onImage(info.image.clone()); // the listener owns info; keep our own handle
+      info.dispose();
+    },
+        // the fetch itself failed (e.g. no CORS on web): let Image.network try, it falls
+        // back to the initials when the photo really is missing
+        onError: (_, _) => mounted ? setState(() => _plain = true) : null);
     _stream!.addListener(_listener!);
   }
 
   Future<void> _onImage(ui.Image image) async {
-    final key = _key;
+    final key = _key, columns = widget.columns, invert = _invert;
     try {
-      final bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-      if (bytes == null) throw StateError('no pixels');
       final w = image.width, h = image.height;
+      final ByteData? bytes;
+      try {
+        bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      } finally {
+        image.dispose();
+      }
+      if (bytes == null) throw StateError('no pixels');
       final dots = await compute(_screenOf,
-          (bytes.buffer.asUint8List(), w, h, w / widget.columns, _invert));
+          (bytes.buffer.asUint8List(), w, h, w / columns, invert));
       final screen = _Screen(dots, w.toDouble(), h.toDouble());
       _cache[key] = screen;
       if (!mounted || key != _key) return;

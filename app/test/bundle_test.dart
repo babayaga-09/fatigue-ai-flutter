@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:touchline/data/bundle.dart';
+import 'package:touchline/format.dart';
 
 import 'helpers.dart';
 
@@ -95,5 +96,27 @@ void main() {
     expect(b.bounce!.next20, isNull);
     expect(b.bounce!.control, 0.2);
     expect(b.managerSplitHalf, -0.1);
+  });
+
+  test('a malformed career block is dropped, not drawn', () {
+    for (final bad in [
+      {'seasons': <String>[], 'p10': [], 'p50': [], 'p90': [], 'peak_value': 1,
+       'peak_age': 25.0, 'vs_curve': 'on'},
+      {'seasons': ['2026/27'], 'p10': [1], 'p50': [2], 'p90': <int>[], 'peak_value': 1,
+       'peak_age': 25.0, 'vs_curve': 'on'},
+      {'seasons': ['next year'], 'p10': [1], 'p50': [2], 'p90': [3], 'peak_value': 1,
+       'peak_age': 25.0, 'vs_curve': 'on'},
+    ]) {
+      final j = minimalBundleJson();
+      (j['players'] as List).first['career'] = bad;
+      expect(Bundle.fromJson(j).playerById[7]!.career, isNull, reason: '$bad');
+    }
+  });
+
+  test('extreme shares never print as certainties', () {
+    expect(pct(0.996), '>99%');
+    expect(pct(0.003), '<1%');
+    expect(pct(1.0), '100%');
+    expect(pct(0.0), '0%');
   });
 }

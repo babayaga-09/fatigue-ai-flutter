@@ -15,6 +15,18 @@ int? _i(Object? v) => v == null ? null : (v as num).toInt();
 String? _s(Object? v) => v as String?;
 Map<String, dynamic> _m(Object? v) => (v as Map).cast<String, dynamic>();
 List<Map<String, dynamic>> _maps(Object? v) => [for (final e in (v as List? ?? const [])) _m(e)];
+/// A career block the app can draw: equal-length non-empty lists and "YYYY/YY" season labels.
+bool _validCareer(Map<String, dynamic>? c) {
+  if (c == null) return false;
+  final s = c['seasons'], a = c['p10'], m = c['p50'], z = c['p90'];
+  if (s is! List || a is! List || m is! List || z is! List) return false;
+  if (s.isEmpty || a.length != s.length || m.length != s.length || z.length != s.length) {
+    return false;
+  }
+  return s.every((e) => e is String && RegExp(r'^\d{4}/').hasMatch(e)) &&
+      c['peak_value'] is num && c['vs_curve'] is String;
+}
+
 List<int> _is(Object? v) => [for (final e in (v as List? ?? const [])) (e as num).toInt()];
 List<double> _ds(Object? v) => [for (final e in (v as List? ?? const [])) (e as num).toDouble()];
 
@@ -314,10 +326,10 @@ class Player {
           ? null
           : Dependency(index: _d(d['index'])!, played: _i(d['played'])!,
               missed: _i(d['missed'])!),
-      career: c == null
+      career: !_validCareer(c)
           ? null
           : Career(
-              seasons: [for (final e in c['seasons'] as List) e as String],
+              seasons: [for (final e in c!['seasons'] as List) e as String],
               p10: _is(c['p10']), p50: _is(c['p50']), p90: _is(c['p90']),
               peakValue: _i(c['peak_value'])!, peakAge: _d(c['peak_age']),
               vsCurve: c['vs_curve'] as String),

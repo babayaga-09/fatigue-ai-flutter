@@ -84,21 +84,28 @@ String dependencyLine(double index) => index.abs() < 0.1
 /// The sacking-bounce finding in plain words, decided by the numbers and their interval.
 String bounceVerdict(Bounce b) {
   final lead = 'Points per game against what the squad should have taken, across '
-      '${b.changes} mid-season sackings in the top five leagues since 2014.';
+      '${b.changes} mid-season manager changes in the top five leagues.';
   final c = b.control;
   if (c == null) return lead;
   final gap = b.first10 - c;
+  final drift = c - b.before; // what clubs that kept their manager recovered anyway
   final ci = b.gapCi;
-  final drift = '$lead Clubs on an equally bad run that kept their manager bounced back '
-      'too: most of the "new-manager bounce" is a team drifting back to its level.';
-  if (ci == null || (ci[0] <= 0 && ci[1] >= 0)) {
-    return '$drift New managers did ${signed(gap, digits: 2)} a game better than that, '
+  final first = drift > gap.abs()
+      ? '$lead Clubs on an equally bad run that kept their manager bounced back too: most '
+          'of the "new-manager bounce" is a team drifting back to its level.'
+      : '$lead Clubs on an equally bad run that kept their manager recovered '
+          '${signed(drift, digits: 2)} a game.';
+  if (ci == null) {
+    return '$first New managers did ${signed(gap, digits: 2)} a game better than that.';
+  }
+  if (ci[0] <= 0 && ci[1] >= 0) {
+    return '$first New managers did ${signed(gap, digits: 2)} a game better than that, '
         'which is within the noise.';
   }
   return ci[0] > 0
-      ? '$drift New managers added a small real edge on top: ${signed(gap, digits: 2)} '
+      ? '$first New managers added a small real edge on top: ${signed(gap, digits: 2)} '
           'a game.'
-      : '$drift Clubs that sacked did ${signed(gap, digits: 2)} a game worse than those '
+      : '$first Clubs that changed did ${signed(gap, digits: 2)} a game worse than those '
           'that kept theirs.';
 }
 

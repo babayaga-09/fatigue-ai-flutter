@@ -39,13 +39,28 @@ class CareerChart extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Row(children: [
-            Text('${history.first.date.year}', style: tt.labelMedium),
-            const Spacer(),
-            Text('Now ${money(last.value)}', style: tt.labelMedium),
-            const Spacer(),
-            Text('${c.seasons.last} · ${money(c.p50.last)}', style: tt.labelMedium),
-          ]),
+          // the "now" label sits under the now point, the same x the painter uses
+          LayoutBuilder(builder: (context, box) {
+            final t0 = history.first.date.millisecondsSinceEpoch;
+            final t1 = seasonEnd(c.seasons.last).millisecondsSinceEpoch;
+            final f = t1 == t0 ? 1.0 : (last.date.millisecondsSinceEpoch - t0) / (t1 - t0);
+            final x = (f * (box.maxWidth - 6)).clamp(0.0, box.maxWidth);
+            return SizedBox(
+              height: 20,
+              child: Stack(clipBehavior: Clip.none, children: [
+                Positioned(left: 0,
+                    child: Text('${history.first.date.year}', style: tt.labelMedium)),
+                Positioned(right: 0,
+                    child: Text('${c.seasons.last} · ${money(c.p50.last)}',
+                        style: tt.labelMedium)),
+                Positioned(
+                  left: (x - 80).clamp(44.0, box.maxWidth - 260), width: 160,
+                  child: Text('Now ${money(last.value)}', textAlign: TextAlign.center,
+                      style: tt.labelMedium),
+                ),
+              ]),
+            );
+          }),
         ]),
       ),
     );

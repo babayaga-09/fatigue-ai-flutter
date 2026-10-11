@@ -210,7 +210,7 @@ class PlayerDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(children: [
               SizedBox(width: 64, child: Text(shortDate(g.date), style: tt.labelLarge)),
-              Expanded(child: Text(g.opp ?? 'Unknown opponent', style: tt.bodyMedium,
+              Expanded(child: Text(g.opp ?? 'Opponent not in the data', style: tt.bodyMedium,
                   maxLines: 1, overflow: TextOverflow.ellipsis)),
               Text('${g.ga} G/A · ${g.minutes}′', style: tt.labelLarge),
             ]),

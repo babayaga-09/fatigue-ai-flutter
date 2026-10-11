@@ -127,7 +127,7 @@ class _ClubsScreenState extends State<ClubsScreen> {
         ],
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-          child: Text(view == 2 ? 'Managers from the 2025/26 season, tenure to date.'
+          child: Text(view == 2 ? 'Managers from the ${AppScope.of(context).bundle!.playerSeason} season, tenure to date.'
               : odds ? 'From 10,000 simulations of the rest of the season.'
               : 'Live table. Thick lines mark the top four and the bottom three.',
               style: tt.bodySmall),
