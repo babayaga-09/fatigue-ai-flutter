@@ -61,8 +61,10 @@ def build_rows(feeder, top5, players, valuations, history) -> pd.DataFrame:
 
 @dataclass
 class ProspectModel:
-    model: lgb.LGBMClassifier
+    model: lgb.LGBMClassifier | None
     categories: dict
+    base: LogisticRegression | None = None  # set when price alone ranks better
+    value_fill: float = 0.0
 
     def _x(self, df: pd.DataFrame) -> pd.DataFrame:
         x = df[NUM + CAT].copy()
@@ -73,24 +75,27 @@ class ProspectModel:
         return x
 
     def predict(self, df: pd.DataFrame) -> np.ndarray:
+        if self.base is not None:
+            return self.base.predict_proba(_lv(df, self.value_fill))[:, 1]
         return self.model.predict_proba(self._x(df))[:, 1]
 
     def explain(self, df: pd.DataFrame, top: int = 3) -> list[list[dict]]:
+        if self.base is not None:
+            return [[] for _ in range(len(df))]
         contrib = self.model.predict(self._x(df), pred_contrib=True)[:, :-1]
         return [[{"f": FRIENDLY[(NUM + CAT)[i]], "effect": float(row[i])}
                  for i in np.argsort(-np.abs(row))[:top]] for row in contrib]
 
 
-def run_prospects(rows: pd.DataFrame, test_season: int,
-                  seed: int = 42) -> tuple[ProspectModel, dict]:
-    movers = rows[rows.moved]
-    test_s = test_season - 1  # moves whose outcome season is the latest complete season
-    train = movers[movers.season <= test_s - 2]
-    val = movers[movers.season == test_s - 1]
-    test = movers[movers.season == test_s]
-    if train.season.max() >= test_s or len(test) == 0 or len(val) == 0:
-        raise ValueError("prospects split is empty or leaks")
-    categories = {c: sorted(rows[c].dropna().unique().tolist()) for c in CAT}
+def _lv(d: pd.DataFrame, fill: float) -> np.ndarray:
+    return d[["log_value"]].fillna(fill).to_numpy()
+
+
+def _fit(movers: pd.DataFrame, s: int, categories: dict, seed: int):
+    """Train on moves up to s-2, early-stop on s-1, refit on both. Nothing from s or later."""
+    train, val = movers[movers.season <= s - 2], movers[movers.season == s - 1]
+    if len(train) == 0 or len(val) == 0:
+        raise ValueError("prospects split is empty")
     probe = ProspectModel(lgb.LGBMClassifier(n_estimators=2000, random_state=seed, **_PARAMS),
                           categories)
     probe.model.fit(probe._x(train), train.regular,
@@ -98,21 +103,55 @@ def run_prospects(rows: pd.DataFrame, test_season: int,
                     callbacks=[lgb.early_stopping(100, verbose=False)])
     best = int(probe.model.best_iteration_ or 200)
     fit = pd.concat([train, val])
-    final = ProspectModel(lgb.LGBMClassifier(n_estimators=best, random_state=seed, **_PARAMS),
-                          categories)
-    final.model.fit(final._x(fit), fit.regular)
+    model = ProspectModel(lgb.LGBMClassifier(n_estimators=best, random_state=seed, **_PARAMS),
+                          categories, value_fill=float(fit.log_value.median()))
+    model.model.fit(model._x(fit), fit.regular)
+    base = LogisticRegression().fit(_lv(fit, model.value_fill), fit.regular)
+    return model, base, best, len(fit)
 
-    def lv(d):
-        return d[["log_value"]].fillna(fit.log_value.median()).to_numpy()
 
-    base = LogisticRegression().fit(lv(fit), fit.regular)
-    p, pb = final.predict(test), base.predict_proba(lv(test))[:, 1]
-    y = test.regular.to_numpy()
-    return final, {"n_train": int(len(fit)), "n_test": int(len(test)),
-                   "test_moves_season": int(test_s), "positive_rate": float(y.mean()),
-                   "auc": float(roc_auc_score(y, p)), "brier": float(brier_score_loss(y, p)),
-                   "baseline_auc": float(roc_auc_score(y, pb)),
-                   "baseline_brier": float(brier_score_loss(y, pb)), "best_iter": best}
+def run_prospects(rows: pd.DataFrame, test_season: int, n_folds: int = 5,
+                  seed: int = 42) -> tuple[ProspectModel, dict]:
+    """Rolling-origin evaluation: each of the last n_folds move seasons is predicted by a
+    model that only saw earlier seasons. One season holds ~100 moves — too few for a stable
+    AUC — so the folds are pooled. The tree model ships only if it beats price alone;
+    otherwise the ranking falls back to the price-only model (said so in the app)."""
+    movers = rows[rows.moved]
+    last = test_season - 1  # moves whose outcome season is the latest complete season
+    seasons = list(range(last - n_folds + 1, last + 1))
+    categories = {c: sorted(rows[c].dropna().unique().tolist()) for c in CAT}
+    ys, ps, pbs, n_by, iters = [], [], [], {}, []
+    for s in seasons:
+        test = movers[movers.season == s]
+        if len(test) == 0:
+            raise ValueError(f"no prospect moves in {s}")
+        model, base, best, _ = _fit(movers, s, categories, seed)
+        ys.append(test.regular.to_numpy())
+        ps.append(model.predict(test))
+        pbs.append(base.predict_proba(_lv(test, model.value_fill))[:, 1])
+        n_by[int(s)] = int(len(test))
+        iters.append(best)
+    y, p, pb = np.concatenate(ys), np.concatenate(ps), np.concatenate(pbs)
+    auc, b_auc = roc_auc_score(y, p), roc_auc_score(y, pb)
+    rng = np.random.default_rng(seed)
+    gains = []
+    for _ in range(1000):  # paired bootstrap over test moves
+        i = rng.integers(0, len(y), len(y))
+        if 0 < y[i].sum() < len(i):
+            gains.append(roc_auc_score(y[i], p[i]) - roc_auc_score(y[i], pb[i]))
+    chosen = "model" if auc > b_auc else "value_only"
+    final, final_base, best, n_fit = _fit(movers, last + 1, categories, seed)
+    if chosen == "value_only":
+        final = ProspectModel(None, categories, final_base, final.value_fill)
+    return final, {"n_train": int(n_fit), "n_test": int(len(y)),
+                   "test_moves_seasons": [int(s) for s in seasons],
+                   "n_test_by_season": n_by, "positive_rate": float(y.mean()),
+                   "auc": float(auc), "brier": float(brier_score_loss(y, p)),
+                   "baseline_auc": float(b_auc),
+                   "baseline_brier": float(brier_score_loss(y, pb)),
+                   "auc_gain_ci": [float(np.percentile(gains, 2.5)),
+                                   float(np.percentile(gains, 97.5))],
+                   "best_iter_by_fold": iters, "best_iter": best, "chosen": chosen}
 
 
 def conversion(rows: pd.DataFrame) -> dict[str, float]:

@@ -36,7 +36,8 @@ def shrink_k(res: pd.DataFrame, min_games: int = 10) -> float:
 
 
 def manager_table(res: pd.DataFrame, season: int, k: float) -> pd.DataFrame:
-    cur = res[res.season == season].sort_values("date").groupby("club_id").tail(1)
+    named = res[(res.season == season) & res.manager.notna()]
+    cur = named.sort_values("date").groupby("club_id").tail(1)
     rows = []
     for club, stint, name, league in cur[["club_id", "stint", "manager", "league"]].itertuples(
             index=False):

@@ -62,6 +62,17 @@ def test_shrinkage_tames_tiny_samples_and_table_ranks_current_managers():
     assert "M1b" in t.index or "M1a" in t.index
 
 
+def test_table_skips_trailing_games_with_no_manager_name():
+    res = _res()
+    last = res[res.season == 2016].sort_values("date").iloc[-1]
+    gap = pd.DataFrame([{**last.to_dict(), "game_id": 10 ** 7, "manager": None,
+                         "date": res.date.max() + pd.Timedelta(days=1),
+                         "stint": res.stint.max() + 1}])
+    t = manager_table(pd.concat([res, gap], ignore_index=True), 2016, 5.0)
+    assert t.name.notna().all()
+    assert int(last.club_id) in set(t.club)
+
+
 def test_reliability_detects_persistent_effects_and_bounce_reports():
     res = _res()
     r = reliability(res, min_games=40)

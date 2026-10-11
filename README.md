@@ -46,9 +46,18 @@ Every number is measured on the **2025/26 season, held out from training** (time
 
 The GRU's edge over a well-built Poisson GLM is small (about 3% on deviance). Sequence modelling helps a bit with football scoring, not a lot, and the README says so rather than leaning on a weak baseline. Details: [`pipeline/README.md`](pipeline/README.md).
 
+### v2: four new questions, tested honestly
+
+| Analysis | Verdict |
+|---|---|
+| **Career curve** — GRU with quantile heads forecasts each player's value 1–3 seasons out | Beats the ageing curve (median log error 0.401 vs 0.405 at one season, 0.681 vs 0.711 at three); the 80% band holds 79–81% of outcomes |
+| **Ready for the Big Five** — will a feeder-league player become a regular after moving up? | LightGBM **lost** to market value alone on 545 moves (AUC 0.563 vs 0.599), so the app ranks by price and says so |
+| **Manager effect** — points above what the squad should get | Split-half reliability −0.21: mostly luck. The sacking "bounce" (−0.35 → +0.22 points/game) looks like regression to the mean |
+| **Can't-live-without** — results with vs without a player | Not stable across half-seasons (r = −0.03); shown as a plain with/without line |
+
 ## Run it
 
-**Data pipeline**: see [`pipeline/README.md`](pipeline/README.md) (`python -m touchline.run`, about 3 minutes).
+**Data pipeline**: see [`pipeline/README.md`](pipeline/README.md) (`python -m touchline.run`, about 10 minutes).
 
 **App**
 ```bash

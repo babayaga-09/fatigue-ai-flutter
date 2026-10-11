@@ -49,8 +49,12 @@ def test_build_rows_labels_movers_and_uses_pre_move_value():
 def test_run_prospects_beats_value_only_baseline_without_leakage():
     rows = _rows()
     model, m = run_prospects(rows, test_season=2025)
-    assert m["test_moves_season"] == 2024
+    assert m["test_moves_seasons"] == [2020, 2021, 2022, 2023, 2024]
+    assert m["n_test"] == sum(m["n_test_by_season"].values())
     assert m["auc"] > m["baseline_auc"]
+    lo, hi = m["auc_gain_ci"]
+    assert lo <= m["auc"] - m["baseline_auc"] <= hi
+    assert m["chosen"] == "model"
     cur = rows[rows.season == 2025].head(5)
     p = model.predict(cur)
     assert ((p >= 0) & (p <= 1)).all()
@@ -60,3 +64,18 @@ def test_run_prospects_beats_value_only_baseline_without_leakage():
 def test_conversion_factor_per_feeder_league():
     f = conversion(_rows())
     assert set(f) == set(FEEDERS) and all(0 < v < 2 for v in f.values())
+
+
+def test_falls_back_to_price_when_model_does_not_beat_it():
+    rows = _rows()
+    # make outcome depend on value only, so the tree model has nothing to add
+    rows["log_value"] = np.log(1e6 * (1 + rows.player_id % 7))
+    rng = np.random.default_rng(1)
+    rows["regular"] = (rng.random(len(rows)) < (rows.player_id % 7) / 7).astype(int)
+    model, m = run_prospects(rows, test_season=2025)
+    if m["chosen"] == "value_only":
+        assert model.explain(rows.head(2)) == [[], []]
+    else:
+        assert m["auc"] > m["baseline_auc"]
+    p = model.predict(rows.head(5))
+    assert ((p >= 0) & (p <= 1)).all()
