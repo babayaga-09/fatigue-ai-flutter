@@ -1,0 +1,47 @@
+name: pages
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: [refresh-data]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.8
+          channel: stable
+          cache: true
+      - name: Build web demo
+        working-directory: app
+        run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+      - name: Put the latest data beside the app
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p app/build/web/data
+          gh release download data-latest -p touchline-bundle.json.gz -D app/build/web/data \
+            || cp app/assets/data/touchline-bundle.json.gz app/build/web/data/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/build/web
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
