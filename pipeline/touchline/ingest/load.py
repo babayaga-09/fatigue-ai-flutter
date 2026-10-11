@@ -29,7 +29,9 @@ def load_tm(raw_dir: Path = RAW_DIR,
                    home_club_id, away_club_id,
                    cast(home_club_goals as int) as home_goals,
                    cast(away_club_goals as int) as away_goals,
-                   home_club_name, away_club_name
+                   home_club_name, away_club_name,
+                   home_club_manager_name as home_manager,
+                   away_club_manager_name as away_manager
             from {src('games')}
             where season >= {from_season} and home_club_goals is not null
               and competition_type <> 'national_team_competition'

@@ -97,3 +97,27 @@ def build_player_rows(stats, players, valuations, history, min_league_minutes: i
                              tolerance=pd.Timedelta(days=90))
         rows = rows[rows.target_value > 0]
     return rows.drop(columns=["ref"]).reset_index(drop=True)
+
+
+def league_season_stats(eapps: pd.DataFrame, games: pd.DataFrame, leagues) -> pd.DataFrame:
+    """Per (player, season): the league and club with most minutes among `leagues`."""
+    leagues = list(leagues)
+    keys = ["player_id", "season"]
+    e = eapps[eapps.competition_id.isin(leagues)]
+    per = (e.groupby(keys + ["competition_id", "club_id"])
+             .agg(minutes=("minutes", "sum"), apps=("game_id", "size"),
+                  goals=("goals", "sum"), assists=("assists", "sum"))
+             .reset_index().sort_values("minutes", ascending=False).drop_duplicates(keys)
+             .rename(columns={"competition_id": "league"}))
+    lg = games[games.competition_id.isin(leagues)]
+    team_games = (pd.concat([
+        lg[["season", "home_club_id"]].rename(columns={"home_club_id": "club_id"}),
+        lg[["season", "away_club_id"]].rename(columns={"away_club_id": "club_id"})])
+        .value_counts().rename("team_games").reset_index())
+    out = per.merge(team_games, on=["season", "club_id"], how="left")
+    m90 = out.minutes.clip(lower=1) / 90
+    out["ga90"] = (out.goals + out.assists) / m90
+    out["g90"] = out.goals / m90
+    out["a90"] = out.assists / m90
+    out["minutes_share"] = out.minutes / (out.team_games * 90)
+    return out.reset_index(drop=True)

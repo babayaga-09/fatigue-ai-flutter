@@ -15,7 +15,8 @@ def test_load_tm_filters_and_types(tmp_path):
         "season": [2024, 2010, 2024, 2025], "date": ["2024-08-10"] * 3 + ["2025-08-10"],
         "home_club_id": [1, 1, 9, 1], "away_club_id": [2, 2, 8, 2],
         "home_club_goals": [2, 1, 0, None], "away_club_goals": [1, 1, 0, None],
-        "home_club_name": ["A"] * 4, "away_club_name": ["B"] * 4}))
+        "home_club_name": ["A"] * 4, "away_club_name": ["B"] * 4,
+        "home_club_manager_name": ["M1"] * 4, "away_club_manager_name": ["M2"] * 4}))
     _w(tmp_path / "appearances.csv.gz", pd.DataFrame({
         "appearance_id": ["1_7"], "game_id": [1], "player_id": [7], "player_club_id": [1],
         "player_current_club_id": [1], "date": ["2024-08-10"], "player_name": ["X"],
@@ -44,3 +45,4 @@ def test_load_tm_filters_and_types(tmp_path):
     assert tm["players"].loc[0, "dob"] == pd.Timestamp("2000-01-01")
     assert tm["valuations"].loc[0, "value"] == 900000
     assert list(tm["transfers"].fee) == [5000000.0]  # future-dated rows dropped
+    assert list(tm["games"].home_manager) == ["M1"]
