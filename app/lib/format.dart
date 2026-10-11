@@ -29,3 +29,18 @@ String kickoffLabel(DateTime utc, DateTime now) {
   if (diff > 1 && diff < 7) return '${_days[k.weekday - 1]} ${_hm(k)}';
   return shortDate(k);
 }
+String thousands(int n) {
+  final s = n.abs().toString();
+  final b = StringBuffer(n < 0 ? '-' : '');
+  for (var i = 0; i < s.length; i++) {
+    if (i > 0 && (s.length - i) % 3 == 0) b.write(',');
+    b.write(s[i]);
+  }
+  return b.toString();
+}
+
+String ordinal(int n) {
+  final t = n % 100;
+  if (t >= 11 && t <= 13) return '${n}th';
+  return '$n${switch (n % 10) { 1 => 'st', 2 => 'nd', 3 => 'rd', _ => 'th' }}';
+}

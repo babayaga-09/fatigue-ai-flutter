@@ -21,4 +21,12 @@ void main() {
     expect(kickoffLabel(DateTime(2026, 10, 10, 15), now), 'Sat 15:00');
     expect(kickoffLabel(DateTime(2026, 10, 20, 15), now), '20 Oct');
   });
+
+  test('thousands and ordinal', () {
+    expect(thousands(4498), '4,498');
+    expect(thousands(980), '980');
+    expect(thousands(1234567), '1,234,567');
+    expect([1, 2, 3, 4, 11, 12, 13, 21, 22, 23].map(ordinal),
+        ['1st', '2nd', '3rd', '4th', '11th', '12th', '13th', '21st', '22nd', '23rd']);
+  });
 }
