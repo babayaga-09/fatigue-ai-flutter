@@ -1,8 +1,13 @@
 import numpy as np
 import pandas as pd
 
-from touchline.models.managers import (bounce, club_game_results, manager_table, reliability,
-                                       shrink_k)
+from touchline.models.managers import (
+    bounce,
+    club_game_results,
+    manager_table,
+    reliability,
+    shrink_k,
+)
 
 
 class _Flat:
