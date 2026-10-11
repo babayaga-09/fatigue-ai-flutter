@@ -47,6 +47,12 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('a build without an update URL says it runs on built-in data', (tester) async {
+    await pumpApp(tester, const HomeScreen());
+    expect(find.text('Built-in data'), findsOneWidget);
+    expect(find.text('Offline'), findsNothing);
+  });
+
   test('fixture bundle has fixtures around fixtureNow', () {
     final Bundle b = fixtureBundle();
     expect(b.fixtures.any((f) => !f.finished && f.kickoff.isAfter(fixtureNow)), isTrue);

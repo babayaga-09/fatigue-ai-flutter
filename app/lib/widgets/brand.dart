@@ -40,7 +40,9 @@ class FreshnessChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = AppScope.of(context);
-    final (icon, label) = s.refreshing
+    final (icon, label) = s.io.fetchRemote == null
+        ? (Icons.inventory_2_outlined, 'Built-in data')
+        : s.refreshing
         ? (Icons.sync_rounded, 'Updating')
         : s.reachable
             ? (Icons.cloud_done_outlined, 'Up to date')

@@ -60,6 +60,11 @@ class ScarfPainter extends CustomPainter {
       final w = body.width * band.flex / total;
       final r = Rect.fromLTWH(x, body.top, w, body.height);
       _paintBand(canvas, r, band);
+      if (x > body.left) {
+        // One-stitch gap between bands so neighbouring results read as separate stitches.
+        canvas.drawLine(Offset(x, body.top), Offset(x, body.bottom),
+            Paint()..color = ground..strokeWidth = 1);
+      }
       x += w;
     }
     if (fringe) _paintFringe(canvas, size, body);
@@ -133,7 +138,7 @@ class ScarfPainter extends CustomPainter {
           textDirection: TextDirection.ltr,
           maxLines: 1)
         ..layout();
-      final padW = tp.width + 12;
+      final padW = tp.width + (band.label!.length <= 2 ? 6 : 12);
       if (padW > r.width - 4 || tp.height > r.height) continue;
       final pr = Rect.fromCenter(center: r.center, width: padW, height: r.height);
       if (band.knit != Knit.dropped) canvas.drawRect(pr, Paint()..color = panel);
