@@ -47,7 +47,7 @@ its cached bundle.
     "value_history": [["2021-07-01", 20000000]],      // one point per year, oldest first
     "transfers": [{"date": "2023-07-01", "from": "…", "to": "…", "fee": 50000000}],
     "similar": [123, 456],           // same position group, nearest first
-    "trend": {"score": 1.8, "reasons": ["5 goal involvements in last 5"]}  // score null if < 900 min
+    "trend": {"score": 1.8, "reasons": ["5 G/A in last 5"]}  // score null if < 900 min
   }],
   "models": { /* contents of metrics.json — shown on the in-app "How this works" sheet */ }
 }
