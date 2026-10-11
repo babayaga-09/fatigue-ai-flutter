@@ -100,7 +100,6 @@ class HomeScreen extends StatelessWidget {
             ClubRow(
               club: c,
               subtitle: '${ordinal(i + 1)} · ${b.leagueById[c.league]?.name ?? c.league}',
-              trailing: Text('${c.elo.round()}', style: tt.labelLarge),
               onTap: () => openClub(context, c.id),
             ),
         ], 'No ratings for this league.'),

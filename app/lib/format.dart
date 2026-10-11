@@ -44,3 +44,5 @@ String ordinal(int n) {
   if (t >= 11 && t <= 13) return '${n}th';
   return '$n${switch (n % 10) { 1 => 'st', 2 => 'nd', 3 => 'rd', _ => 'th' }}';
 }
+
+String count(int n, String word) => '$n $word${n == 1 ? '' : 's'}';

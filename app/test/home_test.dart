@@ -49,7 +49,7 @@ void main() {
 
   testWidgets('a build without an update URL says it runs on built-in data', (tester) async {
     await pumpApp(tester, const HomeScreen());
-    expect(find.text('Built-in data'), findsOneWidget);
+    expect(find.textContaining('Built-in ·'), findsOneWidget);
     expect(find.text('Offline'), findsNothing);
   });
 

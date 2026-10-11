@@ -38,18 +38,18 @@ class PlayerDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(p.name), actions: [
         IconButton(
+          tooltip: 'Compare',
+          icon: const Icon(Icons.compare_arrows_rounded),
+          onPressed: () => openCompare(context, p.id),
+        ),
+        IconButton(
           tooltip: fav ? 'Remove from your players' : 'Add to your players',
           icon: Icon(fav ? Icons.star_rounded : Icons.star_outline_rounded),
           onPressed: () => s.toggleFavourite(p.id),
         ),
       ]),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => openCompare(context, p.id),
-        icon: const Icon(Icons.compare_arrows_rounded),
-        label: const Text('Compare'),
-      ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 104),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             PlayerAvatar(player: p, size: 84),
@@ -78,7 +78,7 @@ class PlayerDetailScreen extends StatelessWidget {
           Text(playerVerdict(p), style: tt.titleMedium),
           const SizedBox(height: 6),
           Text('${b.playerSeason}: ${p.season.apps} apps · ${thousands(p.season.minutes)} min · '
-              '${p.season.goals} goals · ${p.season.assists} assists', style: muted),
+              '${count(p.season.goals, 'goal')} · ${count(p.season.assists, 'assist')}', style: muted),
           const SectionHeading('Value', padded: false),
           ..._value(context, p),
           const SectionHeading('Form', padded: false),

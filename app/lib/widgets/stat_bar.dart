@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../format.dart';
 import '../theme/theme.dart';
+import 'scarf.dart';
 
 /// Signed effect bar centred at zero ("+35%" pushes right, "−12%" left).
 class EffectBar extends StatelessWidget {
@@ -59,10 +60,13 @@ class EffectBar extends StatelessWidget {
 
 /// A 0–1 share with its percentage.
 class ShareBar extends StatelessWidget {
-  const ShareBar({super.key, required this.label, required this.value});
+  const ShareBar({super.key, required this.label, required this.value, this.colors});
 
   final String label;
   final double value;
+
+  /// Knit colours for the filled part; the theme's primary when null.
+  final List<Color>? colors;
 
   @override
   Widget build(BuildContext context) {
@@ -76,18 +80,39 @@ class ShareBar extends StatelessWidget {
           child: Row(children: [
             SizedBox(width: 96, child: Text(label, style: tt.bodyMedium)),
             Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(3),
-                child: LinearProgressIndicator(
-                    value: value.clamp(0.0, 1.0), minHeight: 10,
-                    color: scheme.primary, backgroundColor: scheme.surfaceContainerHighest),
-              ),
+              child: ShareScarf(value: value, colors: colors ?? [scheme.primary], height: 14),
             ),
             SizedBox(width: 52,
                 child: Text(pct(value), textAlign: TextAlign.end,
                     style: tabular(tt.labelLarge!))),
           ]),
         ),
+      ),
+    );
+  }
+}
+
+/// A probability knitted as a scarf: the share in [colors], the rest a dropped stitch.
+class ShareScarf extends StatelessWidget {
+  const ShareScarf({super.key, required this.value, required this.colors, this.height = 8});
+
+  final double value;
+  final List<Color> colors;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    final v = value.clamp(0.0, 1.0);
+    return ExcludeSemantics(
+      child: Scarf(
+        height: height,
+        stripeWidth: 6,
+        semanticLabel: '',
+        bands: [
+          ScarfBand(flex: v, colors: colors),
+          ScarfBand(flex: 1 - v, colors: [Theme.of(context).colorScheme.outlineVariant],
+              knit: Knit.dropped),
+        ],
       ),
     );
   }

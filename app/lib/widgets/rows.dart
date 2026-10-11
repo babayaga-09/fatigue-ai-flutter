@@ -104,7 +104,7 @@ class FixtureRow extends StatelessWidget {
               Text('${home?.name ?? 'TBC'} v ${away?.name ?? 'TBC'}',
                   style: tt.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 6),
-              FixtureScarf(fixture: fixture, home: home, away: away, height: 18),
+              FixtureScarf(fixture: fixture, home: home, away: away, height: 24),
             ]),
           ),
         ]),
@@ -134,7 +134,7 @@ class PlayerTile extends StatelessWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               PlayerAvatar(player: player, size: 52),
               const SizedBox(height: 10),
-              Text(player.name, style: tt.titleSmall, maxLines: 2,
+              Text(player.name, style: tt.titleSmall, maxLines: 1,
                   overflow: TextOverflow.ellipsis),
               Text(player.clubName ?? '', style: tt.bodySmall!
                   .copyWith(color: scheme.onSurfaceVariant), maxLines: 1,
@@ -159,7 +159,8 @@ class PlayerStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: 206,
+        // Padding, portrait and gaps, plus name, club and a two-line note at the text scale.
+        height: 114 + MediaQuery.textScalerOf(context).scale(68),
         child: ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           scrollDirection: Axis.horizontal,

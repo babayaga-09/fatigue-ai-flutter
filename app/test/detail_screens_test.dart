@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:touchline/screens/club_detail_screen.dart';
 import 'package:touchline/screens/player_detail_screen.dart';
@@ -22,6 +23,27 @@ void main() {
     expect(find.text('Not enough minutes yet to judge.'), findsOneWidget);
     expect(find.textContaining('Not enough minutes yet for a fair-value read'), findsOneWidget);
     expect(find.textContaining('€0'), findsNothing);
+  });
+
+  testWidgets('compare is an app-bar action, not a floating button', (tester) async {
+    final p = fixtureBundle().players.first;
+    await pumpApp(tester, PlayerDetailScreen(playerId: p.id));
+    expect(find.byTooltip('Compare'), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsNothing);
+  });
+
+  testWidgets('season line singularises one goal and one assist', (tester) async {
+    final p = fixtureBundle().players.firstWhere((p) => p.season.goals == 1 && p.season.assists == 1);
+    await pumpApp(tester, PlayerDetailScreen(playerId: p.id));
+    expect(find.textContaining('1 goal · 1 assist'), findsOneWidget);
+  });
+
+  testWidgets('club page says power rating in plain words, no Elo jargon', (tester) async {
+    final c = fixtureBundle().clubs.first;
+    await pumpApp(tester, ClubDetailScreen(clubId: c.id));
+    expect(find.textContaining('Elo'), findsNothing);
+    await tester.scrollUntilVisible(find.textContaining('Power rating ${c.elo.round()}'), 200);
+    expect(find.textContaining('Power rating ${c.elo.round()}'), findsOneWidget);
   });
 
   testWidgets('favourite toggles from the player screen', (tester) async {

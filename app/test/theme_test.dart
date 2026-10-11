@@ -31,6 +31,14 @@ void main() {
     });
   }
 
+  for (final b in Brightness.values) {
+    test('$b: selected nav icon is readable on the pink indicator', () {
+      final t = buildTheme(b);
+      final icon = t.navigationBarTheme.iconTheme!.resolve({WidgetState.selected})!.color!;
+      expect(contrast(icon, t.navigationBarTheme.indicatorColor!), greaterThanOrEqualTo(4.5));
+    });
+  }
+
   test('onColor picks a readable ink for any club colour', () {
     for (final c in [Colors.white, const Color(0xFFFDE100), TL.pitch, const Color(0xFF6CABDD),
         const Color(0xFFDB0007), Colors.black]) {

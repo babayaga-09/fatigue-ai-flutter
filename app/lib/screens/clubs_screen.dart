@@ -8,6 +8,8 @@ import '../theme/theme.dart';
 import '../widgets/crest.dart';
 import '../widgets/empty_note.dart';
 import '../widgets/league_chips.dart';
+import '../widgets/scarf.dart';
+import '../widgets/stat_bar.dart';
 import 'routes.dart';
 
 class ClubsScreen extends StatefulWidget {
@@ -34,7 +36,19 @@ class _ClubsScreenState extends State<ClubsScreen> {
         width: 56,
         child: Text(v, textAlign: TextAlign.end,
             style: tabular(strong ? tt.titleSmall! : tt.bodyMedium!)));
-    Widget head(String v) => SizedBox(width: 56, child: Text(v, textAlign: TextAlign.end, style: muted));
+    Widget head(String v, {double w = 56}) =>
+        SizedBox(width: w, child: Text(v, textAlign: TextAlign.end, style: muted));
+    Widget odd(double? v, Club c) => SizedBox(
+          width: 64,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+              Text(v == null ? '–' : pct(v), style: tabular(tt.bodyMedium!)),
+              const SizedBox(height: 3),
+              if (v != null) ShareScarf(value: v, colors: clubColors(c), height: 6),
+            ]),
+          ),
+        );
 
     Widget row(Club c) {
       final p = c.proj;
@@ -55,9 +69,9 @@ class _ClubsScreenState extends State<ClubsScreen> {
                 num(c.table.gd > 0 ? '+${c.table.gd}' : '${c.table.gd}'),
                 num('${c.table.points}', strong: true),
               ] else ...[
-                num(p == null ? '–' : pct(p.pTitle), strong: true),
-                num(p == null ? '–' : pct(p.pTop4)),
-                num(p == null ? '–' : pct(p.pReleg)),
+                odd(p?.pTitle, c),
+                odd(p?.pTop4, c),
+                odd(p?.pReleg, c),
               ],
             ]),
           ),
@@ -97,7 +111,7 @@ class _ClubsScreenState extends State<ClubsScreen> {
             child: Row(children: [
               const SizedBox(width: 66),
               Expanded(child: Text('Club', style: muted)),
-              ...odds ? [head('Title'), head('Top 4'), head('Bottom 3')]
+              ...odds ? [head('Title', w: 64), head('Top 4', w: 64), head('Bottom 3', w: 64)]
                   : [head('P'), head('GD'), head('Pts')],
             ]),
           ),

@@ -60,9 +60,12 @@ ThemeData buildTheme(Brightness brightness) {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
     navigationBarTheme: NavigationBarThemeData(
         backgroundColor: scheme.surfaceContainer, indicatorColor: scheme.tertiaryContainer,
-        elevation: 0),
+        elevation: 0,
+        iconTheme: WidgetStateProperty.resolveWith((states) => IconThemeData(
+            color: states.contains(WidgetState.selected) ? TL.ink : scheme.onSurfaceVariant))),
     navigationRailTheme: NavigationRailThemeData(
-        backgroundColor: scheme.surfaceContainer, indicatorColor: scheme.tertiaryContainer),
+        backgroundColor: scheme.surfaceContainer, indicatorColor: scheme.tertiaryContainer,
+        selectedIconTheme: const IconThemeData(color: TL.ink)),
     chipTheme: ChipThemeData(
         selectedColor: scheme.primary,
         secondaryLabelStyle: TextStyle(color: scheme.onPrimary, fontWeight: FontWeight.w600),

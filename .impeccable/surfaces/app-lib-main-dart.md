@@ -17,7 +17,7 @@ OWN-WORLD: Touchline's own scarf colours, pitch green #0F3D2E and paper pink #F2
 
 STORY: A fan sees the weekend's headline match and who is favoured, then scrolls: who's running hot, which clubs are rising, bargains, overworked players. Tapping opens the club or player view, where the "why" lives. They leave with one opinion to argue about.
 
-FIRST VIEWPORT (phone portrait): a top app bar with a thin brand-scarf band and the stitch wordmark "TOUCHLINE", plus a data-freshness chip; a league chip row; a full-width hero fixture card holding a 64dp half-and-half scarf (home colours left, neutral draw band, away colours right, widths equal to probabilities, crests at both ends), the favourite's % monumental in stitch type, and a one-line pundit verdict; the top of the "Running hot" player carousel; the 4-destination navigation bar.
+FIRST VIEWPORT (phone portrait): a top app bar with a thin brand-scarf band and the stitch wordmark "TOUCHLINE", plus a data-freshness chip; a league chip row; a full-width hero fixture card holding a 72dp half-and-half scarf (tall enough for the 56px stitch %) (home colours left, neutral draw band, away colours right, widths equal to probabilities, crests at both ends), the favourite's % monumental in stitch type, and a one-line pundit verdict; the top of the "Running hot" player carousel; the 4-destination navigation bar.
 
 FORM: The Terrace Scarf, candidate 4 of 7 on the ordered list; seed key da53bc87. Signature interaction: scarves knit in row by row on first view (instant under reduced motion); tapping the hero scarf opens the match sheet.
 

@@ -58,16 +58,16 @@ class ClubDetailScreen extends StatelessWidget {
           if (p == null)
             const EmptyNote('Odds appear once the live season has loaded.')
           else ...[
-            ShareBar(label: 'Title', value: p.pTitle),
-            ShareBar(label: 'Top four', value: p.pTop4),
-            ShareBar(label: 'Bottom three', value: p.pReleg),
+            ShareBar(label: 'Title', value: p.pTitle, colors: clubColors(c)),
+            ShareBar(label: 'Top four', value: p.pTop4, colors: clubColors(c)),
+            ShareBar(label: 'Bottom three', value: p.pReleg, colors: clubColors(c)),
             const SizedBox(height: 6),
             Text('Expected finish ${ordinal(p.expPos.round())} on about '
                 '${p.expPoints.round()} points.', style: tt.bodyMedium),
           ],
           const SectionHeading('Power rating', padded: false),
-          Text('Elo ${c.elo.round()} · ${change >= 0 ? '+' : '−'}${change.abs().round()} in 30 days',
-              style: tt.titleMedium),
+          Text('Power rating ${c.elo.round()}, ${change >= 0 ? 'up' : 'down'} '
+              '${change.abs().round()} this month', style: tt.titleMedium),
           const SectionHeading('Fixtures', padded: false),
           if (fixtures.isEmpty)
             const EmptyNote('No fixtures in the window we track.')
