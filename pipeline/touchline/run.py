@@ -205,7 +205,11 @@ def main(argv=None) -> int:
     # F1 — Ready for the Big Five
     feeder = league_season_stats(eapps, games, prospects.FEEDERS)
     top5 = league_season_stats(eapps, games, config.LEAGUES)
-    prow = prospects.build_rows(feeder, top5, players, vals, elo_res.history)
+    top5_clubs = pd.concat([
+        lg_games[["season", c]].rename(columns={c: "club_id"})
+        for c in ("home_club_id", "away_club_id")]).drop_duplicates()
+    prow = prospects.build_rows(feeder, top5, players, vals, elo_res.history,
+                                tm["transfers"], top5_clubs)
     pmodel, metrics["prospects"] = prospects.run_prospects(prow, test_season)
     conv = prospects.conversion(prow)
     metrics["prospects"]["conversion"] = conv
@@ -223,7 +227,8 @@ def main(argv=None) -> int:
                                                   epochs=8 if args.fast else 30)
     log.info("F4 %s", metrics["career"])
     qual_ids = set(disp[disp.minutes >= config.MIN_DISPLAY_MINUTES].player_id)
-    cur = career.build(panel, [test_season], need_targets=False, ids=qual_ids)
+    cur = career.build(panel, [test_season], need_targets=False, ids=qual_ids,
+                       min_log_value=career.FLOOR)
     cq = cmodel.predict(cur)
     ccurve = cmodel.curve_delta(cur.meta)
     # no forecast above the highest valuation ever recorded; the GRU extrapolates past it

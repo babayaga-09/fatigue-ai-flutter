@@ -21,13 +21,37 @@ def test_club_game_results_two_rows_per_game_and_stints():
         "season": [2024] * 3, "competition_id": ["GB1"] * 3,
         "home_club_id": [1, 2, 1], "away_club_id": [2, 1, 2],
         "home_goals": [2, 0, 1], "away_goals": [0, 0, 3],
-        "home_manager": ["A", "B", "C"], "away_manager": ["B", "A", "B"], "d": [0.0] * 3})
+        "home_manager": ["A", "B", "C"], "away_manager": ["B", "A", "B"],
+        "elo_home": [1500.0] * 3, "elo_away": [1500.0] * 3})
     r = club_game_results(lg, _Flat())
     assert len(r) == 6
     c1 = r[r.club_id == 1].sort_values("date")
     assert list(c1.points) == [3, 1, 0]
     assert abs(c1.iloc[0].pae - (3 - (3 * 0.45 + 0.27))) < 1e-9
     assert c1.stint.nunique() == 2  # A, A, then C
+
+
+class _Linear:
+    """P(home win) rises with the rating gap, so frozen vs live ratings are visible."""
+    def outcome_probs(self, d):
+        ph = np.clip(0.45 + np.asarray(d) / 1000, 0.05, 0.9)
+        return np.stack([ph, np.full_like(ph, 0.05), 0.95 - ph], axis=1)
+
+
+def test_own_rating_is_frozen_within_a_stint_and_season():
+    lg = pd.DataFrame({
+        "game_id": [1, 2, 3, 4],
+        "date": pd.to_datetime(["2024-08-01", "2024-08-08", "2024-08-15", "2025-08-15"]),
+        "season": [2024, 2024, 2024, 2025], "competition_id": ["GB1"] * 4,
+        "home_club_id": [1, 1, 1, 1], "away_club_id": [2, 3, 4, 5],
+        "home_goals": [3, 3, 3, 3], "away_goals": [0, 0, 0, 0],
+        "home_manager": ["A"] * 4, "away_manager": ["X", "Y", "Z", "W"],
+        "elo_home": [1500.0, 1600.0, 1700.0, 1800.0], "elo_away": [1500.0] * 4})
+    c1 = club_game_results(lg, _Linear()).query("club_id == 1").sort_values("date")
+    # the club's own winning run does not raise what it is expected to take this season
+    assert c1.xpts.iloc[0] == c1.xpts.iloc[1] == c1.xpts.iloc[2]
+    # a new season re-reads the rating
+    assert c1.xpts.iloc[3] > c1.xpts.iloc[0]
 
 
 def _res(seed=0):
@@ -76,6 +100,27 @@ def test_table_skips_trailing_games_with_no_manager_name():
 def test_reliability_detects_persistent_effects_and_bounce_reports():
     res = _res()
     r = reliability(res, min_games=40)
-    assert r["n_stints"] >= 5 and r["split_half_r"] is not None
+    assert r["n_stints"] >= 5
+    assert r["split_half_r"] > 0  # planted skill shows up in both halves
+    assert r["reliability"] > r["split_half_r"]
+
+
+def _stint(club, name, paes, start_gid):
+    day = pd.Timestamp("2020-08-01")
+    return [{"game_id": start_gid + i, "date": day + pd.Timedelta(days=7 * (start_gid + i)),
+             "season": 2020, "league": "GB1", "club_id": club, "opp_id": 0, "manager": name,
+             "points": 0, "xpts": 0.0, "pae": v} for i, v in enumerate(paes)]
+
+
+def test_bounce_counts_short_spells_and_compares_with_clubs_that_kept_the_manager():
+    rows = (_stint(1, "A", [0.0] * 30 + [-1.0] * 10, 0)
+            + _stint(1, "B", [0.0] * 15, 40)
+            + _stint(2, "C", [0.0] * 20 + [-1.0] * 10 + [0.0] * 30, 100))
+    res = pd.DataFrame(rows).sort_values(["club_id", "date"]).reset_index(drop=True)
+    res["stint"] = (res.manager != res.groupby("club_id").manager.shift()).cumsum()
     b = bounce(res)
-    assert set(b) == {"n_changes", "last10_before", "first10", "next20"}
+    assert b["n_changes"] == 1  # B lasted 15 games: counted for first10
+    assert b["last10_before"] == -1.0 and b["first10"] == 0.0
+    assert b["next20"] is None and b["n_next20"] == 0
+    assert b["control_next10"] == 0.0 and b["n_controls"] >= 1
+    assert b["gap"] == 0.0 and b["gap_ci"] is None  # one case: too few for an interval

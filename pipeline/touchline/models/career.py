@@ -134,16 +134,11 @@ def _curve(d: CareerData) -> tuple[dict, np.ndarray]:
     return out, np.median(d.y, axis=0)
 
 
-def run_career(panel, test_end: int, epochs: int = 30, seed: int = 0,
-               batch: int = 512, patience: int = 3) -> tuple[CareerModel, dict]:
-    floor = np.log(200_000)
-    train = build(panel, range(2012, test_end - 5), min_log_value=floor)
-    val = build(panel, [test_end - 3], min_log_value=floor)
-    test = build(panel, [test_end], min_log_value=floor)
-    # Target windows never overlap: train targets <= test_end-3 < val targets <= test_end
-    # < test targets.
-    if len(train.y) == 0 or len(val.y) == 0 or len(test.y) == 0:
-        raise ValueError("career split produced an empty set")
+FLOOR = float(np.log(200_000))
+
+
+def _fit(train: CareerData, val: CareerData, epochs: int, seed: int, batch: int,
+         patience: int) -> CareerModel:
     torch.manual_seed(seed)
     gru = CareerGRU()
     opt = torch.optim.Adam(gru.parameters(), lr=1e-3)
@@ -171,7 +166,20 @@ def run_career(panel, test_end: int, epochs: int = 30, seed: int = 0,
                 break
     gru.load_state_dict(state)
     curve, med = _curve(train)
-    model = CareerModel(gru, curve, med)
+    return CareerModel(gru, curve, med)
+
+
+def run_career(panel, test_end: int, epochs: int = 30, seed: int = 0,
+               batch: int = 512, patience: int = 3) -> tuple[CareerModel, dict]:
+    """Evaluate on sequences ending at test_end (train ends <= test_end-6, early-stop on
+    test_end-3; target windows never overlap), then refit the shipped model one window later
+    (train ends <= test_end-3, early-stop on test_end) so it has seen the recent market."""
+    train = build(panel, range(2012, test_end - 5), min_log_value=FLOOR)
+    val = build(panel, [test_end - 3], min_log_value=FLOOR)
+    test = build(panel, [test_end], min_log_value=FLOOR)
+    if len(train.y) == 0 or len(val.y) == 0 or len(test.y) == 0:
+        raise ValueError("career split produced an empty set")
+    model = _fit(train, val, epochs, seed, batch, patience)
     q = model.predict(test)
     base = model.curve_delta(test.meta)
     m = {"n_train": int(len(train.y)), "n_test": int(len(test.y)), "test_end": int(test_end)}
@@ -180,4 +188,12 @@ def run_career(panel, test_end: int, epochs: int = 30, seed: int = 0,
         m[f"baseline_mae_h{h + 1}"] = float(np.mean(np.abs(base[:, h] - test.y[:, h])))
         m[f"coverage_h{h + 1}"] = float(np.mean((test.y[:, h] >= q[:, h, 0])
                                                 & (test.y[:, h] <= q[:, h, 2])))
-    return model, m
+    # paired bootstrap of the one-season gain (baseline error minus model error)
+    gain = np.abs(base[:, 0] - test.y[:, 0]) - np.abs(q[:, 0, 1] - test.y[:, 0])
+    rng = np.random.default_rng(seed)
+    boots = [gain[rng.integers(0, len(gain), len(gain))].mean() for _ in range(1000)]
+    m["gain_h1_ci"] = [float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5))]
+    final = _fit(build(panel, range(2012, test_end - 2), min_log_value=FLOOR),
+                 test, epochs, seed, batch, patience)
+    m["shipped_train_end_max"] = int(test_end - 3)
+    return final, m

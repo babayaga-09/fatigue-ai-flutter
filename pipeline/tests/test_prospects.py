@@ -46,7 +46,7 @@ def test_build_rows_labels_movers_and_uses_pre_move_value():
     assert rows.mv.notna().any()
 
 
-def test_run_prospects_beats_value_only_baseline_without_leakage():
+def test_run_prospects_rolling_folds_and_ci():
     rows = _rows()
     model, m = run_prospects(rows, test_season=2025)
     assert m["test_moves_seasons"] == [2020, 2021, 2022, 2023, 2024]
@@ -70,12 +70,30 @@ def test_falls_back_to_price_when_model_does_not_beat_it():
     rows = _rows()
     # make outcome depend on value only, so the tree model has nothing to add
     rows["log_value"] = np.log(1e6 * (1 + rows.player_id % 7))
-    rng = np.random.default_rng(1)
-    rows["regular"] = (rng.random(len(rows)) < (rows.player_id % 7) / 7).astype(int)
+    rows["regular"] = (rows.player_id % 7 >= 4).astype(int)  # price alone is perfect
     model, m = run_prospects(rows, test_season=2025)
-    if m["chosen"] == "value_only":
-        assert model.explain(rows.head(2)) == [[], []]
-    else:
-        assert m["auc"] > m["baseline_auc"]
+    assert m["chosen"] == "value_only" and m["auc"] <= m["baseline_auc"]
+    assert model.explain(rows.head(2)) == [[], []]
     p = model.predict(rows.head(5))
     assert ((p >= 0) & (p <= 1)).all()
+
+
+def test_moves_come_from_transfers_and_value_is_read_before_the_move():
+    feeder = pd.DataFrame([{"player_id": 1, "season": 2022, "league": "NL1", "club_id": 100,
+                            "minutes": 2500, "apps": 30, "goals": 5, "assists": 3,
+                            "team_games": 34, "ga90": 0.3, "g90": 0.2, "a90": 0.1,
+                            "minutes_share": 0.8}])
+    top5 = pd.DataFrame(columns=["player_id", "season", "minutes_share", "ga90"])
+    players = pd.DataFrame({"player_id": [1], "dob": [pd.Timestamp("2000-01-01")],
+                            "position": ["Attack"]})
+    vals = pd.DataFrame({"player_id": [1, 1],
+                         "date": pd.to_datetime(["2023-01-10", "2023-03-01"]),
+                         "value": [5e6, 20e6]})  # second valuation is after the move
+    hist = pd.DataFrame({"date": pd.to_datetime(["2010-01-01"]), "club_id": [100],
+                         "rating": [1500.0]})
+    transfers = pd.DataFrame({"player_id": [1], "date": pd.to_datetime(["2023-01-31"]),
+                              "to_club_id": [7]})
+    top5_clubs = pd.DataFrame({"season": [2023], "club_id": [7]})
+    r = build_rows(feeder, top5, players, vals, hist, transfers, top5_clubs).iloc[0]
+    assert bool(r.moved) and r.regular == 0  # moved up, never played: not a regular
+    assert r.mv == 5e6  # the valuation before the transfer, not after

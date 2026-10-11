@@ -57,7 +57,7 @@ def load_tm(raw_dir: Path = RAW_DIR,
             from {src('clubs')}"""),
         "transfers": q(f"""
             select player_id, cast(transfer_date as date) as date, from_club_name as from_club,
-                   to_club_name as to_club, transfer_fee as fee
+                   to_club_name as to_club, transfer_fee as fee, from_club_id, to_club_id
             from {src('transfers')}
             where cast(transfer_date as date) <= date '{today}'"""),
     }

@@ -35,6 +35,7 @@ def test_load_tm_filters_and_types(tmp_path):
     _w(tmp_path / "transfers.csv.gz", pd.DataFrame({
         "player_id": [7, 7], "transfer_date": ["2023-07-01", "2099-06-30"],
         "from_club_name": ["Y", "A"], "to_club_name": ["A", "Z"],
+        "from_club_id": [9, 1], "to_club_id": [1, 8],
         "transfer_fee": [5000000.0, None]}))
 
     tm = load_tm(tmp_path, from_season=2012)

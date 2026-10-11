@@ -1,7 +1,8 @@
 """F1 — Ready for the Big Five: P(a feeder-league player becomes a regular after moving up).
 
-Trained only on players who did move (the question is conditional on the move). Value is the
-last valuation *before* the move, so nothing from after the transfer leaks in."""
+Trained only on players who did move (the question is conditional on the move), including
+those who moved and never got a game. Value is the last valuation before the transfer (or
+before the season ends, for players who haven't moved), so nothing after the move leaks in."""
 from dataclasses import dataclass
 
 import lightgbm as lgb
@@ -29,14 +30,37 @@ _PARAMS = dict(objective="binary", learning_rate=0.03, num_leaves=15, min_child_
                colsample_bytree=0.8, subsample=0.8, subsample_freq=1, verbose=-1)
 
 
-def build_rows(feeder, top5, players, valuations, history) -> pd.DataFrame:
+def _transfer_moves(transfers, top5_clubs) -> pd.DataFrame:
+    """Transfers to a club playing top-five league football next season. A move dated from
+    January to September of year Y feeds season Y (labelled Y); the feeder season is Y-1."""
+    t = transfers.dropna(subset=["to_club_id"]).copy()
+    d = pd.to_datetime(t.date)
+    t = t[d.dt.month <= 9]
+    t["season"] = pd.to_datetime(t.date).dt.year
+    t["club_id"] = t.to_club_id.astype("int64")
+    t = t.merge(top5_clubs.astype({"club_id": "int64"}), on=["season", "club_id"])
+    t["season"] = t.season - 1
+    return (t.groupby(["player_id", "season"]).date.min().rename("move_date").reset_index())
+
+
+def build_rows(feeder, top5, players, valuations, history, transfers=None,
+               top5_clubs=None) -> pd.DataFrame:
+    """One row per feeder-league season with 900+ minutes. A player 'moved' if a transfer took
+    him to a top-five club or he played top-five league football the next season; he became a
+    'regular' with 40%+ of his club's league minutes (zero minutes counts as not)."""
     f = feeder[feeder.minutes >= 900].copy()
     nxt = top5[["player_id", "season", "minutes_share", "ga90"]].rename(
         columns={"minutes_share": "next_share", "ga90": "next_ga90"})
     nxt["season"] = nxt["season"] - 1
     f = f.merge(nxt, on=["player_id", "season"], how="left")
-    f["moved"] = f.next_share.notna()
-    f["regular"] = (f.next_share >= REGULAR_SHARE).astype(int)
+    if transfers is not None and top5_clubs is not None:
+        mv = _transfer_moves(transfers, top5_clubs)
+        f = f.merge(mv.astype({"player_id": f.player_id.dtype}), on=["player_id", "season"],
+                    how="left")
+    else:
+        f["move_date"] = pd.NaT
+    f["moved"] = f.next_share.notna() | f.move_date.notna()
+    f["regular"] = (f.next_share.fillna(0) >= REGULAR_SHARE).astype(int)
     prev = feeder[["player_id", "season", "ga90"]].rename(columns={"ga90": "prev_ga90"})
     prev["season"] = prev["season"] + 1
     f = f.merge(prev, on=["player_id", "season"], how="left")
@@ -50,13 +74,16 @@ def build_rows(feeder, top5, players, valuations, history) -> pd.DataFrame:
     f = pd.merge_asof(f.sort_values("ref"), h.sort_values("ref"), on="ref", by="club_id",
                       direction="backward")
     v = valuations.rename(columns={"value": "mv"}).copy()
-    v["ref"] = v["date"].astype("datetime64[ns]")
+    v["vref"] = v["date"].astype("datetime64[ns]")
     v["player_id"] = v["player_id"].astype(f["player_id"].dtype)
-    f = pd.merge_asof(f.sort_values("ref"), v[["player_id", "ref", "mv"]].sort_values("ref"),
-                      on="ref", by="player_id", direction="backward",
+    # value as known before the move: the day before the transfer when it came first
+    move = pd.to_datetime(f.move_date).astype("datetime64[ns]") - pd.Timedelta(days=1)
+    f["vref"] = move.where(move < f.ref, f.ref)
+    f = pd.merge_asof(f.sort_values("vref"), v[["player_id", "vref", "mv"]].sort_values("vref"),
+                      on="vref", by="player_id", direction="backward",
                       tolerance=pd.Timedelta(days=400))
     f["log_value"] = np.log(f.mv.where(f.mv > 0))
-    return f.drop(columns=["ref", "dob"]).reset_index(drop=True)
+    return f.drop(columns=["ref", "vref", "dob", "move_date"]).reset_index(drop=True)
 
 
 @dataclass

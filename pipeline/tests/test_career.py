@@ -36,3 +36,6 @@ def test_run_career_beats_ageing_curve_with_ordered_quantiles():
     q = model.predict(build(panel, [2022]))
     assert (np.diff(q, axis=2) >= 0).all()  # p10 <= p50 <= p90
     assert 0.3 < m["coverage_h1"] <= 1.0
+    lo, hi = m["gain_h1_ci"]
+    assert lo <= m["baseline_mae_h1"] - m["mae_h1"] <= hi
+    assert m["shipped_train_end_max"] == 2019  # shipped model refit one window later
