@@ -1,0 +1,106 @@
+{
+  "title": "Choose Touchline's new visual world",
+  "question": "The roll assigned The Matchday Programme. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "The Matchday Programme",
+      "kicker": "THE ROLL",
+      "lineage": "80s and 90s club matchday programmes: duotone cover photos, team sheets, sponsor strips, programme numbers",
+      "thesis": "Every screen is printed like the programme you buy at the turnstile: players appear as two-colour halftone portraits in their club's colours, and line-ups read like the team sheet.",
+      "palette": ["#FFFFFF", "#111111", "#D7262D", "#1D3C8F", "#F2C200", "#E9E6DF"],
+      "materials": ["two-colour halftone photography", "coated programme stock", "condensed headline type", "numbered team sheets"],
+      "viewport": "Material shell. Home opens on the week's big match as a programme cover: both clubs' best players as halftone portraits in their club colours, the fixture in condensed type, win/draw/loss as a printed three-part strip. Below: 'Ready for the Big Five' prospects, 'Can't-live-without' team sheet, manager effect table.",
+      "risk": "Halftone must stay legible at small sizes; needs a real shader (Flutter fragment shader) with a plain duotone fallback.",
+      "raised": [
+        {"from": "challenger-split-flap", "raise": "Fixtures and odds update like a scoreboard: values change in place, rows never jump."},
+        {"from": "challenger-crouwel-grid", "raise": "A visible column grid: every number sits on the same baseline grid as the programme's stats pages."},
+        {"from": "challenger-vertical-feed", "raise": "One item owns the top of each screen (the cover), everything else is the inside pages."}
+      ]
+    },
+    {
+      "id": "model-pick",
+      "label": "The Football Yearbook",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Rothmans / Sky Sports Football Yearbook: the stats bible",
+      "thesis": "The app as the yearbook every stats fan owned: dense tables, tiny precise type, a club-colour thumb index down the edge.",
+      "palette": ["#FAFAF7", "#141414", "#B3121B", "#0F4C81"],
+      "materials": ["thin bible paper", "dense tabular type", "thumb-index tabs"],
+      "viewport": "Home as the yearbook's 'season at a glance' page: compact tables of prospects, managers and dependencies, club thumb-tabs on the right edge.",
+      "risk": "The most familiar choice here and closest to the editorial-almanac look many AI designs land on; can feel dry for a casual fan."
+    },
+    {
+      "id": "challenger-split-flap",
+      "label": "Scoreboard Flaps",
+      "verdict": "competitive",
+      "lineage": "split-flap boards and old stadium scoreboards",
+      "thesis": "Fixtures, odds and rankings as a black flap board where values clack into place.",
+      "palette": ["#0B0B0B", "#F4F1EA", "#F2A900", "#B3261E"],
+      "materials": ["matte flap faces", "brushed steel frame", "amber row lamps"],
+      "viewport": "Home as a board of this week's fixtures with win chances flapping in.",
+      "case": "Strong for fixtures and odds (clear, glanceable) but thin for player stories, career curves and scouting.",
+      "risk": "Dark board everywhere; reads as a gimmick beyond the fixture list."
+    },
+    {
+      "id": "challenger-crouwel-grid",
+      "label": "Grid Specimen",
+      "verdict": "declined",
+      "lineage": "Wim Crouwel gridded posters",
+      "palette": ["#FFFFFF", "#111111", "#1F5BFF"],
+      "materials": ["construction grid", "monumental grid letters"],
+      "case": "Loses both: no football resonance, and grid letters slow reading.",
+      "kept": "A visible column grid for numbers."
+    },
+    {
+      "id": "challenger-vertical-feed",
+      "label": "Vertical Feed",
+      "verdict": "declined",
+      "lineage": "full-screen short-video feeds",
+      "palette": ["#000000", "#FFFFFF"],
+      "materials": ["full-bleed media", "side rail"],
+      "case": "Loses both: one item per screen hides the comparisons stats need.",
+      "kept": "One item owns the top of each screen."
+    },
+    {
+      "id": "challenger-metro",
+      "label": "Metro Tiles",
+      "verdict": "declined",
+      "lineage": "flat tile interfaces",
+      "palette": ["#000000", "#00ABA9", "#FFFFFF"],
+      "materials": ["flat tiles", "giant lowercase"],
+      "case": "Loses both: generic tech look, no football world.",
+      "kept": "Nothing material."
+    },
+    {
+      "id": "challenger-jcard",
+      "label": "Mixtape J-card",
+      "verdict": "declined",
+      "lineage": "hand-lettered cassette inlays",
+      "palette": ["#FFFFFF", "#1F3FAF", "#C8102E"],
+      "materials": ["ballpoint", "lined inlay"],
+      "case": "Loses both: charming but unrelated to football.",
+      "kept": "Nothing material."
+    },
+    {
+      "id": "challenger-terminal-yellow",
+      "label": "Terminal Yellow",
+      "verdict": "declined",
+      "lineage": "airport wayfinding",
+      "palette": ["#FFC917", "#111111"],
+      "materials": ["yellow sign bands"],
+      "case": "Already offered last round and passed over.",
+      "kept": "Nothing new."
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "FotMob / OneFootball done impeccably: dark cards, crests, stat rows, a single accent.",
+    "palette": ["#0E1621", "#1A2433", "#00C853", "#FFFFFF"],
+    "materials": ["dark cards", "stat rows"],
+    "viewport": "Fixture list, stat cards, league tabs.",
+    "risk": "Indistinguishable from the apps fans already use, by design."
+  },
+  "steer": true
+}
