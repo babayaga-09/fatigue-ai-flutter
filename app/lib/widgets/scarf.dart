@@ -141,7 +141,7 @@ class ScarfPainter extends CustomPainter {
       final padW = tp.width + (band.label!.length <= 2 ? 6 : 12);
       if (padW > r.width - 4 || tp.height > r.height) continue;
       final pr = Rect.fromCenter(center: r.center, width: padW, height: r.height);
-      if (band.knit != Knit.dropped) canvas.drawRect(pr, Paint()..color = panel);
+      canvas.drawRect(pr, Paint()..color = panel); // ground-coloured panel on a dropped stitch keeps the letter clear
       tp.paint(canvas, Offset(r.center.dx - tp.width / 2, r.center.dy - tp.height / 2));
       return;
     }

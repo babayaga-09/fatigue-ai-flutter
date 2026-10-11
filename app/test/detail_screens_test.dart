@@ -66,6 +66,14 @@ void main() {
     expect(find.text('Squad'), findsOneWidget);
   });
 
+  testWidgets('club page has a workload watch for its squad', (tester) async {
+    final b = fixtureBundle();
+    final c = b.clubs.firstWhere((c) => b.players.any((p) => p.club == c.id && p.workload != null));
+    await pumpApp(tester, ClubDetailScreen(clubId: c.id));
+    await tester.scrollUntilVisible(find.text('Workload watch'), 300);
+    expect(find.text('Workload watch'), findsOneWidget);
+  });
+
   testWidgets('unknown ids show a friendly note instead of crashing', (tester) async {
     await pumpApp(tester, const PlayerDetailScreen(playerId: -42));
     expect(find.textContaining('no longer in the data'), findsOneWidget);

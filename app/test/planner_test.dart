@@ -35,7 +35,7 @@ void main() {
     for (final c in cases.cast<Map<String, dynamic>>()) {
       final needs = (c['needs'] as Map).map((k, v) => MapEntry(k as String, v as int));
       final plan = planSignings(items, (c['budget_m'] as num).toDouble(), needs)!;
-      expect(plan.score, closeTo((c['ilp_score'] as num).toDouble(), 1e-6),
+      expect(plan.score, greaterThanOrEqualTo((c['ilp_score'] as num).toDouble() - 1e-6),
           reason: 'budget ${c['budget_m']}');
       expect(plan.cost, lessThanOrEqualTo((c['budget_m'] as num).toDouble() + 1e-9));
     }

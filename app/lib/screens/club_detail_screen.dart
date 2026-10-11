@@ -31,6 +31,9 @@ class ClubDetailScreen extends StatelessWidget {
     final p = c.proj;
     final fixtures = clubFixtures(b, c.id);
     final players = squad(b, c.id);
+    final tired = players.where((p) => p.workload != null).toList()
+      ..sort((a, x) => ((x.workload!.flag ? 1000 : 0) + x.workload!.index)
+          .compareTo((a.workload!.flag ? 1000 : 0) + a.workload!.index));
     final change = c.eloChange30d;
     return Scaffold(
       appBar: AppBar(title: Text(c.name)),
@@ -75,6 +78,19 @@ class ClubDetailScreen extends StatelessWidget {
             for (final f in fixtures)
               FixtureRow(fixture: f, home: b.clubById[f.home], away: b.clubById[f.away],
                   now: s.now),
+          const SectionHeading('Workload watch', padded: false),
+          if (tired.isEmpty)
+            const EmptyNote('No workload data for this squad yet.')
+          else
+            for (final pl in tired.take(3))
+              PlayerRow(
+                player: pl,
+                subtitle: '${thousands(pl.workload!.seasonMinutes)} min · '
+                    '${pl.workload!.congestedApps} on short rest',
+                trailing: Text('${pl.workload!.band} · ${pl.workload!.index}',
+                    style: tt.labelLarge),
+                onTap: () => openPlayer(context, pl.id),
+              ),
           const SectionHeading('Squad', padded: false),
           if (players.isEmpty)
             const EmptyNote('No squad data for this club yet.')

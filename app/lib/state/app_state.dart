@@ -29,6 +29,7 @@ class AppState extends ChangeNotifier {
   Bundle? bundle;
   BundleOrigin? origin;
   bool reachable = false;
+  bool needsAppUpdate = false;
   bool refreshing = false;
   Object? loadError;
   String? league;
@@ -38,7 +39,11 @@ class AppState extends ChangeNotifier {
   DateTime get now => clock();
 
   Future<void> start() async {
-    await _restorePrefs();
+    try {
+      await _restorePrefs();
+    } catch (_) {
+      // Preferences are a nicety; the match data must load regardless.
+    }
     try {
       final local = await loadLocal(io, decode: decode);
       bundle = local.bundle;
@@ -57,6 +62,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     final r = await fetchNewer(io, current, decode: decode);
     reachable = r.reachable;
+    needsAppUpdate = r.needsAppUpdate;
     if (r.bundle != null) {
       bundle = r.bundle;
       origin = BundleOrigin.network;

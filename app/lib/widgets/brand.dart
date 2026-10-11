@@ -41,7 +41,9 @@ class FreshnessChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = AppScope.of(context);
     final date = shortDate(DateTime.parse(s.bundle!.clubsThrough));
-    final (icon, meaning) = s.io.fetchRemote == null
+    final (icon, meaning) = s.needsAppUpdate
+        ? (Icons.system_update_outlined, 'New data needs an app update. Showing data from $date')
+        : s.io.fetchRemote == null
         ? (Icons.inventory_2_outlined, 'Built-in data from $date')
         : s.refreshing
             ? (Icons.sync_rounded, 'Updating; showing data from $date')
@@ -52,6 +54,8 @@ class FreshnessChip extends StatelessWidget {
       message: meaning,
       child: Semantics(
         label: meaning,
+        button: true,
+        onTap: s.refreshing ? null : s.refresh,
         excludeSemantics: true,
         child: ActionChip(
           avatar: Icon(icon, size: 18),

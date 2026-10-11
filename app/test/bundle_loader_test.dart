@@ -65,6 +65,7 @@ void main() {
           current);
       expect(r.bundle, isNull);
       expect(wrote, isFalse);
+      expect(r.needsAppUpdate, isTrue);
     });
 
     test('network failure or no remote configured: unreachable', () async {

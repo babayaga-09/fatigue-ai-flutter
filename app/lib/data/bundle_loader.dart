@@ -28,9 +28,12 @@ class LocalLoad {
 }
 
 class FetchResult {
-  const FetchResult({required this.reachable, this.bundle});
+  const FetchResult({required this.reachable, this.bundle, this.needsAppUpdate = false});
   final bool reachable;
   final Bundle? bundle;
+
+  /// The published data uses a newer format than this app understands.
+  final bool needsAppUpdate;
 }
 
 /// Cached bundle if it is valid, otherwise the seed shipped inside the app.
@@ -59,6 +62,8 @@ Future<FetchResult> fetchNewer(BundleIo io, Bundle current,
   final Bundle fresh;
   try {
     fresh = await decode(bytes);
+  } on UnsupportedBundleError {
+    return const FetchResult(reachable: true, needsAppUpdate: true);
   } catch (_) {
     return const FetchResult(reachable: true);
   }

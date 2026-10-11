@@ -51,6 +51,8 @@ void main() {
     await pumpApp(tester, const HomeScreen());
     expect(find.text('11 Oct'), findsOneWidget); // the date always survives
     expect(find.byTooltip('Built-in data from 11 Oct'), findsOneWidget);
+    expect(tester.getSemantics(find.bySemanticsLabel('Built-in data from 11 Oct')),
+        isSemantics(isButton: true, hasTapAction: true));
     expect(find.text('Offline'), findsNothing);
   });
 

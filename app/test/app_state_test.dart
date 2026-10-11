@@ -32,6 +32,24 @@ void main() {
     expect(s.bundle, isNotNull);
   });
 
+  test('a newer data format asks for an app update and keeps the old data', () async {
+    final seed = gz(minimalBundleJson());
+    final s = AppState(
+        io: BundleIo(readSeed: () async => seed,
+            fetchRemote: () async => gz(minimalBundleJson()..['schema_version'] = 2)),
+        prefs: MemoryPrefs(), decode: decodeInline);
+    await s.start();
+    expect(s.needsAppUpdate, isTrue);
+    expect(s.bundle, isNotNull);
+  });
+
+  test('broken preferences never block the data from loading', () async {
+    final s = AppState(io: BundleIo(readSeed: () async => gz(minimalBundleJson())),
+        prefs: _ThrowingPrefs(), decode: decodeInline);
+    await s.start();
+    expect(s.bundle, isNotNull);
+  });
+
   test('favourites and theme persist across launches', () async {
     final prefs = MemoryPrefs();
     final seed = gz(minimalBundleJson());
@@ -64,4 +82,11 @@ void main() {
     s.setLeague('GB1');
     expect(n, 1);
   });
+}
+
+class _ThrowingPrefs implements Prefs {
+  @override
+  Future<String?> read(String key) => throw StateError('storage blocked');
+  @override
+  Future<void> write(String key, String value) => throw StateError('storage blocked');
 }
