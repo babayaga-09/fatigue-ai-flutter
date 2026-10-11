@@ -13,7 +13,7 @@ def test_hot_player_ranks_first_with_reasons():
     t = trending(df).set_index("player_id")
     assert t.trend_score.idxmax() == 1
     assert np.isnan(t.loc[4, "trend_score"])
-    assert "5 G/A in last 5" in t.loc[1, "reasons"]
+    assert "5 G/A last 5" in t.loc[1, "reasons"]
     assert any("Value up" in r for r in t.loc[1, "reasons"])
 
 
@@ -44,4 +44,4 @@ def test_every_reason_fits_a_tile_line():
         "last5_minutes": [450], "value_now": [180e6], "value_6m_ago": [100e6],
         "forecast_ga5": [4.25]})
     reasons = trending(df).loc[0, "reasons"]
-    assert reasons and all(len(r) <= 16 for r in reasons), reasons
+    assert reasons and all(len(r) <= 14 for r in reasons), reasons

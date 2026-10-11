@@ -11,13 +11,13 @@ def _z(s: pd.Series) -> pd.Series:
 def _reasons(r) -> list[str]:
     out = []
     if r.last5_ga >= 3:
-        out.append(f"{int(r.last5_ga)} G/A in last 5")
+        out.append(f"{int(r.last5_ga)} G/A last 5")
     if (pd.notna(r.value_change_pct) and r.value_change_pct >= 0.10
             and r.value_change >= 250_000):
         m = r.value_change / 1e6
         out.append(f"Value up €{m:.0f}M" if m >= 10 else f"Value up €{m:.1f}M")
     if pd.notna(r.forecast_ga5) and r.forecast_ga5 >= 2.0:
-        out.append(f"Due {r.forecast_ga5:.1f} G/A in 5")
+        out.append(f"{r.forecast_ga5:.1f} G/A next 5")
     return out[:2]
 
 
