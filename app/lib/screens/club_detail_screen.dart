@@ -66,7 +66,7 @@ class ClubDetailScreen extends StatelessWidget {
                 '${p.expPoints.round()} points.', style: tt.bodyMedium),
           ],
           const SectionHeading('Power rating', padded: false),
-          Text('Power rating ${c.elo.round()}, ${change >= 0 ? 'up' : 'down'} '
+          Text('${c.elo.round()}, ${change >= 0 ? 'up' : 'down'} '
               '${change.abs().round()} this month', style: tt.titleMedium),
           const SectionHeading('Fixtures', padded: false),
           if (fixtures.isEmpty)

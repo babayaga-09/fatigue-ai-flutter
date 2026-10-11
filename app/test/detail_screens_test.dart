@@ -42,8 +42,9 @@ void main() {
     final c = fixtureBundle().clubs.first;
     await pumpApp(tester, ClubDetailScreen(clubId: c.id));
     expect(find.textContaining('Elo'), findsNothing);
-    await tester.scrollUntilVisible(find.textContaining('Power rating ${c.elo.round()}'), 200);
-    expect(find.textContaining('Power rating ${c.elo.round()}'), findsOneWidget);
+    await tester.scrollUntilVisible(find.textContaining('${c.elo.round()}, '), 200);
+    expect(find.textContaining('${c.elo.round()}, '), findsOneWidget);
+    expect(find.textContaining('Power rating ${c.elo.round()}'), findsNothing); // no echo of the heading
   });
 
   testWidgets('favourite toggles from the player screen', (tester) async {

@@ -4,6 +4,7 @@ import 'package:touchline/data/bundle.dart';
 import 'package:touchline/widgets/crest.dart';
 import 'package:touchline/widgets/empty_note.dart';
 import 'package:touchline/widgets/player_avatar.dart';
+import 'package:touchline/widgets/rows.dart';
 import 'package:touchline/widgets/scarf.dart';
 import 'package:touchline/widgets/value_chart.dart';
 
@@ -58,6 +59,16 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(find.byKey(const ValueKey('initials')), findsOneWidget);
+  });
+
+  testWidgets('player tiles never clip at large text', (tester) async {
+    final ps = fixtureBundle().players.take(6).toList();
+    await tester.pumpWidget(MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
+        child: MaterialApp(home: Scaffold(body: PlayerStrip(players: ps,
+            notes: (_) => 'Four goal involvements in the last five games')))));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('value chart with one point shows an empty note', (tester) async {

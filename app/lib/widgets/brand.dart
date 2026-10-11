@@ -41,21 +41,23 @@ class FreshnessChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = AppScope.of(context);
     final date = shortDate(DateTime.parse(s.bundle!.clubsThrough));
-    final (icon, label) = s.io.fetchRemote == null
-        ? (Icons.inventory_2_outlined, 'Built-in · $date')
+    final (icon, meaning) = s.io.fetchRemote == null
+        ? (Icons.inventory_2_outlined, 'Built-in data from $date')
         : s.refreshing
-            ? (Icons.sync_rounded, 'Updating')
+            ? (Icons.sync_rounded, 'Updating; showing data from $date')
             : s.reachable
-                ? (Icons.cloud_done_outlined, 'Data $date')
-                : (Icons.cloud_off_outlined, 'Offline · $date');
+                ? (Icons.cloud_done_outlined, 'Up to date: data from $date')
+                : (Icons.cloud_off_outlined, 'Offline: showing data from $date');
     return Tooltip(
-      message: 'Club data from ${shortDate(DateTime.parse(s.bundle!.clubsThrough))}',
-      child: ActionChip(
-        avatar: Icon(icon, size: 18),
-        label: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 120),
-            child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis)),
-        onPressed: s.refreshing ? null : s.refresh,
+      message: meaning,
+      child: Semantics(
+        label: meaning,
+        excludeSemantics: true,
+        child: ActionChip(
+          avatar: Icon(icon, size: 18),
+          label: Text(date, maxLines: 1),
+          onPressed: s.refreshing ? null : s.refresh,
+        ),
       ),
     );
   }

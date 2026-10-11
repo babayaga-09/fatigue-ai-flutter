@@ -49,7 +49,8 @@ void main() {
 
   testWidgets('a build without an update URL says it runs on built-in data', (tester) async {
     await pumpApp(tester, const HomeScreen());
-    expect(find.textContaining('Built-in ·'), findsOneWidget);
+    expect(find.text('11 Oct'), findsOneWidget); // the date always survives
+    expect(find.byTooltip('Built-in data from 11 Oct'), findsOneWidget);
     expect(find.text('Offline'), findsNothing);
   });
 

@@ -142,7 +142,7 @@ class PlayerTile extends StatelessWidget {
               const SizedBox(height: 8),
               if (note != null)
                 Text(note!, style: tt.labelMedium!.copyWith(color: scheme.primary),
-                    maxLines: 2, overflow: TextOverflow.ellipsis),
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
             ]),
           ),
         ),
@@ -159,8 +159,8 @@ class PlayerStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        // Padding, portrait and gaps, plus name, club and a two-line note at the text scale.
-        height: 114 + MediaQuery.textScalerOf(context).scale(68),
+        // Padding, portrait and gaps, plus one line each of name, club and note at the text scale.
+        height: 120 + MediaQuery.textScalerOf(context).scale(56),
         child: ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           scrollDirection: Axis.horizontal,
