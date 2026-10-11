@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'app.dart';
+import 'data/platform_io.dart';
+import 'data/prefs.dart';
+import 'state/app_state.dart';
+
 void main() {
-  runApp(const MainApp());
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
-  }
+  WidgetsFlutterBinding.ensureInitialized();
+  final state = AppState(io: platformBundleIo(), prefs: DevicePrefs())..start();
+  runApp(TouchlineApp(state: state));
 }
