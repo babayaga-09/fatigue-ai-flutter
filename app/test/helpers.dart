@@ -2,7 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:touchline/data/bundle.dart';
+import 'package:touchline/state/app_state.dart';
+import 'package:touchline/theme/theme.dart';
 
 Map<String, dynamic> minimalBundleJson() => {
       'schema_version': 1,
@@ -50,3 +54,16 @@ Bundle? _fixture;
 Bundle fixtureBundle() => _fixture ??= Bundle.fromJson(jsonDecode(utf8.decode(
     const GZipDecoder().decodeBytes(File('test/fixtures/bundle.json.gz').readAsBytesSync())))
     as Map<String, dynamic>);
+
+/// "Now" for widget tests: the frozen bundle's own generation time, inside its fixture window.
+DateTime get fixtureNow => fixtureBundle().generatedAt;
+
+Future<AppState> pumpApp(WidgetTester tester, Widget child,
+    {AppState? state, Brightness brightness = Brightness.light}) async {
+  final s = state ?? AppState.preloaded(fixtureBundle(), clock: () => fixtureNow);
+  await tester.pumpWidget(AppScope(
+      state: s,
+      child: MaterialApp(theme: buildTheme(brightness), home: child)));
+  await tester.pump(const Duration(milliseconds: 800));
+  return s;
+}
