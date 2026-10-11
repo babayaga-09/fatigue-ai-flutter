@@ -14,6 +14,7 @@ its cached bundle.
   "clubs": [{
     "id": 11,                       // Transfermarkt club id; negative = football-data id (club new to dataset)
     "name": "Arsenal", "crest": "https://…png" /* or null */, "league": "GB1",
+    "colors": ["#DB0007", "#FFFFFF"],   // traditional scarf colours (primary, secondary); null when unknown
     "elo": 1912.4, "elo_change_30d": 14.2,
     "form": ["W", "D", "W"],        // oldest → newest, up to 5
     "table": {"pos": 1, "played": 7, "points": 19, "gd": 12, "gf": 15, "ga": 3},

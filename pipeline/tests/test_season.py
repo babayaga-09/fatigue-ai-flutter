@@ -63,3 +63,25 @@ def test_matches_already_in_history_are_not_replayed_in_elo():
     by = {c["id"]: c for c in skip}
     assert by[11]["elo"] == 1700.0 and by[11]["table"]["points"] == 3  # table still counts it
     assert {c["id"]: c for c in replay}[11]["elo"] != 1700.0
+
+
+def test_snapshot_attaches_club_colours():
+    today = pd.Timestamp("2026-10-04", tz="UTC")
+    hist = pd.DataFrame({"date": pd.to_datetime(["2026-05-01"] * 2), "club_id": [11, 31],
+                         "rating": [1700.0, 1650.0]})
+    clubs, _ = league_snapshot("GB1", _teams(), _matches(today), {11: 1700.0, 31: 1650.0}, hist,
+                               EloParams(), MODEL, today, n_sims=50,
+                               colours={57: ["#DB0007", "#FFFFFF"]})
+    by = {c["id"]: c for c in clubs}
+    assert by[11]["colors"] == ["#DB0007", "#FFFFFF"]
+    assert by[31]["colors"] is None
+
+
+def test_colour_table_is_well_formed():
+    import re
+
+    from touchline.ingest.club_map import load_club_colours
+    table = load_club_colours()
+    assert len(table) >= 96
+    assert all(len(v) == 2 and all(re.fullmatch(r"#[0-9A-F]{6}", c) for c in v)
+               for v in table.values())

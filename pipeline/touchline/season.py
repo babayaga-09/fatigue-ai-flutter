@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from touchline.config import LEAGUES
-from touchline.ingest.club_map import map_clubs
+from touchline.ingest.club_map import load_club_colours, map_clubs
 from touchline.models.elo import EloParams, EloResult, run_elo
 from touchline.models.match_model import MatchModel
 from touchline.models.season_sim import league_table, simulate_season
@@ -33,7 +33,8 @@ def _rating_at(history: pd.DataFrame, club: int, when: pd.Timestamp, default: fl
 
 def league_snapshot(league, teams, matches, ratings, history, params: EloParams,
                     model: MatchModel, today: pd.Timestamp, n_sims: int = 10000,
-                    history_until: pd.Timestamp | None = None):
+                    history_until: pd.Timestamp | None = None,
+                    colours: dict[int, list[str]] | None = None):
     """history_until: last date already in the Elo history; finished matches on or before it
     count for the table and form but are not replayed into Elo (no double counting)."""
     ids = [int(c) for c in teams.club_id]
@@ -72,11 +73,14 @@ def league_snapshot(league, teams, matches, ratings, history, params: EloParams,
     name = dict(zip(teams.club_id, teams.short, strict=True))
     crest = dict(zip(teams.club_id, teams.crest, strict=True))
     month_ago = (today - pd.Timedelta(days=30)).tz_localize(None)
+    fd_of = dict(zip(teams.club_id, teams.fd_id, strict=True))
+    colours = colours or {}
     clubs = []
     for c in ids:
         t, s = table.loc[c], sim.loc[c]
         clubs.append({
             "id": c, "name": name[c], "crest": crest[c], "league": league,
+            "colors": colours.get(int(fd_of[c])),
             "elo": round(now[c], 1),
             "elo_change_30d": round(now[c] - _rating_at(hist, c, month_ago, start[c]), 1),
             "form": _form(c, played),
@@ -124,7 +128,8 @@ def build_current_season(fd, tm_clubs, elo_res: EloResult, params, model, season
         matches["away"] = matches.away_fd.map(idmap)
         c, f = league_snapshot(league, teams, matches, elo_res.ratings, elo_res.history,
                                params, model, today, n_sims,
-                               history_until=elo_res.history.date.max())
+                               history_until=elo_res.history.date.max(),
+                               colours=load_club_colours())
         clubs += c
         fixtures += f
     return clubs, fixtures
@@ -144,7 +149,8 @@ def offline_clubs(games, tm_clubs, elo_res: EloResult, season: int) -> list[dict
         for c in ids:
             t = table.loc[c]
             clubs.append({"id": int(c), "name": names.get(c, str(c)), "crest": None,
-                          "league": league, "elo": round(elo_res.ratings.get(c, 1500.0), 1),
+                          "league": league, "colors": None,
+                          "elo": round(elo_res.ratings.get(c, 1500.0), 1),
                           "elo_change_30d": 0.0, "form": _form(c, played),
                           "table": {k: int(t[k]) for k in _TABLE_KEYS}, "proj": None})
     return clubs

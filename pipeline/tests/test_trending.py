@@ -25,3 +25,14 @@ def test_unqualified_players_get_no_reasons():
         "forecast_ga5": [3.0, 1.0, 2.5]})
     t = trending(df).set_index("player_id")
     assert t.loc[3, "reasons"] == []
+
+
+def test_small_value_rises_get_one_decimal_and_tiny_ones_none():
+    df = pd.DataFrame({
+        "player_id": [1, 2], "minutes": [2500, 2500], "ga90": [0.2, 0.2],
+        "last5_ga": [0, 0], "last5_minutes": [450, 450],
+        "value_now": [1.4e6, 330e3], "value_6m_ago": [1.0e6, 300e3],
+        "forecast_ga5": [0.5, 0.5]})
+    t = trending(df).set_index("player_id")
+    assert "Value up €0.4M" in t.loc[1, "reasons"]
+    assert t.loc[2, "reasons"] == []  # +€30k is not news

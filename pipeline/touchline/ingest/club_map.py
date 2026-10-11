@@ -11,6 +11,7 @@ _STOP = {"fc", "afc", "cf", "sc", "ac", "ssc", "as", "us", "rc", "rcd", "cd", "u
          "club", "de", "del", "la", "football", "calcio", "futbol", "balompie", "sv", "tsg", "bc",
          "cfc", "fsv", "osc", "s", "p", "a"}
 _OVERRIDES = Path(__file__).with_name("club_overrides.json")
+_COLOURS = Path(__file__).with_name("club_colours.json")
 
 
 def norm_tokens(name: str) -> list[str]:
@@ -54,3 +55,7 @@ def map_clubs(fd_teams: pd.DataFrame, tm_clubs: pd.DataFrame, overrides: dict[in
 
 def load_overrides() -> dict[int, int]:
     return {int(k): int(v) for k, v in json.loads(_OVERRIDES.read_text()).items()}
+
+
+def load_club_colours() -> dict[int, list[str]]:
+    return {int(k): v for k, v in json.loads(_COLOURS.read_text()).items()}
