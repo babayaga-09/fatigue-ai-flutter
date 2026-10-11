@@ -36,6 +36,7 @@ void main() {
     expect(find.text('How this works'), findsOneWidget);
     expect(find.text('Who wins'), findsOneWidget);
     expect(find.textContaining('Not an injury prediction'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Dark'), 200);
     await tester.ensureVisible(find.text('Dark'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Dark'));
