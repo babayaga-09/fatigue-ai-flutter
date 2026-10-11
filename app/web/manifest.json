@@ -1,11 +1,11 @@
 {
-    "name": "touchline",
-    "short_name": "touchline",
+    "name": "Touchline",
+    "short_name": "Touchline",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#EDEDE8",
+    "theme_color": "#0F3D2E",
+    "description": "Football, read in seconds: match odds, fair values and form from tested models.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
