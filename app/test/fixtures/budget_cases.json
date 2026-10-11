@@ -1,0 +1,65 @@
+[
+  {
+    "budget_m": 50,
+    "needs": {
+      "Attack": 1
+    },
+    "ilp": [
+      398184
+    ],
+    "greedy": [
+      1061122
+    ],
+    "ilp_score": 63.3,
+    "greedy_score": 11.2
+  },
+  {
+    "budget_m": 100,
+    "needs": {
+      "Attack": 1,
+      "Midfield": 1,
+      "Defender": 1
+    },
+    "ilp": [
+      256448,
+      325443,
+      495667
+    ],
+    "greedy": [
+      257376,
+      1061122,
+      126665
+    ],
+    "ilp_score": 162.0,
+    "greedy_score": 17.7
+  },
+  {
+    "budget_m": 200,
+    "needs": {
+      "Attack": 2,
+      "Midfield": 2,
+      "Defender": 2,
+      "Goalkeeper": 1
+    },
+    "ilp": [
+      249565,
+      256448,
+      324358,
+      325443,
+      463600,
+      495667,
+      935245
+    ],
+    "greedy": [
+      99397,
+      257376,
+      61841,
+      1061122,
+      126665,
+      844516,
+      334835
+    ],
+    "ilp_score": 347.1,
+    "greedy_score": 36.900000000000006
+  }
+]
