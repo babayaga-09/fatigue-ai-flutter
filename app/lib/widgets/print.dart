@@ -176,9 +176,11 @@ class TeamSheetRow extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
+      // the rule spans the page measure, like the section rules, not the full bleed
       child: Container(
         constraints: const BoxConstraints(minHeight: 56),
-        padding: EdgeInsets.symmetric(horizontal: inset, vertical: 8),
+        margin: EdgeInsets.symmetric(horizontal: inset),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: scheme.outlineVariant))),
         child: Row(children: [

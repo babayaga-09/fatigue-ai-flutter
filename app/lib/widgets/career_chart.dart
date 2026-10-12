@@ -48,14 +48,20 @@ class CareerChart extends StatelessWidget {
             return SizedBox(
               height: 20,
               child: Stack(clipBehavior: Clip.none, children: [
-                Positioned(left: 0,
-                    child: Text('${history.first.date.year}', style: tt.labelMedium)),
+                // a short career puts "now" near the start: the start year gives way to it
+                if (x > 130)
+                  Positioned(left: 0,
+                      child: Text('${history.first.date.year}', style: tt.labelMedium)),
                 Positioned(right: 0,
                     child: Text('${c.seasons.last} · ${money(c.p50.last)}',
                         style: tt.labelMedium)),
                 Positioned(
-                  left: (x - 80).clamp(44.0, box.maxWidth - 260), width: 160,
-                  child: Text('Now ${money(last.value)}', textAlign: TextAlign.center,
+                  left: x > 130
+                      ? (x - 80).clamp(44.0, box.maxWidth - 260)
+                      : math.max(0.0, x - 12),
+                  width: 160,
+                  child: Text('Now ${money(last.value)}',
+                      textAlign: x > 130 ? TextAlign.center : TextAlign.left,
                       style: tt.labelMedium),
                 ),
               ]),

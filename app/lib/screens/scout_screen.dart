@@ -79,20 +79,12 @@ class _ScoutScreenState extends State<ScoutScreen> {
     return Scaffold(
       appBar: AppBar(title: const ScreenTitle('Scouting')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-        children: [
+        padding: const EdgeInsets.only(bottom: 32),
+        children: _gutter([
           if (b.prospects.isNotEmpty) ...[
             SectionHeading('Ready for the Big Five', padded: false, note: bigFiveNote(b)),
-            Transform.translate(
-              offset: const Offset(-16, 0),
-              child: SizedBox(
-                width: MediaQuery.sizeOf(context).width,
-                child: Column(children: [
-                  for (final (i, pr) in b.prospects.take(3).indexed)
-                    ProspectRow(number: i + 1, prospect: pr),
-                ]),
-              ),
-            ),
+            for (final (i, pr) in b.prospects.take(3).indexed)
+              ProspectRow(number: i + 1, prospect: pr),
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton(
@@ -132,12 +124,7 @@ class _ScoutScreenState extends State<ScoutScreen> {
           Text('Max age ${maxAge.round()}', style: tt.titleMedium),
           Slider(min: 18, max: 36, divisions: 18, value: maxAge, label: '${maxAge.round()}',
               onChanged: (v) => setState(() => maxAge = v)),
-          Transform.translate(
-            offset: const Offset(-16, 0),
-            child: SizedBox(width: MediaQuery.sizeOf(context).width,
-                child: LeagueChips(selected: league,
-                    onSelected: (v) => setState(() => league = v))),
-          ),
+          LeagueChips(selected: league, onSelected: (v) => setState(() => league = v)),
           const SizedBox(height: 12),
           FilledButton.icon(
             onPressed: busy ? null : () => _build(b),
@@ -194,8 +181,17 @@ class _ScoutScreenState extends State<ScoutScreen> {
           const SectionHeading('Ask the Scout', padded: false),
           Text('Coming later: ask in plain words, like "a left-back under €15M".',
               style: muted),
-        ],
+        ]),
       ),
     );
   }
 }
+
+/// One page gutter: full-width rows and the chip strip carry their own 16px inset; everything
+/// else gets it here, so figures and rules end on the same edge as the section rules.
+List<Widget> _gutter(List<Widget> items) => [
+      for (final w in items)
+        w is ProspectRow || w is PlayerRow || w is LeagueChips
+            ? w
+            : Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: w),
+    ];
