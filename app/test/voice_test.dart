@@ -38,8 +38,8 @@ void main() {
     expect(bounceVerdict(b([-0.05, 0.17])), contains('within the noise'));
     expect(bounceVerdict(b([0.01, 0.12])), contains('small real edge'));
     expect(bounceVerdict(b(null)), allOf(contains('drifting back'), isNot(contains('noise'))));
-    final noDrift = Bounce(changes: 10, before: -0.1, first10: 0.4, next20: null, control: -0.05,
-        gapCi: const [0.2, 0.6]);
+    const noDrift = Bounce(changes: 10, before: -0.1, first10: 0.4, next20: null, control: -0.05,
+        gapCi: [0.2, 0.6]);
     expect(bounceVerdict(noDrift), isNot(contains('drifting back')));
   });
 
