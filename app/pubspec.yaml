@@ -24,6 +24,6 @@ flutter:
   assets:
     - assets/data/
   fonts:
-    - family: Jersey
+    - family: Archivo
       fonts:
-        - asset: assets/fonts/Jersey10-Regular.ttf
+        - asset: assets/fonts/Archivo.ttf

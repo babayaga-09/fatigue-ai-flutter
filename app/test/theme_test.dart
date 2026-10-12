@@ -12,13 +12,15 @@ double contrast(Color a, Color b) {
 
 void main() {
   for (final b in Brightness.values) {
-    test('$b: stitch roles use Jersey at whole-stitch sizes', () {
+    test('$b: masthead roles are condensed black Archivo; text roles are not', () {
       final t = buildTheme(b).textTheme;
-      expect(t.displayLarge!.fontFamily, 'Jersey');
-      expect(t.displayLarge!.fontSize, closeTo(56, 0.01));
-      expect(t.displaySmall!.fontSize, closeTo(37.33, 0.01));
-      expect(t.headlineSmall!.fontSize, closeTo(18.67, 0.01));
-      expect(t.bodyMedium!.fontFamily, isNot('Jersey'));
+      for (final r in [t.displayLarge!, t.displaySmall!, t.headlineSmall!]) {
+        expect(r.fontFamily, 'Archivo');
+        expect(r.fontVariations, contains(const FontVariation('wdth', 62)));
+        expect(r.fontWeight, FontWeight.w900);
+      }
+      expect(t.bodyMedium!.fontFamily, 'Archivo');
+      expect(t.bodyMedium!.fontVariations, isNull);
     });
 
     test('$b: text contrast on the ground and on containers', () {
@@ -32,7 +34,7 @@ void main() {
   }
 
   for (final b in Brightness.values) {
-    test('$b: selected nav icon is readable on the pink indicator', () {
+    test('$b: selected nav icon is readable on the ink indicator', () {
       final t = buildTheme(b);
       final icon = t.navigationBarTheme.iconTheme!.resolve({WidgetState.selected})!.color!;
       expect(contrast(icon, t.navigationBarTheme.indicatorColor!), greaterThanOrEqualTo(4.5));
@@ -40,7 +42,7 @@ void main() {
   }
 
   test('onColor picks a readable ink for any club colour', () {
-    for (final c in [Colors.white, const Color(0xFFFDE100), TL.pitch, const Color(0xFF6CABDD),
+    for (final c in [Colors.white, const Color(0xFFFDE100), TL.red, TL.blue, TL.yellow, const Color(0xFF6CABDD),
         const Color(0xFFDB0007), Colors.black]) {
       expect(contrast(onColor(c), c), greaterThanOrEqualTo(3), reason: '$c');
     }

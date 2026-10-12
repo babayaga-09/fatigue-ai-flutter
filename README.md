@@ -3,18 +3,18 @@
 Football, read in seconds: match odds, fair values and form, from models tested on a season they never saw.
 
 <p>
-  <img src="docs/screenshots/home.png" width="23%" alt="Home: this week's big match drawn as a half-and-half scarf">
-  <img src="docs/screenshots/club.png" width="23%" alt="Club page with the club's own scarf">
-  <img src="docs/screenshots/player.png" width="23%" alt="Player page: fair value and what drives it">
-  <img src="docs/screenshots/scout.png" width="23%" alt="Scout: the best signings for a budget">
+  <img src="docs/screenshots/home.png" width="23%" alt="Home: the matchday cover, each club's star printed as a halftone in its colours">
+  <img src="docs/screenshots/club.png" width="23%" alt="Club page: manager record and who they lean on">
+  <img src="docs/screenshots/player.png" width="23%" alt="Player page: the career curve forecast with its range">
+  <img src="docs/screenshots/scout.png" width="23%" alt="Scouting: Ready for the Big Five and the budget planner">
 </p>
 
 ## What it does
 
-- **Home**: the week's biggest match as a half-and-half scarf (each club's colours, width = win chance), plus who's running hot, clubs in form, power rankings, bargains and an overworked watch.
-- **Clubs**: live tables for the top five leagues, plus title, top-four and bottom-three odds from 10,000 simulations.
-- **Players**: 2,600+ players with search, filters, fair value against market price and the reasons behind it, a five-game forecast, a workload index and lookalikes.
-- **Scout**: give it a budget and positions and it picks the best set of signings, solved exactly on the phone. Or start from a player and find a cheaper version.
+- **Home**: a matchday-programme cover for the week's biggest match (each club's star as a halftone in its colours, the win/draw/loss strip), then the inside pages: who's running hot, Ready for the Big Five, the sacking-bounce finding, clubs in form, power rankings, bargains and an overworked watch.
+- **Clubs**: live tables for the top five leagues, title, top-four and bottom-three odds from 10,000 simulations, and luck-adjusted manager records. Club pages show who the team leans on.
+- **Players**: 2,600+ players with search, filters, fair value against market price and the reasons behind it, a five-game forecast, a career curve (value 1–3 seasons out, with its range), a workload index and lookalikes.
+- **Scouting**: feeder-league players ready for the Big Five, ranked honestly; give it a budget and positions and it picks the best set of signings, solved exactly on the phone. Or start from a player and find a cheaper version.
 
 ## How it works
 
@@ -46,9 +46,21 @@ Every number is measured on the **2025/26 season, held out from training** (time
 
 The GRU's edge over a well-built Poisson GLM is small (about 3% on deviance). Sequence modelling helps a bit with football scoring, not a lot, and the README says so rather than leaning on a weak baseline. Details: [`pipeline/README.md`](pipeline/README.md).
 
+### v2: four new questions, tested honestly
+
+| Analysis | Verdict |
+|---|---|
+| **Career curve**: GRU with quantile heads forecasts each player's value 1–3 seasons out | Beats the ageing curve (median log error 0.401 vs 0.405 at one season, 0.681 vs 0.711 at three); the 80% band holds 79–81% of outcomes |
+| **Ready for the Big Five**: will a feeder-league player become a regular after moving up? | LightGBM **lost** to market value alone on 713 moves (AUC 0.626 vs 0.651), so the app ranks by price and says so |
+| **Sacking the manager**: does the new-manager bounce exist? | Teams sack at −0.36 points a game below expectation; clubs on the same run that kept their manager recover to 0.00, new managers to +0.06. Mostly drift back to level, plus a small real edge (95% CI +0.01 to +0.11) |
+| **Manager effect**: points above what the squad should get | Weak but real (split-half r = 0.14): shown as "mostly luck with some skill underneath" |
+| **Can't-live-without**: results with vs without a player | Not stable across half-seasons (r = −0.01); shown as a plain with/without line |
+
+A fresh code review caught five method problems in the first version (manager judged against his own results, a survivor-biased bounce, missing failed moves, a post-move valuation, a stale career model); the numbers above are after the fixes. Details: [`pipeline/README.md`](pipeline/README.md).
+
 ## Run it
 
-**Data pipeline**: see [`pipeline/README.md`](pipeline/README.md) (`python -m touchline.run`, about 3 minutes).
+**Data pipeline**: see [`pipeline/README.md`](pipeline/README.md) (`python -m touchline.run`, about 10 minutes).
 
 **App**
 ```bash
@@ -63,7 +75,7 @@ Without `BUNDLE_URL` the APK runs on the data shipped inside it and never calls 
 
 ## Design
 
-The visual idea is the terrace scarf. A fixture is a half-and-half matchday scarf whose seam sits at the win split, and a club's form is a short bar scarf: won solid, drew cross-stitched, lost as a dropped stitch, so colour is never the only signal. Lettering is Jersey, a typeface designed for charting knitting. See [`DESIGN.md`](DESIGN.md).
+The visual idea is the matchday programme you buy at the turnstile. Players are printed as two-colour halftone portraits in their club's colours (computed on the device from the photo), line-ups and rankings read as numbered team sheets, and win/draw/loss is a printed three-part strip with the figures set inside, never colour alone. Type is Archivo: its narrowest, heaviest cut for mastheads, normal width for reading. See [`DESIGN.md`](DESIGN.md).
 
 ## Data, licences, limits
 
@@ -71,4 +83,4 @@ The visual idea is the terrace scarf. A fixture is a half-and-half matchday scar
 - Market values are crowd estimates, not transfer fees. Player stats show the latest complete season in the open dataset, labelled in the app.
 - There are no injury records, so workload is a risk index only.
 - Club colours are hand-picked approximations of traditional colours, not official brand assets. Not affiliated with any club or league.
-- Code: MIT. Jersey typeface: SIL Open Font License (`app/assets/fonts/OFL.txt`).
+- Code: MIT. Archivo typeface: SIL Open Font License (`app/assets/fonts/Archivo-OFL.txt`).

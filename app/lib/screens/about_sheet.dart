@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../format.dart';
 import '../state/app_state.dart';
+import '../theme/theme.dart';
 import '../widgets/section.dart';
 
 Future<void> showAboutSheet(BuildContext context) => showModalBottomSheet<void>(
@@ -35,6 +36,28 @@ class AboutSheet extends StatelessWidget {
             'recent averages ${f(at('form', 'naive_mae'), 2)}.'),
       ('Workload', 'A risk index from minutes, games on short rest and sudden load spikes. '
           'Not an injury prediction: the data has no injury records.'),
+      if (at('career', 'mae_h1') case final c?)
+        ('Career curve', 'A neural network reads up to six seasons of a career and forecasts '
+            'market value one to three seasons ahead, with a range. Tested on careers it never '
+            'saw: typical miss ${f(c, 2)} (log scale) against ${f(at('career', 'baseline_mae_h1'), 2)} '
+            'for the usual ageing curve one season out, and the range held '
+            '${pct((at('career', 'coverage_h1') ?? 0).toDouble())} of outcomes. The edge '
+            'grows further out.'),
+      if (at('prospects', 'auc') case final a?)
+        ('Ready for the Big Five', 'We tried to predict which feeder-league players become '
+            'regulars after a move. Over ${at('prospects', 'n_test')} past moves our model '
+            'scored ${f(a, 2)}; the market value alone scored '
+            '${f(at('prospects', 'baseline_auc'), 2)} (0.5 is a coin flip). The price won, '
+            'so the list shows the price ranking.'),
+      if ((b.models['manager_effect'] as Map?)?['split_half_r'] case final num r)
+        ('Managers', 'Points above what the squad should have taken, judged against club '
+            'strength frozen at the start of each spell so a manager is not marked against '
+            "his own results. A manager's odd and even games agree at r = ${f(r, 2)}, "
+            'so read it as a tendency.'),
+      if ((b.models['dependency'] as Map?)?['stability_r'] case final num r)
+        ('With and without', 'Results with a player against results without him. It barely '
+            'repeats from the first half of a season to the second (r = ${f(r, 2)}), so it is '
+            'a description of this season, not a measure of how good he is.'),
     ];
     return DraggableScrollableSheet(
       expand: false,
@@ -44,7 +67,7 @@ class AboutSheet extends StatelessWidget {
         controller: controller,
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         children: [
-          Text('How this works', style: tt.titleLarge),
+          Text('HOW THIS WORKS', style: masthead(34, Theme.of(context).colorScheme.onSurface)),
           const SizedBox(height: 6),
           Text('Every number comes from a model tested on a season it never saw, and checked '
               'against a simple rule of thumb. Results below are from ${b.playerSeason}.',
@@ -78,7 +101,7 @@ class AboutSheet extends StatelessWidget {
             onSelectionChanged: (v) => s.setThemeMode(v.first),
           ),
           const SizedBox(height: 24),
-          Text('Lettering: Jersey by Sarah Cadigan-Fried, SIL Open Font License.', style: muted),
+          Text('Type: Archivo by Omnibus-Type, SIL Open Font License.', style: muted),
         ],
       ),
     );

@@ -29,7 +29,9 @@ def load_tm(raw_dir: Path = RAW_DIR,
                    home_club_id, away_club_id,
                    cast(home_club_goals as int) as home_goals,
                    cast(away_club_goals as int) as away_goals,
-                   home_club_name, away_club_name
+                   home_club_name, away_club_name,
+                   home_club_manager_name as home_manager,
+                   away_club_manager_name as away_manager
             from {src('games')}
             where season >= {from_season} and home_club_goals is not null
               and competition_type <> 'national_team_competition'
@@ -55,7 +57,7 @@ def load_tm(raw_dir: Path = RAW_DIR,
             from {src('clubs')}"""),
         "transfers": q(f"""
             select player_id, cast(transfer_date as date) as date, from_club_name as from_club,
-                   to_club_name as to_club, transfer_fee as fee
+                   to_club_name as to_club, transfer_fee as fee, from_club_id, to_club_id
             from {src('transfers')}
             where cast(transfer_date as date) <= date '{today}'"""),
     }

@@ -2,23 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../format.dart';
 import '../state/app_state.dart';
+import '../theme/theme.dart';
 import '../theme/tokens.dart';
-import 'scarf.dart';
-
-/// Touchline's own scarf as a thin knitted band.
-class BrandBand extends StatelessWidget {
-  const BrandBand({super.key});
-
-  @override
-  Widget build(BuildContext context) => const ExcludeSemantics(
-        child: Scarf(
-          height: 8,
-          stripeWidth: 12,
-          semanticLabel: '',
-          bands: [ScarfBand(flex: 1, colors: [TL.pitch, TL.pink])],
-        ),
-      );
-}
 
 class Wordmark extends StatelessWidget {
   const Wordmark({super.key});
@@ -28,8 +13,8 @@ class Wordmark extends StatelessWidget {
         header: true,
         label: 'Touchline',
         child: ExcludeSemantics(
-          child: Text('TOUCHLINE', style: Theme.of(context).textTheme.displaySmall!
-              .copyWith(color: Theme.of(context).colorScheme.primary)),
+          child: Text('TOUCHLINE',
+              style: masthead(36, TL.red)),
         ),
       );
 }
@@ -65,4 +50,24 @@ class FreshnessChip extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A screen's title in masthead caps.
+class ScreenTitle extends StatelessWidget {
+  const ScreenTitle(this.text, {super.key});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        header: true,
+        label: text,
+        child: ExcludeSemantics(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(text.toUpperCase(),
+                style: masthead(32, Theme.of(context).colorScheme.onSurface)),
+          ),
+        ),
+      );
 }

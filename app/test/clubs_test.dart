@@ -26,4 +26,15 @@ void main() {
     await tester.pump();
     expect(find.textContaining('Odds need the live season'), findsOneWidget);
   });
+
+  testWidgets('managers view lists the league with the luck caveat', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(412, 2400));
+    await pumpApp(tester, const ClubsScreen());
+    await tester.tap(find.text('Managers'));
+    await tester.pump();
+    final ms = fixtureBundle().managers.where((m) => m.league == 'GB1').toList();
+    expect(ms, isNotEmpty);
+    expect(find.text(ms.first.name.toUpperCase()), findsWidgets);
+    expect(find.textContaining('luck-adjusted'), findsOneWidget);
+  });
 }

@@ -15,6 +15,19 @@ int? _i(Object? v) => v == null ? null : (v as num).toInt();
 String? _s(Object? v) => v as String?;
 Map<String, dynamic> _m(Object? v) => (v as Map).cast<String, dynamic>();
 List<Map<String, dynamic>> _maps(Object? v) => [for (final e in (v as List? ?? const [])) _m(e)];
+/// A career block the app can draw: equal-length non-empty lists and "YYYY/YY" season labels.
+bool _validCareer(Map<String, dynamic>? c) {
+  if (c == null) return false;
+  final s = c['seasons'], a = c['p10'], m = c['p50'], z = c['p90'];
+  if (s is! List || a is! List || m is! List || z is! List) return false;
+  if (s.isEmpty || a.length != s.length || m.length != s.length || z.length != s.length) {
+    return false;
+  }
+  return s.every((e) => e is String && RegExp(r'^\d{4}/').hasMatch(e)) &&
+      c['peak_value'] is num && c['vs_curve'] is String;
+}
+
+List<int> _is(Object? v) => [for (final e in (v as List? ?? const [])) (e as num).toInt()];
 List<double> _ds(Object? v) => [for (final e in (v as List? ?? const [])) (e as num).toDouble()];
 
 int? parseHexColor(String? hex) {
@@ -166,6 +179,84 @@ class Transfer {
   final int? fee;
 }
 
+class Dependency {
+  const Dependency({required this.index, required this.played, required this.missed});
+  /// Points per game with him minus without him, against expectation (shrunk). Descriptive only.
+  final double index;
+  final int played, missed;
+}
+
+class Career {
+  const Career({required this.seasons, required this.p10, required this.p50, required this.p90,
+      required this.peakValue, required this.peakAge, required this.vsCurve});
+  final List<String> seasons;
+  final List<int> p10, p50, p90;
+  final int peakValue;
+  final double? peakAge;
+
+  /// "ahead", "on" or "behind" the usual curve for his position and age.
+  final String vsCurve;
+}
+
+class Prospect {
+  const Prospect({required this.id, required this.name, required this.img,
+      required this.clubName, required this.league, required this.leagueName, required this.pos,
+      required this.age, required this.marketValue, required this.ga90,
+      required this.translatedGa90, required this.pRegular});
+  factory Prospect.fromJson(Map<String, dynamic> j) => Prospect(
+      id: _i(j['id'])!, name: j['name'] as String, img: _s(j['img']),
+      clubName: _s(j['club_name']), league: j['league'] as String,
+      leagueName: j['league_name'] as String, pos: _s(j['pos']), age: _d(j['age']),
+      marketValue: _i(j['market_value']), ga90: _d(j['ga90'])!,
+      translatedGa90: _d(j['translated_ga90'])!, pRegular: _d(j['p_regular'])!);
+  final int id;
+  final String name;
+  final String? img;
+  final String? clubName;
+  final String league;
+  final String leagueName;
+  final String? pos;
+  final double? age;
+  final int? marketValue;
+  final double ga90, translatedGa90, pRegular;
+}
+
+class Manager {
+  const Manager({required this.name, required this.club, required this.league,
+      required this.games, required this.since, required this.pae, required this.paeRaw,
+      required this.per38, required this.first10});
+  factory Manager.fromJson(Map<String, dynamic> j) => Manager(
+      name: j['name'] as String, club: _i(j['club'])!, league: j['league'] as String,
+      games: _i(j['games'])!, since: DateTime.parse(j['since'] as String),
+      pae: _d(j['pae'])!, paeRaw: _d(j['pae_raw'])!, per38: _d(j['per38'])!,
+      first10: _d(j['first10']));
+  final String name;
+  final int club;
+  final String league;
+  final int games;
+  final DateTime since;
+
+  /// Points above expected per game: shrunk toward 0, and raw.
+  final double pae, paeRaw, per38;
+  final double? first10;
+}
+
+class Bounce {
+  const Bounce({required this.changes, required this.before, required this.first10,
+      required this.next20, required this.control, this.gapCi});
+  final int changes;
+  final double before, first10;
+
+  /// Games 11-30, only for managers who lasted that long.
+  final double? next20;
+
+  /// What clubs on an equally bad run did over their next 10 when they kept the manager.
+  final double? control;
+
+  /// 95% interval for the new manager's first 10 minus the kept-manager control.
+  final List<double>? gapCi;
+}
+
 class Player {
   const Player({required this.id, required this.name, required this.img, required this.club,
       required this.clubName, required this.league, required this.pos, required this.subPos,
@@ -174,13 +265,15 @@ class Player {
       required this.valueWhy, required this.season, required this.last5,
       required this.forecastGa5, required this.workload, required this.valueHistory,
       required this.transfers, required this.similar, required this.trendScore,
-      required this.trendReasons});
+      required this.trendReasons, this.dependency, this.career});
 
   factory Player.fromJson(Map<String, dynamic> j) {
     final s = _m(j['season']);
     final f = _m(j['form']);
     final w = j['workload'] == null ? null : _m(j['workload']);
     final t = _m(j['trend']);
+    final d = j['dependency'] == null ? null : _m(j['dependency']);
+    final c = j['career'] == null ? null : _m(j['career']);
     return Player(
       id: _i(j['id'])!,
       name: j['name'] as String,
@@ -229,6 +322,17 @@ class Player {
       similar: [for (final e in (j['similar'] as List? ?? const [])) (e as num).toInt()],
       trendScore: _d(t['score']),
       trendReasons: [for (final e in (t['reasons'] as List? ?? const [])) e as String],
+      dependency: d == null
+          ? null
+          : Dependency(index: _d(d['index'])!, played: _i(d['played'])!,
+              missed: _i(d['missed'])!),
+      career: !_validCareer(c)
+          ? null
+          : Career(
+              seasons: [for (final e in c!['seasons'] as List) e as String],
+              p10: _is(c['p10']), p50: _is(c['p50']), p90: _is(c['p90']),
+              peakValue: _i(c['peak_value'])!, peakAge: _d(c['peak_age']),
+              vsCurve: c['vs_curve'] as String),
     );
   }
 
@@ -257,6 +361,8 @@ class Player {
   final List<int> similar;
   final double? trendScore;
   final List<String> trendReasons;
+  final Dependency? dependency;
+  final Career? career;
 
   /// Model outputs are only shown for players with 900+ minutes in the season.
   bool get qualified => season.minutes >= 900;
@@ -265,7 +371,8 @@ class Player {
 class Bundle {
   Bundle({required this.schemaVersion, required this.generatedAt, required this.playersThrough,
       required this.clubsThrough, required this.playerSeason, required this.leagues,
-      required this.clubs, required this.fixtures, required this.players, required this.models});
+      required this.clubs, required this.fixtures, required this.players, required this.models,
+      this.prospects = const [], this.managers = const []});
 
   factory Bundle.fromJson(Map<String, dynamic> j) {
     final v = j['schema_version'];
@@ -282,6 +389,8 @@ class Bundle {
       fixtures: [for (final e in _maps(j['fixtures'])) Fixture.fromJson(e)],
       players: [for (final e in _maps(j['players'])) Player.fromJson(e)],
       models: _m(j['models']),
+      prospects: [for (final e in _maps(j['prospects'])) Prospect.fromJson(e)],
+      managers: [for (final e in _maps(j['managers'])) Manager.fromJson(e)],
     );
   }
 
@@ -295,8 +404,31 @@ class Bundle {
   final List<Fixture> fixtures;
   final List<Player> players;
   final Map<String, dynamic> models;
+  final List<Prospect> prospects;
+  final List<Manager> managers;
 
   late final Map<int, Club> clubById = {for (final c in clubs) c.id: c};
   late final Map<int, Player> playerById = {for (final p in players) p.id: p};
   late final Map<String, League> leagueById = {for (final l in leagues) l.id: l};
+  late final Map<int, Manager> managerByClub = {for (final m in managers) m.club: m};
+
+  Map<String, dynamic>? _model(String k) =>
+      models[k] == null ? null : _m(models[k]);
+
+  /// True when the Big Five list is ranked by price because the model didn't beat it.
+  bool get prospectsByPrice => _model('prospects')?['chosen'] != 'model';
+
+  /// Split-half correlation of the manager effect: odd games vs even games (near zero = luck).
+  double? get managerSplitHalf => _d(_model('manager_effect')?['split_half_r']);
+
+  late final Bounce? bounce = () {
+    final b = _model('manager_effect')?['bounce'];
+    if (b == null) return null;
+    final m = _m(b);
+    if (m['first10'] == null) return null;
+    return Bounce(changes: _i(m['n_changes'])!, before: _d(m['last10_before'])!,
+        first10: _d(m['first10'])!, next20: _d(m['next20']),
+        control: _d(m['control_next10']),
+        gapCi: m['gap_ci'] == null ? null : _ds(m['gap_ci']));
+  }();
 }

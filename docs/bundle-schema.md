@@ -47,7 +47,26 @@ its cached bundle.
     "value_history": [["2021-07-01", 20000000]],      // one point per year, oldest first
     "transfers": [{"date": "2023-07-01", "from": "…", "to": "…", "fee": 50000000}],
     "similar": [123, 456],           // same position group, nearest first
-    "trend": {"score": 1.8, "reasons": ["5 G/A last 5"]}  // score null if < 900 min
+    "trend": {"score": 1.8, "reasons": ["5 G/A last 5"]}, // score null if < 900 min
+    "dependency": {"index": 0.41, "played": 28, "missed": 6},  // pts/game with vs without; null if < 3 missed
+    "career": {                       // GRU quantile forecast, next 3 seasons; null if < 900 min
+      "seasons": ["2026/27", "2027/28", "2028/29"],
+      "p10": [60000000, 50000000, 40000000], "p50": [85000000, 90000000, 85000000],
+      "p90": [110000000, 130000000, 140000000],
+      "peak_value": 90000000, "peak_age": 26.3, "vs_curve": "ahead"   // ahead | on | behind
+    }
+  }],
+  "prospects": [{                    // Ready for the Big Five: top 150 feeder-league players
+    "id": 1, "name": "…", "img": "https://…", "club_name": "…", "league": "NL1",
+    "league_name": "Eredivisie", "pos": "Attack", "age": 21.4, "market_value": 15000000,
+    "ga90": 0.62, "translated_ga90": 0.41,    // feeder output × league conversion factor
+    "p_regular": 0.71,                         // P(≥ 40% of league minutes after a move)
+    "why": [{"f": "Minutes share", "effect": 0.12}]
+  }],
+  "managers": [{                     // current top-five managers, luck-adjusted
+    "name": "…", "club": 11, "league": "GB1", "games": 120, "since": "2023-07-01",
+    "pae": 0.18,        // points above expected per game, shrunk toward 0
+    "pae_raw": 0.22, "per38": 6.8, "first10": 0.3    // first10 null if unavailable
   }],
   "models": { /* contents of metrics.json — shown on the in-app "How this works" sheet */ }
 }

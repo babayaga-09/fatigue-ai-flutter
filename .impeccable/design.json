@@ -1,855 +1,524 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-11T14:11:08+00:00",
+  "generatedAt": "2026-10-12T10:34:14+00:00",
   "title": "Design System: Touchline",
   "extensions": {
     "colorMeta": {
-      "pitch": {
-        "role": "primary",
-        "displayName": "Pitch Green",
-        "canonical": "#0F3D2E",
-        "tonalRamp": [
-          "#001206",
-          "#002D1F",
-          "#1F4C3C",
-          "#406C5B",
-          "#618E7B",
-          "#83B19E",
-          "#A6D5C2",
-          "#CBFBE7"
-        ]
-      },
-      "paper-pink": {
-        "role": "tertiary",
-        "displayName": "Paper Pink",
-        "canonical": "#F2A7C3",
-        "tonalRamp": [
-          "#1C000C",
-          "#450827",
-          "#672944",
-          "#8B4964",
-          "#AF6A85",
-          "#D58CA8",
-          "#FBB0CC",
-          "#FFDFF0"
-        ]
-      },
-      "terrace-concrete": {
+      "stock": {
         "role": "neutral",
-        "displayName": "Terrace Concrete",
-        "canonical": "#EDEDE8",
+        "displayName": "Programme Stock",
+        "canonical": "oklch(100.0% 0.000 89.9)",
         "tonalRamp": [
-          "#0B0B08",
-          "#252522",
-          "#42423E",
-          "#61615D",
-          "#83837E",
-          "#A5A5A1",
-          "#C9C9C5",
-          "#EFEFEA"
-        ]
-      },
-      "night-ground": {
-        "role": "neutral",
-        "displayName": "Night Ground",
-        "canonical": "#0D1311",
-        "tonalRamp": [
-          "#070D0B",
-          "#202724",
-          "#3D4441",
-          "#5C6361",
-          "#7D8482",
-          "#9FA7A4",
-          "#C3CBC8",
-          "#E8F1EE"
+          "#0B0B0B",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#AEAEAE",
+          "#D1D1D1",
+          "#EEEEEE"
         ]
       },
       "ink": {
         "role": "neutral",
-        "displayName": "Ink",
-        "canonical": "#16181D",
+        "displayName": "Programme Ink",
+        "canonical": "oklch(17.8% 0.000 89.9)",
         "tonalRamp": [
-          "#090B10",
-          "#23252A",
-          "#404248",
-          "#5F6167",
-          "#808289",
-          "#A2A5AC",
-          "#C6C9D0",
-          "#EBEEF6"
+          "#0B0B0B",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#AEAEAE",
+          "#D1D1D1",
+          "#EEEEEE"
         ]
       },
-      "win": {
-        "role": "semantic",
-        "displayName": "Win Green",
-        "canonical": "#1E7A46",
+      "turnstile-red": {
+        "role": "primary",
+        "displayName": "Turnstile Red",
+        "canonical": "oklch(56.9% 0.210 25.6)",
         "tonalRamp": [
-          "#001201",
-          "#003302",
-          "#005321",
-          "#147440",
-          "#409660",
-          "#65BA82",
-          "#8AE0A5",
-          "#D1FBDC"
+          "#1E0001",
+          "#4C0609",
+          "#840812",
+          "#BA1F25",
+          "#ED4040",
+          "#F98980",
+          "#FEBFB8",
+          "#FEE9E7"
         ]
       },
-      "draw": {
-        "role": "semantic",
-        "displayName": "Draw Slate",
-        "canonical": "#7D838C",
+      "royal-blue": {
+        "role": "secondary",
+        "displayName": "Royal Blue",
+        "canonical": "oklch(38.7% 0.143 264.9)",
         "tonalRamp": [
-          "#070B12",
-          "#21252D",
-          "#3D424A",
-          "#5C626A",
-          "#7D838C",
-          "#9FA5AF",
-          "#C3CAD3",
-          "#E8EFF9"
+          "#000036",
+          "#04186A",
+          "#1E3D90",
+          "#3D60B7",
+          "#5E85DF",
+          "#8AACF7",
+          "#BBD1FF",
+          "#E7EFFD"
         ]
       },
-      "loss": {
-        "role": "semantic",
-        "displayName": "Loss Red",
-        "canonical": "#C8102E",
+      "sponsor-yellow": {
+        "role": "tertiary",
+        "displayName": "Sponsor-Strip Yellow",
+        "canonical": "oklch(83.3% 0.170 90.6)",
         "tonalRamp": [
-          "#1E0002",
-          "#690000",
-          "#920000",
-          "#BA0023",
-          "#E43845",
-          "#FF6166",
-          "#FF8889",
-          "#FFE0DC"
+          "#100A00",
+          "#302501",
+          "#54430B",
+          "#7C630B",
+          "#A68513",
+          "#D3A901",
+          "#FBCB20",
+          "#FEEEC2"
         ]
       },
       "neutral-club-a": {
         "role": "neutral",
-        "displayName": "Neutral Club A",
-        "canonical": "#5C6670",
+        "displayName": "Unknown-Club Dark",
+        "canonical": "oklch(40.9% 0.000 89.9)",
         "tonalRamp": [
-          "#050C13",
-          "#1D262F",
-          "#3A434C",
-          "#59626C",
-          "#79848E",
-          "#9CA6B1",
-          "#BFCBD6",
-          "#E4F0FC"
+          "#0B0B0B",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#AEAEAE",
+          "#D1D1D1",
+          "#EEEEEE"
         ]
       },
       "neutral-club-b": {
         "role": "neutral",
-        "displayName": "Neutral Club B",
-        "canonical": "#D9DCE0",
-        "tonalRamp": [
-          "#090B0E",
-          "#232528",
-          "#404245",
-          "#5F6165",
-          "#808286",
-          "#A2A5A9",
-          "#C6C9CD",
-          "#ECEFF3"
-        ]
-      },
-      "primary": {
-        "role": "scheme",
-        "displayName": "Primary",
-        "canonical": "#0F3D2E",
-        "tonalRamp": [
-          "#001206",
-          "#002D1F",
-          "#1F4C3C",
-          "#406C5B",
-          "#618E7B",
-          "#83B19E",
-          "#A6D5C2",
-          "#CBFBE7"
-        ]
-      },
-      "on-primary": {
-        "role": "scheme",
-        "displayName": "On Primary",
-        "canonical": "#FFFFFF",
+        "displayName": "Unknown-Club Light",
+        "canonical": "oklch(91.9% 0.000 89.9)",
         "tonalRamp": [
           "#0B0B0B",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#A5A5A5",
-          "#C9C9C9",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#AEAEAE",
+          "#D1D1D1",
           "#EEEEEE"
         ]
       },
-      "primary-container": {
-        "role": "scheme",
-        "displayName": "Primary Container",
-        "canonical": "#CDE9D9",
+      "primary": {
+        "role": "primary",
+        "displayName": "Turnstile Red",
+        "canonical": "oklch(56.9% 0.210 25.6)",
         "tonalRamp": [
-          "#001006",
-          "#142B1F",
-          "#31483B",
-          "#4F685A",
-          "#70897B",
-          "#92AD9D",
-          "#B5D1C1",
-          "#DAF7E6"
+          "#1E0001",
+          "#4C0609",
+          "#840812",
+          "#BA1F25",
+          "#ED4040",
+          "#F98980",
+          "#FEBFB8",
+          "#FEE9E7"
         ]
       },
-      "on-primary-container": {
-        "role": "scheme",
-        "displayName": "On Primary Container",
-        "canonical": "#0F3D2E",
+      "primary-container": {
+        "role": "primary",
+        "displayName": "Red Wash",
+        "canonical": "oklch(93.6% 0.026 14.7)",
         "tonalRamp": [
-          "#001206",
-          "#002D1F",
-          "#1F4C3C",
-          "#406C5B",
-          "#618E7B",
-          "#83B19E",
-          "#A6D5C2",
-          "#CBFBE7"
+          "#150708",
+          "#322122",
+          "#523F40",
+          "#756061",
+          "#998384",
+          "#BEA8A9",
+          "#E2CACB",
+          "#FEE8E9"
+        ]
+      },
+      "secondary": {
+        "role": "secondary",
+        "displayName": "Royal Blue",
+        "canonical": "oklch(38.7% 0.143 264.9)",
+        "tonalRamp": [
+          "#000036",
+          "#04186A",
+          "#1E3D90",
+          "#3D60B7",
+          "#5E85DF",
+          "#8AACF7",
+          "#BBD1FF",
+          "#E7EFFD"
+        ]
+      },
+      "secondary-container": {
+        "role": "secondary",
+        "displayName": "Blue Wash",
+        "canonical": "oklch(93.1% 0.023 269.4)",
+        "tonalRamp": [
+          "#070B15",
+          "#222632",
+          "#404552",
+          "#616674",
+          "#838997",
+          "#A8AEBD",
+          "#CBD1E0",
+          "#E8EEFE"
         ]
       },
       "tertiary": {
         "role": "tertiary",
-        "displayName": "Deep Plum",
-        "canonical": "#8E3B5E",
+        "displayName": "Strip Gold Text",
+        "canonical": "oklch(45.9% 0.094 91.4)",
         "tonalRamp": [
-          "#1D000C",
-          "#4C0027",
-          "#6F1F44",
-          "#944063",
-          "#B96284",
-          "#E084A7",
-          "#FFA8CB",
-          "#FFDFF0"
-        ]
-      },
-      "on-tertiary": {
-        "role": "scheme",
-        "displayName": "On Tertiary",
-        "canonical": "#FFFFFF",
-        "tonalRamp": [
-          "#0B0B0B",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#A5A5A5",
-          "#C9C9C9",
-          "#EEEEEE"
+          "#100B00",
+          "#302500",
+          "#544307",
+          "#7A6419",
+          "#9E8741",
+          "#C4AC66",
+          "#E8CF88",
+          "#FEEEC0"
         ]
       },
       "tertiary-container": {
-        "role": "scheme",
-        "displayName": "Tertiary Container",
-        "canonical": "#F2A7C3",
+        "role": "tertiary",
+        "displayName": "Sponsor-Strip Yellow",
+        "canonical": "oklch(83.3% 0.170 90.6)",
         "tonalRamp": [
-          "#1C000C",
-          "#450827",
-          "#672944",
-          "#8B4964",
-          "#AF6A85",
-          "#D58CA8",
-          "#FBB0CC",
-          "#FFDFF0"
-        ]
-      },
-      "on-tertiary-container": {
-        "role": "scheme",
-        "displayName": "On Tertiary Container",
-        "canonical": "#16181D",
-        "tonalRamp": [
-          "#090B10",
-          "#23252A",
-          "#404248",
-          "#5F6167",
-          "#808289",
-          "#A2A5AC",
-          "#C6C9D0",
-          "#EBEEF6"
-        ]
-      },
-      "surface": {
-        "role": "scheme",
-        "displayName": "Surface",
-        "canonical": "#EDEDE8",
-        "tonalRamp": [
-          "#0B0B08",
-          "#252522",
-          "#42423E",
-          "#61615D",
-          "#83837E",
-          "#A5A5A1",
-          "#C9C9C5",
-          "#EFEFEA"
-        ]
-      },
-      "on-surface": {
-        "role": "scheme",
-        "displayName": "On Surface",
-        "canonical": "#16181D",
-        "tonalRamp": [
-          "#090B10",
-          "#23252A",
-          "#404248",
-          "#5F6167",
-          "#808289",
-          "#A2A5AC",
-          "#C6C9D0",
-          "#EBEEF6"
-        ]
-      },
-      "on-surface-variant": {
-        "role": "scheme",
-        "displayName": "On Surface Variant",
-        "canonical": "#4A4F57",
-        "tonalRamp": [
-          "#080B11",
-          "#21252C",
-          "#3D424A",
-          "#5C626A",
-          "#7D838B",
-          "#A0A5AF",
-          "#C4CAD3",
-          "#E9EFF9"
-        ]
-      },
-      "surface-container-lowest": {
-        "role": "scheme",
-        "displayName": "Surface Container Lowest",
-        "canonical": "#FAFAF7",
-        "tonalRamp": [
-          "#0B0B09",
-          "#252523",
-          "#424240",
-          "#61615F",
-          "#828280",
-          "#A5A5A2",
-          "#C9C9C6",
-          "#EFEFEC"
-        ]
-      },
-      "surface-container-low": {
-        "role": "scheme",
-        "displayName": "Surface Container Low",
-        "canonical": "#F6F6F2",
-        "tonalRamp": [
-          "#0B0B09",
-          "#252522",
-          "#42423F",
-          "#61615E",
-          "#82827F",
-          "#A5A5A1",
-          "#C9C9C5",
-          "#EFEFEB"
-        ]
-      },
-      "surface-container": {
-        "role": "scheme",
-        "displayName": "Surface Container",
-        "canonical": "#E6E6E0",
-        "tonalRamp": [
-          "#0B0B08",
-          "#252521",
-          "#42423D",
-          "#62625C",
-          "#83837D",
-          "#A5A5A0",
-          "#C9C9C4",
-          "#EFEFE9"
-        ]
-      },
-      "surface-container-high": {
-        "role": "scheme",
-        "displayName": "Surface Container High",
-        "canonical": "#DEDED8",
-        "tonalRamp": [
-          "#0B0B08",
-          "#252521",
-          "#42423D",
-          "#62625C",
-          "#83837D",
-          "#A5A5A0",
-          "#C9C9C4",
-          "#EFEFE9"
+          "#100A00",
+          "#302501",
+          "#54430B",
+          "#7C630B",
+          "#A68513",
+          "#D3A901",
+          "#FBCB20",
+          "#FEEEC2"
         ]
       },
       "surface-container-highest": {
-        "role": "scheme",
-        "displayName": "Surface Container Highest",
-        "canonical": "#D6D6D0",
+        "role": "neutral",
+        "displayName": "Draw-Band Grey",
+        "canonical": "oklch(89.4% 0.001 106.4)",
         "tonalRamp": [
-          "#0B0B08",
-          "#252521",
-          "#42423D",
-          "#62625C",
-          "#83837D",
-          "#A5A5A0",
-          "#C9C9C4",
-          "#EFEFE9"
+          "#0B0B0B",
+          "#262626",
+          "#454544",
+          "#666665",
+          "#898988",
+          "#AEAEAD",
+          "#D1D1D0",
+          "#EEEEED"
         ]
       },
       "outline": {
-        "role": "scheme",
-        "displayName": "Outline",
-        "canonical": "#767C85",
+        "role": "neutral",
+        "displayName": "Rule Grey",
+        "canonical": "oklch(53.8% 0.000 89.9)",
         "tonalRamp": [
-          "#070B12",
-          "#20252D",
-          "#3D424A",
-          "#5C626A",
-          "#7D838C",
-          "#9FA5AF",
-          "#C3CAD3",
-          "#E8EFF9"
+          "#0B0B0B",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#AEAEAE",
+          "#D1D1D1",
+          "#EEEEEE"
         ]
       },
       "outline-variant": {
-        "role": "scheme",
-        "displayName": "Outline Variant",
-        "canonical": "#C9CBC6",
+        "role": "neutral",
+        "displayName": "Hairline Grey",
+        "canonical": "oklch(87.0% 0.001 106.4)",
         "tonalRamp": [
-          "#0A0C08",
-          "#242622",
-          "#41433F",
-          "#60625E",
-          "#81837E",
-          "#A4A6A1",
-          "#C8CAC5",
-          "#EDEFEA"
+          "#0B0B0B",
+          "#262626",
+          "#454544",
+          "#666665",
+          "#898988",
+          "#AEAEAD",
+          "#D1D1D0",
+          "#EEEEED"
         ]
       },
       "primary-dark": {
         "role": "primary",
-        "displayName": "Floodlit Mint",
-        "canonical": "#8FD6AE",
+        "displayName": "Coral Red (back cover)",
+        "canonical": "oklch(76.0% 0.143 24.1)",
         "tonalRamp": [
-          "#001203",
-          "#003113",
-          "#00502F",
-          "#29714E",
-          "#4D936E",
-          "#71B790",
-          "#95DCB4",
-          "#CDFCE0"
+          "#1F0001",
+          "#4E040A",
+          "#80131B",
+          "#A93C3C",
+          "#D2615D",
+          "#FB8781",
+          "#FBC0BB",
+          "#FEE9E7"
         ]
       },
-      "on-primary-dark": {
-        "role": "dark-scheme",
-        "displayName": "On Primary Dark",
-        "canonical": "#003920",
+      "secondary-dark": {
+        "role": "secondary",
+        "displayName": "Pale Royal (back cover)",
+        "canonical": "oklch(80.7% 0.096 271.1)",
         "tonalRamp": [
-          "#001203",
-          "#002F17",
-          "#1A4D33",
-          "#3B6E51",
-          "#5D9072",
-          "#7FB394",
-          "#A3D8B7",
-          "#CEFBDF"
-        ]
-      },
-      "primary-container-dark": {
-        "role": "dark-scheme",
-        "displayName": "Primary Container Dark",
-        "canonical": "#1C4A39",
-        "tonalRamp": [
-          "#001206",
-          "#002E1E",
-          "#1E4C3B",
-          "#3F6C5A",
-          "#608E7A",
-          "#82B19D",
-          "#A5D6C1",
-          "#CAFCE6"
-        ]
-      },
-      "on-primary-container-dark": {
-        "role": "dark-scheme",
-        "displayName": "On Primary Container Dark",
-        "canonical": "#CDE9D9",
-        "tonalRamp": [
-          "#001006",
-          "#142B1F",
-          "#31483B",
-          "#4F685A",
-          "#70897B",
-          "#92AD9D",
-          "#B5D1C1",
-          "#DAF7E6"
-        ]
-      },
-      "tertiary-dark": {
-        "role": "dark-scheme",
-        "displayName": "Tertiary Dark",
-        "canonical": "#F2A7C3",
-        "tonalRamp": [
-          "#1C000C",
-          "#450827",
-          "#672944",
-          "#8B4964",
-          "#AF6A85",
-          "#D58CA8",
-          "#FBB0CC",
-          "#FFDFF0"
-        ]
-      },
-      "on-tertiary-dark": {
-        "role": "dark-scheme",
-        "displayName": "On Tertiary Dark",
-        "canonical": "#16181D",
-        "tonalRamp": [
-          "#090B10",
-          "#23252A",
-          "#404248",
-          "#5F6167",
-          "#808289",
-          "#A2A5AC",
-          "#C6C9D0",
-          "#EBEEF6"
+          "#040033",
+          "#172055",
+          "#334078",
+          "#52629D",
+          "#7486C4",
+          "#97ABEC",
+          "#C1D0FC",
+          "#E9EEFE"
         ]
       },
       "surface-dark": {
-        "role": "dark-scheme",
-        "displayName": "Surface Dark",
-        "canonical": "#0D1311",
+        "role": "neutral",
+        "displayName": "Back-Cover Black",
+        "canonical": "oklch(17.8% 0.000 89.9)",
         "tonalRamp": [
-          "#070D0B",
-          "#202724",
-          "#3D4441",
-          "#5C6361",
-          "#7D8482",
-          "#9FA7A4",
-          "#C3CBC8",
-          "#E8F1EE"
+          "#0B0B0B",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#AEAEAE",
+          "#D1D1D1",
+          "#EEEEEE"
         ]
       },
       "on-surface-dark": {
-        "role": "dark-scheme",
-        "displayName": "On Surface Dark",
-        "canonical": "#E6E8E3",
+        "role": "neutral",
+        "displayName": "Back-Cover White",
+        "canonical": "oklch(96.1% 0.000 89.9)",
         "tonalRamp": [
-          "#0A0C09",
-          "#242622",
-          "#41433F",
-          "#60625E",
-          "#81837F",
-          "#A4A6A1",
-          "#C8CAC5",
-          "#EDEFEA"
-        ]
-      },
-      "on-surface-variant-dark": {
-        "role": "dark-scheme",
-        "displayName": "On Surface Variant Dark",
-        "canonical": "#A9B1AC",
-        "tonalRamp": [
-          "#070D09",
-          "#212723",
-          "#3D4440",
-          "#5C635F",
-          "#7D8480",
-          "#9FA7A2",
-          "#C3CBC6",
-          "#E8F1EC"
-        ]
-      },
-      "surface-container-lowest-dark": {
-        "role": "dark-scheme",
-        "displayName": "Surface Container Lowest Dark",
-        "canonical": "#0A0F0D",
-        "tonalRamp": [
-          "#080C0A",
-          "#212724",
-          "#3E4441",
-          "#5D6360",
-          "#7D8481",
-          "#A0A7A4",
-          "#C4CBC8",
-          "#E9F0ED"
-        ]
-      },
-      "surface-container-low-dark": {
-        "role": "dark-scheme",
-        "displayName": "Surface Container Low Dark",
-        "canonical": "#141B18",
-        "tonalRamp": [
-          "#070D0A",
-          "#202724",
-          "#3C4441",
-          "#5B6360",
-          "#7C8581",
-          "#9EA8A3",
-          "#C2CCC7",
-          "#E7F1ED"
-        ]
-      },
-      "surface-container-dark": {
-        "role": "dark-scheme",
-        "displayName": "Surface Container Dark",
-        "canonical": "#18201C",
-        "tonalRamp": [
-          "#060D09",
-          "#1F2723",
-          "#3C4440",
-          "#5A645F",
-          "#7B8580",
-          "#9EA8A3",
-          "#C1CCC7",
-          "#E7F2EC"
-        ]
-      },
-      "surface-container-high-dark": {
-        "role": "dark-scheme",
-        "displayName": "Surface Container High Dark",
-        "canonical": "#1F2824",
-        "tonalRamp": [
-          "#060D0A",
-          "#1E2723",
-          "#3B4540",
-          "#5A645F",
-          "#7A8580",
-          "#9DA8A3",
-          "#C1CCC7",
-          "#E6F2EC"
+          "#0B0B0B",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#AEAEAE",
+          "#D1D1D1",
+          "#EEEEEE"
         ]
       },
       "surface-container-highest-dark": {
-        "role": "dark-scheme",
-        "displayName": "Surface Container Highest Dark",
-        "canonical": "#27312C",
+        "role": "neutral",
+        "displayName": "Back-Cover Draw Grey",
+        "canonical": "oklch(32.1% 0.000 89.9)",
         "tonalRamp": [
-          "#050D09",
-          "#1E2823",
-          "#3A4540",
-          "#59645F",
-          "#7A8680",
-          "#9CA8A2",
-          "#C0CDC6",
-          "#E5F2EB"
-        ]
-      },
-      "outline-dark": {
-        "role": "dark-scheme",
-        "displayName": "Outline Dark",
-        "canonical": "#8A918C",
-        "tonalRamp": [
-          "#080D09",
-          "#212723",
-          "#3E443F",
-          "#5D635E",
-          "#7D847F",
-          "#A0A7A2",
-          "#C4CBC6",
-          "#E9F1EB"
-        ]
-      },
-      "outline-variant-dark": {
-        "role": "dark-scheme",
-        "displayName": "Outline Variant Dark",
-        "canonical": "#2E3833",
-        "tonalRamp": [
-          "#050D09",
-          "#1E2823",
-          "#3B4540",
-          "#59645F",
-          "#7A8680",
-          "#9CA8A2",
-          "#C0CDC6",
-          "#E5F2EB"
+          "#0B0B0B",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#AEAEAE",
+          "#D1D1D1",
+          "#EEEEEE"
         ]
       }
     },
     "typographyMeta": {
       "display-large": {
-        "displayName": "Display Large (3 stitches)",
-        "purpose": "Favourite's % on the hero fixture scarf."
+        "displayName": "Masthead 56",
+        "purpose": "Largest masthead; condensed black caps (Archivo wdth 62, wght 900)."
+      },
+      "display-medium": {
+        "displayName": "Masthead 44",
+        "purpose": "Club band name."
       },
       "display-small": {
-        "displayName": "Display Small (2 stitches)",
-        "purpose": "Wordmark, club names on club scarves."
+        "displayName": "Masthead 34",
+        "purpose": "Cover club names, player names on detail pages."
       },
       "headline-small": {
-        "displayName": "Headline Small (1 stitch)",
-        "purpose": "Row scarf %, form letters, scores, monograms."
+        "displayName": "Section Masthead",
+        "purpose": "Section headings under the 3px ink rule."
       },
       "title-large": {
-        "displayName": "Title Large",
-        "purpose": "Section headings, hero fixture title."
+        "displayName": "Verdict",
+        "purpose": "Pundit one-line verdicts."
       },
-      "title-medium": {
-        "displayName": "Title Medium",
-        "purpose": "Row titles, pundit verdicts."
+      "title-small": {
+        "displayName": "Row Name",
+        "purpose": "Team-sheet names (uppercase, 0.4px tracking), tabular."
       },
       "body-medium": {
-        "displayName": "Body Medium",
-        "purpose": "Explanations, metadata, empty notes."
+        "displayName": "Body",
+        "purpose": "Findings and explanations."
       },
       "label-large": {
-        "displayName": "Label Large",
-        "purpose": "Tabular numbers in bars, kickoff times."
-      },
-      "label-medium": {
-        "displayName": "Label Medium",
-        "purpose": "Trend notes on player tiles."
+        "displayName": "Figure",
+        "purpose": "Tabular figures in columns; kickoff strip."
       }
     },
     "shadows": [
       {
         "name": "sheet",
-        "value": "Material elevation 1 (bottom sheet)",
-        "purpose": "Modal bottom sheets only; every other surface is elevation 0."
+        "value": "Material elevation 1",
+        "purpose": "Bottom sheets only; everything else is flat at elevation 0."
       }
     ],
     "motion": [
       {
-        "name": "knit-in",
-        "value": "650ms Curves.easeOutExpo (cubic-bezier(0.16,1,0.3,1)), revealed in whole 4px rows from the top",
-        "purpose": "Scarves knit in once on first view; instant when animations are disabled."
+        "name": "halftone-develop",
+        "value": "500ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Halftone dots grow from 0 to full radius on a portrait's first view (Curves.easeOutExpo); instant under reduced motion and on later views."
       }
     ],
     "breakpoints": [
       {
         "name": "rail",
-        "value": "840dp"
+        "value": "840px",
+        "purpose": "Bottom navigation bar becomes a labelled navigation rail."
+      },
+      {
+        "name": "page-max",
+        "value": "960px",
+        "purpose": "Maximum printed page width on wide screens, centred on stock."
       }
     ]
   },
   "components": [
     {
-      "name": "Hero Fixture Scarf",
-      "kind": "custom",
-      "refersTo": "fixture-scarf-hero",
-      "description": "72dp half-and-half matchday scarf; band widths equal win/draw/win probabilities, favourite's % on a solid panel at 3 stitches.",
-      "html": "<div class=\"ds-fx\"><span class=\"ds-crest\">FCB</span><div class=\"ds-scarf\" role=\"img\" aria-label=\"Bayern win 72%, draw 18%, RB Leipzig win 10%\"><div class=\"ds-band ds-home\" style=\"flex:72\"><b class=\"ds-panel ds-lg\">72%</b></div><div class=\"ds-band ds-draw\" style=\"flex:18\"><b class=\"ds-panel ds-sm\">18%</b></div><div class=\"ds-band ds-away\" style=\"flex:10\"></div></div><span class=\"ds-crest ds-crest-b\">RBL</span></div>",
-      "css": ".ds-fx{display:flex;align-items:center;gap:8px;background:#F6F6F2;padding:16px;border-radius:16px}.ds-crest{width:36px;height:36px;border-radius:9px;background:#DC052D;color:#fff;display:grid;place-items:center;font-family:'Jersey 10',monospace;font-variant-numeric:tabular-nums;line-height:1;font-size:12px}.ds-crest-b{background:#DD0741}.ds-scarf{flex:1;height:72px;display:flex;gap:1px;background:#EDEDE8;border:1px solid #C9CBC6;border-radius:3px;overflow:hidden;animation:ds-knit .65s cubic-bezier(.16,1,.3,1)}.ds-band{display:grid;place-items:center}.ds-home{background:repeating-linear-gradient(90deg,#DC052D 0 14px,#FFFFFF 14px 28px)}.ds-away{background:repeating-linear-gradient(90deg,#DD0741 0 14px,#FFFFFF 14px 28px)}.ds-draw{background:#7D838C}.ds-panel{font-family:'Jersey 10',monospace;font-variant-numeric:tabular-nums;line-height:1;font-weight:400;padding:0 6px;height:100%;display:grid;place-items:center;color:#fff}.ds-home .ds-panel{background:#DC052D}.ds-draw .ds-panel{background:#7D838C}.ds-lg{font-size:56px}.ds-sm{font-size:18.667px}@keyframes ds-knit{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}@media (prefers-reduced-motion:reduce){.ds-scarf{animation:none}}"
+      "name": "Filled Button",
+      "kind": "button",
+      "refersTo": "button-filled",
+      "description": "Primary action: an ink block, square corners.",
+      "html": "<button class=\"ds-btn-filled\">Compare players</button>",
+      "css": ".ds-btn-filled{background:#111111;color:#FFFFFF;border:none;border-radius:2px;padding:10px 24px;font:700 14px/20px Archivo,sans-serif;letter-spacing:.1px;cursor:pointer;transition:background .15s}.ds-btn-filled:hover{background:#333333}.ds-btn-filled:focus-visible{outline:2px solid #D7262D;outline-offset:2px}.ds-btn-filled:active{background:#000}"
     },
     {
-      "name": "Form Scarf",
-      "kind": "custom",
-      "refersTo": "form-scarf",
-      "description": "Last results as square cells: win solid, draw cross-stitch, loss dropped stitch, each lettered.",
-      "html": "<div class=\"ds-form\" role=\"img\" aria-label=\"Form: lost, won, drew, won, won\"><i class=\"ds-l\">L</i><i class=\"ds-w\">W</i><i class=\"ds-d\">D</i><i class=\"ds-w\">W</i><i class=\"ds-w\">W</i></div>",
-      "css": ".ds-form{display:inline-flex;gap:1px;background:#EDEDE8;border:1px solid #C9CBC6;border-radius:3px;overflow:hidden}.ds-form i{width:22px;height:22px;display:grid;place-items:center;font-style:normal;font-family:'Jersey 10',monospace;font-variant-numeric:tabular-nums;line-height:1;font-size:18.667px;color:#fff}.ds-w{background:#1E7A46}.ds-d{background:#7D838C;background-image:radial-gradient(circle,rgba(255,255,255,.35) 1px,transparent 1.5px);background-size:12px 12px}.ds-l{background:repeating-linear-gradient(180deg,#EDEDE8 0 4px,#C8102E 4px 6px,#EDEDE8 6px 8px);color:#16181D}"
-    },
-    {
-      "name": "Club Scarf",
-      "kind": "custom",
-      "refersTo": "club-scarf",
-      "description": "A club's own two-tone bar scarf, fringed, name upper-cased on a 2-stitch solid panel.",
-      "html": "<div class=\"ds-club\"><b>ATLETI</b></div>",
-      "css": ".ds-club{height:72px;display:grid;place-items:center;border:1px solid #C9CBC6;border-radius:3px;background:repeating-linear-gradient(90deg,#CB3524 0 16px,#FFFFFF 16px 32px)}.ds-club b{font-family:'Jersey 10',monospace;font-variant-numeric:tabular-nums;line-height:1;font-weight:400;font-size:37.333px;color:#fff;background:#CB3524;height:100%;display:grid;place-items:center;padding:0 12px}"
-    },
-    {
-      "name": "Share Bar",
-      "kind": "custom",
-      "refersTo": "share-scarf",
-      "description": "A 0-1 probability: share knitted in club colours, remainder a dropped stitch, tabular % at right.",
-      "html": "<div class=\"ds-share\"><span class=\"ds-lbl\">Top four</span><div class=\"ds-track\"><div class=\"ds-fill\" style=\"width:96%\"></div></div><span class=\"ds-pct\">96%</span></div>",
-      "css": ".ds-share{display:flex;align-items:center;gap:8px;font:400 14px/1.4 Roboto,sans-serif;color:#16181D}.ds-lbl{width:96px}.ds-track{flex:1;height:14px;border:1px solid #C9CBC6;border-radius:3px;overflow:hidden;background:repeating-linear-gradient(180deg,#EDEDE8 0 4px,#C9CBC6 4px 6px,#EDEDE8 6px 8px)}.ds-fill{height:100%;background:repeating-linear-gradient(90deg,#CB3524 0 6px,#FFFFFF 6px 12px)}.ds-pct{width:52px;text-align:right;font-weight:500;font-variant-numeric:tabular-nums}"
-    },
-    {
-      "name": "Brand Band and Wordmark",
-      "kind": "custom",
-      "refersTo": "brand-band",
-      "description": "Stitch wordmark in pitch green over Touchline's own 8dp pitch-and-pink scarf band.",
-      "html": "<div class=\"ds-brand\"><b>TOUCHLINE</b><div class=\"ds-band8\"></div></div>",
-      "css": ".ds-brand{background:#EDEDE8;padding:12px 16px}.ds-brand b{font-family:'Jersey 10',monospace;font-variant-numeric:tabular-nums;line-height:1;font-weight:400;font-size:37.333px;color:#0F3D2E}.ds-band8{margin-top:8px;height:8px;border:1px solid #C9CBC6;border-radius:3px;background:repeating-linear-gradient(90deg,#0F3D2E 0 12px,#F2A7C3 12px 24px)}"
-    },
-    {
-      "name": "Hero Fixture Card",
-      "kind": "card",
-      "refersTo": "card",
-      "description": "Flat tonal card (no shadow) holding title, kickoff meta, the hero scarf, and a pundit verdict.",
-      "html": "<article class=\"ds-card\" tabindex=\"0\"><h3>Bayern v RB Leipzig</h3><p class=\"ds-meta\">Sat 22:00 · Bundesliga</p><p class=\"ds-verdict\">Bayern should handle this. RB Leipzig need a miracle.</p><p class=\"ds-link\">Breakdown ›</p></article>",
-      "css": ".ds-card{background:#F6F6F2;border-radius:16px;padding:16px;font-family:Roboto,sans-serif;color:#16181D;transition:background .2s}.ds-card:hover{background:#E6E6E0}.ds-card:focus-visible{outline:2px solid #0F3D2E;outline-offset:2px}.ds-card h3{margin:0;font-size:22px;font-weight:700;letter-spacing:-.2px}.ds-meta{margin:0 0 16px;font-size:14px;color:#4A4F57}.ds-verdict{margin:0 0 4px;font-size:16px;font-weight:600}.ds-link{margin:0;text-align:right;color:#0F3D2E;font-weight:500}"
+      "name": "Outlined Button",
+      "kind": "button",
+      "refersTo": "button-outlined",
+      "description": "Secondary action: 1.5px ink border on stock.",
+      "html": "<button class=\"ds-btn-outlined\">Find similar for less</button>",
+      "css": ".ds-btn-outlined{background:#FFFFFF;color:#D7262D;border:1.5px solid #111111;border-radius:2px;padding:10px 24px;font:700 14px/20px Archivo,sans-serif;cursor:pointer;transition:background .15s}.ds-btn-outlined:hover{background:#FBE3E4}.ds-btn-outlined:focus-visible{outline:2px solid #D7262D;outline-offset:2px}"
     },
     {
       "name": "League Chips",
       "kind": "chip",
-      "refersTo": "chip-selected",
-      "description": "Filter chips, no checkmark: outline-variant border, pitch fill when selected.",
-      "html": "<div class=\"ds-chips\"><button class=\"ds-chip ds-sel\" aria-pressed=\"true\">All</button><button class=\"ds-chip\" aria-pressed=\"false\">Premier League</button><button class=\"ds-chip\" aria-pressed=\"false\">LaLiga</button></div>",
-      "css": ".ds-chips{display:flex;gap:8px}.ds-chip{font:500 14px Roboto,sans-serif;padding:6px 16px;border-radius:8px;border:1px solid #C9CBC6;background:transparent;color:#4A4F57;cursor:pointer}.ds-chip:hover{background:#E6E6E0}.ds-chip:focus-visible{outline:2px solid #0F3D2E}.ds-sel,.ds-sel:hover{background:#0F3D2E;border-color:#0F3D2E;color:#fff;font-weight:600}"
+      "refersTo": "chip-league",
+      "description": "League filter row; selected chip is an ink fill, no checkmark.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip ds-chip-on\">All</button><button class=\"ds-chip\">Premier League</button><button class=\"ds-chip\">LaLiga</button></div>",
+      "css": ".ds-chips{display:flex;gap:8px}.ds-chip{background:#FFFFFF;color:#111111;border:1px solid #6E6E6E;border-radius:2px;padding:6px 16px;font:700 14px/20px Archivo,sans-serif;cursor:pointer}.ds-chip:hover{background:#F4F4F3}.ds-chip:focus-visible{outline:2px solid #D7262D;outline-offset:2px}.ds-chip-on{background:#111111;color:#FFFFFF;border-color:#111111}"
     },
     {
-      "name": "Navigation Bar",
+      "name": "Bottom Navigation",
       "kind": "nav",
       "refersTo": "nav-bar",
-      "description": "Four destinations on surface-container; paper-pink pill indicator with ink icon when selected. Becomes a rail at 840dp.",
-      "html": "<nav class=\"ds-nav\"><a class=\"ds-cur\" aria-current=\"page\"><span class=\"ds-pill\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path d=\"M4 9h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z M7 5l2 3 M17 5l-2 3 M12 4v4\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\"/></svg></span>Home</a><a><span class=\"ds-pill\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path d=\"M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg></span>Clubs</a></nav>",
-      "css": ".ds-nav{display:flex;background:#E6E6E0;padding:12px 0 16px;font:500 12px Roboto,sans-serif}.ds-nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;color:#4A4F57;cursor:pointer}.ds-pill{width:64px;height:32px;border-radius:16px;display:grid;place-items:center;transition:background .2s}.ds-nav a:hover .ds-pill{background:#DEDED8}.ds-nav a:focus-visible{outline:2px solid #0F3D2E}.ds-nav .ds-cur{color:#16181D}.ds-cur .ds-pill,.ds-nav a.ds-cur:hover .ds-pill{background:#F2A7C3}"
+      "description": "Four destinations; the selected icon sits in a square ink indicator.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-i ds-on\" href=\"#\"><span class=\"ds-ind\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path d=\"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z\" fill=\"currentColor\"/></svg></span>Home</a><a class=\"ds-nav-i\" href=\"#\"><span class=\"ds-ind\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path d=\"M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg></span>Clubs</a></nav>",
+      "css": ".ds-nav{display:flex;background:#FFFFFF;padding:12px 0}.ds-nav-i{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;color:#4D4D4D;font:700 12px/16px Archivo,sans-serif;text-decoration:none}.ds-nav-i:hover .ds-ind{background:#EDEDEC}.ds-ind{display:flex;justify-content:center;align-items:center;width:64px;height:32px;border-radius:2px}.ds-on{color:#111111}.ds-on .ds-ind,.ds-on:hover .ds-ind{background:#111111;color:#FFFFFF}.ds-nav-i:focus-visible{outline:2px solid #D7262D}"
+    },
+    {
+      "name": "Section Heading",
+      "kind": "custom",
+      "refersTo": "section-heading",
+      "description": "Heavy 3px ink rule, then the title in masthead caps; optional red action and note.",
+      "html": "<div class=\"ds-sec\"><div class=\"ds-sec-rule\"></div><div class=\"ds-sec-row\"><h2 class=\"ds-sec-t\">Ready for the Big Five</h2><a class=\"ds-sec-a\" href=\"#\">All</a></div><p class=\"ds-sec-n\">Feeder-league players the market rates highest.</p></div>",
+      "css": ".ds-sec{padding:32px 16px 10px}.ds-sec-rule{height:3px;background:#111111;margin-bottom:8px}.ds-sec-row{display:flex;align-items:center}.ds-sec-t{flex:1;margin:0;font-size:24px;color:#111111;font-family: Archivo, sans-serif; font-weight: 900; font-stretch: 62%; font-variation-settings: 'wdth' 62, 'wght' 900; line-height: 0.92; text-transform: uppercase; font-variant-numeric: tabular-nums;}.ds-sec-a{color:#D7262D;font:700 14px Archivo,sans-serif;text-decoration:none}.ds-sec-a:hover{text-decoration:underline}.ds-sec-a:focus-visible{outline:2px solid #D7262D}.ds-sec-n{margin:4px 0 0;font:12px/16px Archivo,sans-serif;color:#4D4D4D}"
+    },
+    {
+      "name": "Team Sheet Row",
+      "kind": "custom",
+      "refersTo": "team-sheet-row",
+      "description": "Numbered ranking line: red masthead number, uppercase name, tabular trailing figure, hairline below.",
+      "html": "<div class=\"ds-ts\" tabindex=\"0\"><span class=\"ds-ts-n\">1</span><span class=\"ds-ts-b\"><b>BAYERN</b><small>Bundesliga</small></span><span class=\"ds-ts-f\">2041</span></div>",
+      "css": ".ds-ts{display:flex;align-items:center;min-height:56px;margin:0 16px;padding:8px 0;border-bottom:1px solid #D4D4D3;cursor:pointer}.ds-ts:hover{background:#F4F4F3}.ds-ts:focus-visible{outline:2px solid #D7262D}.ds-ts-n{width:44px;font-size:26px;color:#D7262D;font-family: Archivo, sans-serif; font-weight: 900; font-stretch: 62%; font-variation-settings: 'wdth' 62, 'wght' 900; line-height: 0.92; text-transform: uppercase; font-variant-numeric: tabular-nums;}.ds-ts-b{flex:1;display:flex;flex-direction:column}.ds-ts-b b{font:700 14px/20px Archivo,sans-serif;letter-spacing:.4px;color:#111111}.ds-ts-b small{font:12px/16px Archivo,sans-serif;color:#4D4D4D}.ds-ts-f{font:700 16px Archivo,sans-serif;font-variant-numeric:tabular-nums;color:#111111}"
+    },
+    {
+      "name": "Result Strip",
+      "kind": "custom",
+      "refersTo": "result-strip-hero",
+      "description": "Win/draw/loss as printed bands sized by chance, each carrying its figure; draw is plain grey stock.",
+      "html": "<div class=\"ds-rs\"><div class=\"ds-rs-b\" style=\"flex:72;background:#D7262D;color:#fff;justify-content:flex-start\">72%</div><div class=\"ds-rs-b\" style=\"flex:18;background:#DCDCDB;color:#111\">18%</div><div class=\"ds-rs-b\" style=\"flex:10;background:#fff;color:#111;border:1px solid #111;justify-content:flex-end\">10%</div></div><div class=\"ds-rs-l\"><span>Bayern</span><span>Draw</span><span>RB Leipzig</span></div>",
+      "css": ".ds-rs{display:flex;gap:2px;height:56px}.ds-rs-b{display:flex;align-items:center;justify-content:center;padding:0 10px;font-size:30px;overflow:hidden;font-family: Archivo, sans-serif; font-weight: 900; font-stretch: 62%; font-variation-settings: 'wdth' 62, 'wght' 900; line-height: 0.92; text-transform: uppercase; font-variant-numeric: tabular-nums;}.ds-rs-l{display:flex;justify-content:space-between;margin-top:6px;font:500 12px Archivo,sans-serif;color:#111111}"
+    },
+    {
+      "name": "Form Boxes",
+      "kind": "custom",
+      "refersTo": "form-box-won",
+      "description": "Last results: won solid ink, drew grey, lost an open box; the letter is always printed.",
+      "html": "<div class=\"ds-fb\"><span class=\"ds-w\">W</span><span class=\"ds-w\">W</span><span class=\"ds-d\">D</span><span class=\"ds-l\">L</span><span class=\"ds-w\">W</span></div>",
+      "css": ".ds-fb{display:flex;gap:2px}.ds-fb span{box-sizing:border-box;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13.6px;font-family: Archivo, sans-serif; font-weight: 900; font-stretch: 62%; font-variation-settings: 'wdth' 62, 'wght' 900; line-height: 0.92; text-transform: uppercase; font-variant-numeric: tabular-nums;}.ds-w{background:#111111;color:#FFFFFF}.ds-d{background:#DCDCDB;color:#111111}.ds-l{border:1.5px solid #111111;color:#111111}"
+    },
+    {
+      "name": "Club Band",
+      "kind": "custom",
+      "refersTo": "club-band",
+      "description": "Club page masthead: full-bleed first colour, name in masthead caps, 4px stripe in the second colour (example colours).",
+      "html": "<div class=\"ds-cb\"><div class=\"ds-cb-n\">BAYERN</div><div class=\"ds-cb-s\"></div></div>",
+      "css": ".ds-cb{height:88px;box-sizing:border-box;background:#DC052D;padding:0 16px 10px;display:flex;flex-direction:column;justify-content:flex-end}.ds-cb-n{font-size:44px;color:#FFFFFF;font-family: Archivo, sans-serif; font-weight: 900; font-stretch: 62%; font-variation-settings: 'wdth' 62, 'wght' 900; line-height: 0.92; text-transform: uppercase; font-variant-numeric: tabular-nums;}.ds-cb-s{height:4px;margin-top:6px;background:#0066B2}"
+    },
+    {
+      "name": "Match Cover Kickoff Strip",
+      "kind": "custom",
+      "refersTo": "match-cover-strip",
+      "description": "Sponsor-yellow printed strip under the cover halves.",
+      "html": "<div class=\"ds-ko\">SAT 22:00 · BUNDESLIGA</div>",
+      "css": ".ds-ko{background:#F2C200;color:#111111;padding:6px 16px;font:700 14px/20px Archivo,sans-serif;letter-spacing:.6px;text-transform:uppercase;font-variant-numeric:tabular-nums}"
     }
   ],
   "narrative": {
-    "northStar": "The Terrace Scarf",
-    "overview": "Every prediction is knitted into a supporter's scarf. A fixture is a half-and-half matchday scarf whose seams sit at the win, draw, and loss split; a club's form is a short bar scarf of its last results; a season probability is a scarf with the remainder dropped. The scarf is the chart, so numbers arrive as something a fan already owns rather than as percentage rows on dark cards.\n\nAround the scarves the app is plain Material 3 on cool terrace concrete: flat tonal cards, Roboto for everything that is read, one green and one pink as Touchline's own colours, and every club in its own two-tone pair taken from the data. Stitch-grid lettering (Jersey 10) is reserved for the knit: hero percentages, club names on scarves, the wordmark, scores, and monograms. Density is a two-minute glance: one hero fixture, then short sections with generous air above each heading.",
+    "northStar": "The Matchday Programme",
+    "overview": "Every screen is printed like the programme bought at the turnstile. The ground is white coated stock with black ink. Touchline's own printing colours are turnstile red and royal blue, and sponsor-strip yellow appears only on printed strips and highlights. Whenever a club is in focus, its two printing colours take over: the cover halves, the club band, the halftone portraits, and the share bars all print in that club's colours. Everywhere else the page stays neutral stock. The dark theme is the programme's black back cover: an #111111 ground with white type, and the same printing colours.\n\nMastheads are condensed black capitals. Lists read as numbered team sheets. Players appear as two-colour halftone portraits, never as photos in rounded frames. Probabilities are printed bands with the figure set inside, so meaning never depends on colour alone. Corners are square, rules are either hairline or heavy, and nothing floats. One item owns the top of each screen (the cover or a club band) and the rest reads as inside pages under heavy section rules. The system rejects the category default of dark navy cards, crests as decoration, and a single neon-green accent.",
     "keyCharacteristics": [
-      "Probabilities are drawn as knitted scarves whose band widths equal the numbers.",
-      "Touchline's scarf is pitch green and paper pink; clubs wear their own colours.",
-      "Stitch type only at whole-stitch sizes, Roboto for body and UI.",
-      "Results carry shape as well as colour: solid knit, cross-stitch, dropped stitch.",
-      "Flat tonal surfaces; only bottom sheets float."
+      "White stock and #111111 ink; red, blue and yellow as printing colours, not UI tints.",
+      "Club colours replace the house accent whenever a club is in focus.",
+      "Archivo throughout: condensed black caps for mastheads, normal width for text, tabular figures for numbers.",
+      "Square (2px) corners, hairline and 3px rules, no shadows except the bottom sheet.",
+      "Halftone portraits that develop in on first view."
     ],
     "rules": [
       {
-        "name": "The Club's Own Colours Rule",
-        "body": "Club colours come from the data bundle (`clubs[].colors.primary/secondary`), never from a hand-kept table; a missing pair falls back to the neutral club pair, never to brand green.",
+        "name": "The Club-In-Focus Rule",
+        "body": "When a screen is about a club or a club's player, that club's printing colours carry the accent: cover halves, club band, halftone ink and paper, share bars, and career band. Turnstile red is the fallback when no club is in focus or the club colour is too pale to read (luminance above 0.6 to 0.7).",
+        "section": "colors"
+      },
+      {
+        "name": "The Yellow-Is-Print Rule",
+        "body": "Sponsor-strip yellow appears only as a printed strip or highlight. It never serves as a button, a chip, or text on stock.",
         "section": "colors"
       },
       {
         "name": "The Ink-On-Colour Rule",
-        "body": "Text on any colour uses ink when the colour's luminance exceeds 0.36, white otherwise.",
+        "body": "Text on any printed colour uses ink (#111111) when the colour's luminance is above 0.36, and white otherwise. A halftone's ink must reach 3:1 contrast on its field, or else it falls back to black or white.",
         "section": "colors"
       },
       {
-        "name": "The Shape-Before-Colour Rule",
-        "body": "Colour is never the only signal: every result and probability band also differs by knit, label, or semantic description.",
-        "section": "colors"
-      },
-      {
-        "name": "The Whole-Stitch Rule",
-        "body": "Jersey is set only at multiples of one stitch, where 1 stitch = 75/1400 em, so the 18.667px size makes one stitch one logical pixel. Use 18.667, 37.333, or 56; never an in-between size, never letter-spacing.",
-        "section": "typography"
-      },
-      {
-        "name": "The Stitch Is For The Knit Rule",
-        "body": "Jersey appears on scarves, the wordmark, scores, and monograms. Headings, verdicts, and body copy stay in Roboto.",
+        "name": "The Masthead Rule",
+        "body": "Condensed black caps (`wdth` 62, `wght` 900) are reserved for mastheads, club names, section heads, and headline figures. Running text never uses them.",
         "section": "typography"
       },
       {
         "name": "The Tabular Rule",
-        "body": "Every number that sits in a column or updates (percentages, points, money, minutes) uses tabular figures.",
+        "body": "Every figure that can sit in a column uses tabular figures and is right-aligned in a fixed-width cell (44px numbers, 52 to 56px percentages), so a column of numbers shares one edge.",
         "section": "typography"
       },
       {
-        "name": "The Only Sheets Float Rule",
-        "body": "No shadows on cards, bars, chips, or scarves. If something needs to float, it is a bottom sheet.",
+        "name": "The Flat-Stock Rule",
+        "body": "Nothing casts a shadow except the bottom sheet. Separation comes from rules, gaps, and printed colour.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do draw any win/draw/loss split or 0-1 share as a scarf whose band widths equal the values.",
-      "Do put scarf labels on a solid name panel and separate bands with a 1px ground-colour seam.",
-      "Do knit scarves in row by row (650ms, easeOutExpo) and show them complete under reduced motion.",
-      "Do set Jersey only at 18.667, 37.333, or 56px.",
-      "Do take club colours from the bundle and fall back to the neutral pair.",
-      "Do write in a pundit's voice: one plain verdict per item (\"Bayern should handle this.\").",
-      "Do present workload as a risk index with a band (\"Heavy · 82\"), and keep trend reasons to 14 characters or fewer.",
-      "Do keep 28px above and 8px below every section heading."
+      "**Do** set mastheads, club names, and section heads in Archivo at `wdth` 62, `wght` 900, upper case, line-height 0.92.",
+      "**Do** print the club in focus in its own two colours, and use `onColor` (luminance threshold 0.36) for any type laid on them.",
+      "**Do** set the figure inside every probability band and every form box so meaning never rests on colour alone.",
+      "**Do** open each inside page with the 3px ink rule and 32px above it.",
+      "**Do** right-align figures in fixed-width tabular cells.",
+      "**Do** render missing data as a plain-language EmptyNote, never as 0."
     ],
     "donts": [
-      "Don't add shadows to cards, chips, or bars; only bottom sheets float.",
-      "Don't show workload as an injury probability.",
-      "Don't let colour be the only difference between results; keep the knit shapes.",
-      "Don't set headings, verdicts, or body text in Jersey.",
-      "Don't apply the knit texture outside scarf bands.",
-      "Don't fall back to dark navy cards with a green accent and rows of percentages."
+      "**Don't** round corners beyond 2px (4px for the bottom sheet's top edge only).",
+      "**Don't** add shadows or elevation to anything but the bottom sheet.",
+      "**Don't** use sponsor yellow for buttons, chips, or text on stock.",
+      "**Don't** show player photos as circular avatars or in full colour where a halftone can print. Plain photos are only the fallback when pixels can't be read.",
+      "**Don't** fall back to dark navy cards or a single neon-green accent."
     ]
   }
 }

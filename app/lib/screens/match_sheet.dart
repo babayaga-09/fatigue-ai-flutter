@@ -4,7 +4,8 @@ import '../copy/voice.dart';
 import '../data/bundle.dart';
 import '../format.dart';
 import '../state/app_state.dart';
-import '../widgets/scarf.dart';
+import '../theme/theme.dart';
+import '../widgets/print.dart';
 import '../widgets/section.dart';
 import '../widgets/stat_bar.dart';
 import 'club_detail_screen.dart';
@@ -37,11 +38,12 @@ class MatchSheet extends StatelessWidget {
         shrinkWrap: true,
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         children: [
-          Text('$hn v $an', style: tt.titleLarge),
+          Text('${hn.toUpperCase()} v ${an.toUpperCase()}',
+              style: masthead(34, Theme.of(context).colorScheme.onSurface)),
           Text('${kickoffLabel(f.kickoff, s.now)} · ${b.leagueById[f.league]?.name ?? f.league}',
               style: muted),
           const SizedBox(height: 16),
-          FixtureScarf(fixture: f, home: home, away: away, hero: true),
+          ResultStrip(fixture: f, home: home, away: away, hero: true),
           const SizedBox(height: 12),
           Text(fixtureVerdict(hn, an, f.p), style: tt.titleMedium),
           if (f.score != null) ...[
@@ -63,7 +65,7 @@ class MatchSheet extends StatelessWidget {
                 child: Row(children: [
                   SizedBox(width: 120, child: Text(c.name, style: tt.bodyMedium,
                       maxLines: 1, overflow: TextOverflow.ellipsis)),
-                  FormScarf(form: c.form, cell: 18),
+                  FormBoxes(form: c.form, cell: 20),
                 ]),
               ),
           const SizedBox(height: 16),

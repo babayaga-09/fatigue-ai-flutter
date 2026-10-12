@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../data/bundle.dart';
+import '../theme/theme.dart';
 import '../theme/tokens.dart';
-import 'scarf.dart';
+import 'print.dart';
 
 /// First letters of up to two capitalised words: "Borussia Dortmund" -> "BD".
 String initials(String name) {
@@ -49,11 +50,8 @@ class _Monogram extends StatelessWidget {
       width: size,
       height: size,
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(size / 4)),
-      child: Text(
-        initials(club?.name ?? '?'),
-        style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: onColor(bg)),
-      ),
+      color: bg,
+      child: Text(initials(club?.name ?? '?'), style: masthead(size * 0.5, onColor(bg))),
     );
   }
 }

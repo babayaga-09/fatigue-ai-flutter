@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../data/bundle.dart';
 import '../format.dart';
 import 'crest.dart';
+import '../theme/theme.dart';
 import 'player_avatar.dart';
-import 'scarf.dart';
+import 'print.dart';
 
 class _RowShell extends StatelessWidget {
   const _RowShell({required this.leading, required this.title, this.subtitle, this.trailing,
@@ -96,7 +97,7 @@ class FixtureRow extends StatelessWidget {
           SizedBox(
             width: 92,
             child: Text(score != null ? '${score[0]}–${score[1]}' : kickoffLabel(fixture.kickoff, now),
-                style: score != null ? tt.headlineSmall : tt.labelLarge!
+                style: score != null ? masthead(26, scheme.onSurface) : tt.labelLarge!
                     .copyWith(color: scheme.onSurfaceVariant)),
           ),
           Expanded(
@@ -104,7 +105,7 @@ class FixtureRow extends StatelessWidget {
               Text('${home?.name ?? 'TBC'} v ${away?.name ?? 'TBC'}',
                   style: tt.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 6),
-              FixtureScarf(fixture: fixture, home: home, away: away, height: 24),
+              ResultStrip(fixture: fixture, home: home, away: away),
             ]),
           ),
         ]),
@@ -119,33 +120,29 @@ class PlayerTile extends StatelessWidget {
   final String? note;
   final VoidCallback? onTap;
 
+  static const width = 132.0;
+
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     return SizedBox(
-      width: 156,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              PlayerAvatar(player: player, size: 52),
-              const SizedBox(height: 10),
-              Text(player.name, style: tt.titleSmall, maxLines: 1,
-                  overflow: TextOverflow.ellipsis),
-              Text(player.clubName ?? '', style: tt.bodySmall!
-                  .copyWith(color: scheme.onSurfaceVariant), maxLines: 1,
-                  overflow: TextOverflow.ellipsis),
-              const SizedBox(height: 8),
-              if (note != null)
-                Text(note!, style: tt.labelMedium!.copyWith(color: scheme.primary),
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
-            ]),
-          ),
-        ),
+      width: width,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          PlayerAvatar(player: player, size: width),
+          const SizedBox(height: 8),
+          Text(player.name.toUpperCase(), style: tt.titleSmall!.copyWith(letterSpacing: 0.3),
+              maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(player.clubName ?? '', style: tt.bodySmall!
+              .copyWith(color: scheme.onSurfaceVariant), maxLines: 1,
+              overflow: TextOverflow.ellipsis),
+          if (note != null)
+            Text(note!, style: tt.labelMedium!.copyWith(color: scheme.primary,
+                fontWeight: FontWeight.w700),
+                maxLines: 1, overflow: TextOverflow.ellipsis),
+        ]),
       ),
     );
   }
@@ -159,13 +156,13 @@ class PlayerStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        // Padding, portrait and gaps, plus one line each of name, club and note at the text scale.
-        height: 120 + MediaQuery.textScalerOf(context).scale(56),
+        // Portrait (3:4) and gap, plus one line each of name, club and note at the text scale.
+        height: PlayerTile.width * 4 / 3 + 12 + MediaQuery.textScalerOf(context).scale(60),
         child: ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           scrollDirection: Axis.horizontal,
           itemCount: players.length,
-          separatorBuilder: (_, _) => const SizedBox(width: 10),
+          separatorBuilder: (_, _) => const SizedBox(width: 12),
           itemBuilder: (context, i) => PlayerTile(
               player: players[i],
               note: notes?.call(players[i]) ??

@@ -6,10 +6,12 @@ import '../data/planner.dart';
 import '../data/selectors.dart';
 import '../format.dart';
 import '../state/app_state.dart';
+import '../widgets/brand.dart';
 import '../widgets/empty_note.dart';
 import '../widgets/league_chips.dart';
 import '../widgets/rows.dart';
 import '../widgets/section.dart';
+import 'big_five_screen.dart';
 import 'routes.dart';
 
 typedef Solver = Future<Plan?> Function(
@@ -75,11 +77,24 @@ class _ScoutScreenState extends State<ScoutScreen> {
     final t = target == null ? null : b.playerById[target];
     final p = plan;
     return Scaffold(
-      appBar: AppBar(title: const Text('Scout')),
+      appBar: AppBar(title: const ScreenTitle('Scouting')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-        children: [
-          Text('Build my window', style: tt.titleLarge),
+        padding: const EdgeInsets.only(bottom: 32),
+        children: _gutter([
+          if (b.prospects.isNotEmpty) ...[
+            SectionHeading('Ready for the Big Five', padded: false, note: bigFiveNote(b)),
+            for (final (i, pr) in b.prospects.take(3).indexed)
+              ProspectRow(number: i + 1, prospect: pr),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const BigFiveScreen())),
+                child: Text('See all ${b.prospects.length}, filter by league and position'),
+              ),
+            ),
+          ],
+          const SectionHeading('Build my window', padded: false),
           Text('The most player for your money, judged on ${b.playerSeason} numbers.',
               style: muted),
           const SizedBox(height: 16),
@@ -109,12 +124,7 @@ class _ScoutScreenState extends State<ScoutScreen> {
           Text('Max age ${maxAge.round()}', style: tt.titleMedium),
           Slider(min: 18, max: 36, divisions: 18, value: maxAge, label: '${maxAge.round()}',
               onChanged: (v) => setState(() => maxAge = v)),
-          Transform.translate(
-            offset: const Offset(-16, 0),
-            child: SizedBox(width: MediaQuery.sizeOf(context).width,
-                child: LeagueChips(selected: league,
-                    onSelected: (v) => setState(() => league = v))),
-          ),
+          LeagueChips(selected: league, onSelected: (v) => setState(() => league = v)),
           const SizedBox(height: 12),
           FilledButton.icon(
             onPressed: busy ? null : () => _build(b),
@@ -171,8 +181,17 @@ class _ScoutScreenState extends State<ScoutScreen> {
           const SectionHeading('Ask the Scout', padded: false),
           Text('Coming later: ask in plain words, like "a left-back under €15M".',
               style: muted),
-        ],
+        ]),
       ),
     );
   }
 }
+
+/// One page gutter: full-width rows and the chip strip carry their own 16px inset; everything
+/// else gets it here, so figures and rules end on the same edge as the section rules.
+List<Widget> _gutter(List<Widget> items) => [
+      for (final w in items)
+        w is ProspectRow || w is PlayerRow || w is LeagueChips
+            ? w
+            : Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: w),
+    ];

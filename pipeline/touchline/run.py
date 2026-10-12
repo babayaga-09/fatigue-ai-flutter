@@ -8,6 +8,7 @@ from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -18,6 +19,7 @@ from touchline.features.players import (
     build_player_rows,
     display_population,
     enrich_appearances,
+    league_season_stats,
     season_stats,
 )
 from touchline.ingest.club_map import load_overrides
@@ -26,9 +28,13 @@ from touchline.ingest.football_data import FootballData
 from touchline.ingest.load import load_tm
 from touchline.models import (
     budget,
+    career,
+    dependency,
     elo,
     form,
+    managers,
     match_model,
+    prospects,
     similarity,
     trending,
     valuator,
@@ -41,7 +47,8 @@ log = logging.getLogger("touchline")
 GATES = [("club_elo", "favourite_accuracy", "baseline_home_pick_accuracy", "higher"),
          ("match_model", "rps", "baseline_rps", "lower"),
          ("valuator", "mae_eur", "baseline_mae_eur", "lower"),
-         ("form", "poisson_deviance", "baseline_poisson_deviance", "lower")]
+         ("form", "poisson_deviance", "baseline_poisson_deviance", "lower"),
+         ("career", "mae_h1", "baseline_mae_h1", "lower")]
 
 BUDGET_CASES = [(50, {"Attack": 1}),
                 (100, {"Attack": 1, "Midfield": 1, "Defender": 1}),
@@ -126,6 +133,14 @@ def main(argv=None) -> int:
     m2_final = match_model.fit_match_model(full.d, full.home_goals, full.away_goals)
     log.info("M2 %s", metrics["match_model"])
 
+    # F2 — manager effect (points above what the squad's strength predicted)
+    res = managers.club_game_results(full, m2_final)
+    k_mgr = managers.shrink_k(res)
+    mgr_table = managers.manager_table(res, test_season, k_mgr)
+    metrics["manager_effect"] = {"k": k_mgr, **managers.reliability(res),
+                                 "bounce": managers.bounce(res)}
+    log.info("F2 %s", metrics["manager_effect"])
+
     # Clubs + M3 season projection
     token = os.environ.get("FOOTBALL_API_KEY", "").strip()
     today = pd.Timestamp.now(tz="UTC")
@@ -175,6 +190,64 @@ def main(argv=None) -> int:
 
     # M7 — similarity among qualified players
     sim = similarity.similar_players(disp_rows)
+
+    # F3 — can't-live-without index
+    def clubs_of(frame):
+        f = frame.dropna(subset=["club_id"])
+        return {int(p): int(c) for p, c in zip(f.player_id, f.club_id, strict=True)}
+
+    dep = dependency.dependency(eapps, res, clubs_of(disp), test_season).set_index("player_id")
+    stab = dependency.split_half_stability(
+        eapps, res, clubs_of(stats[stats.season == test_season - 1]), test_season - 1)
+    metrics["dependency"] = {"n": len(dep), "stability_n": stab["n"], "stability_r": stab["r"]}
+    log.info("F3 %s", metrics["dependency"])
+
+    # F1 — Ready for the Big Five
+    feeder = league_season_stats(eapps, games, prospects.FEEDERS)
+    top5 = league_season_stats(eapps, games, config.LEAGUES)
+    top5_clubs = pd.concat([
+        lg_games[["season", c]].rename(columns={c: "club_id"})
+        for c in ("home_club_id", "away_club_id")]).drop_duplicates()
+    prow = prospects.build_rows(feeder, top5, players, vals, elo_res.history,
+                                tm["transfers"], top5_clubs)
+    pmodel, metrics["prospects"] = prospects.run_prospects(prow, test_season)
+    conv = prospects.conversion(prow)
+    metrics["prospects"]["conversion"] = conv
+    # a prospect has never played top-five league football (Osimhen at Galatasaray is not one)
+    proven = set(top5[top5.minutes > 0].player_id)
+    cur_feeder = set(players[players.league.isin(list(prospects.FEEDERS))
+                             & (players.last_season >= test_season)].player_id) - proven
+    pc = prow[(prow.season == test_season) & prow.player_id.isin(cur_feeder)].copy()
+    pc["p"] = pmodel.predict(pc)
+    pc["why"] = pmodel.explain(pc)
+    pc = pc.sort_values("p", ascending=False).head(150)
+    log.info("F1 %s", {k: v for k, v in metrics["prospects"].items() if k != "conversion"})
+
+    # F4 — career curve
+    panel = career.yearly_panel(vals, players, stats)
+    cmodel, metrics["career"] = career.run_career(panel, test_end=test_season - 3,
+                                                  epochs=8 if args.fast else 30)
+    log.info("F4 %s", metrics["career"])
+    qual_ids = set(disp[disp.minutes >= config.MIN_DISPLAY_MINUTES].player_id)
+    cur = career.build(panel, [test_season], need_targets=False, ids=qual_ids,
+                       min_log_value=career.FLOOR)
+    cq = cmodel.predict(cur)
+    ccurve = cmodel.curve_delta(cur.meta)
+    # no forecast above the highest valuation ever recorded; the GRU extrapolates past it
+    vmax = float(vals.value.max())
+    career_by = {}
+    for i, row in cur.meta.iterrows():
+        lv0 = float(cur.last[i])
+        p10, p50, p90 = (np.minimum(np.exp(lv0 + cq[i, :, j]), vmax) for j in range(3))
+        path = [float(np.exp(lv0)), *map(float, p50)]
+        peak = int(np.argmax(path))
+        diff = float(cq[i, 0, 1] - ccurve[i, 0])
+        career_by[int(row.player_id)] = {
+            "seasons": [_season_label(test_season + h) for h in range(1, 4)],
+            "p10": [eur(x) for x in p10], "p50": [eur(x) for x in p50],
+            "p90": [eur(x) for x in p90], "peak_value": eur(path[peak]),
+            "peak_age": round(float(row.age) + peak, 1) if pd.notna(row.age) else None,
+            "vs_curve": "ahead" if diff > 0.1 else "behind" if diff < -0.1 else "on"}
 
     # Trending
     last5 = feats[feats.player_id.isin(disp.player_id)].groupby("player_id").tail(5)
@@ -236,6 +309,10 @@ def main(argv=None) -> int:
             "similar": sim.get(int(pid), []),
             "trend": {"score": trend.loc[pid, "trend_score"],
                       "reasons": trend.loc[pid, "reasons"]},
+            "dependency": None if pid not in dep.index else {
+                "index": round(float(dep.loc[pid, "index"]), 3),
+                "played": int(dep.loc[pid, "played"]), "missed": int(dep.loc[pid, "missed"])},
+            "career": career_by.get(int(pid)) if qualified else None,
         })
 
     # M8 — budget planner golden cases (the app ports the planner and checks against these)
@@ -260,6 +337,21 @@ def main(argv=None) -> int:
         "player_season": _season_label(test_season),
         "leagues": [{"id": k, "fd": v[0], "name": v[1]} for k, v in config.LEAGUES.items()],
         "clubs": clubs, "fixtures": fixtures, "players": out_players, "models": metrics,
+        "prospects": [{
+            "id": int(r.player_id), "name": pinfo.loc[r.player_id, "name"],
+            "img": pinfo.loc[r.player_id, "image_url"],
+            "club_name": club_names.get(r.club_id), "league": r.league,
+            "league_name": prospects.FEEDERS[r.league], "pos": r.position,
+            "age": round(float(r.age), 1) if pd.notna(r.age) else None,
+            "market_value": eur(r.mv), "ga90": round(float(r.ga90), 2),
+            "translated_ga90": round(float(r.ga90) * conv[r.league], 2),
+            "p_regular": round(float(r.p), 3), "why": r.why} for r in pc.itertuples()],
+        "managers": [{
+            "name": m.name, "club": int(m.club), "league": m.league, "games": int(m.games),
+            "since": _fmt(m.since), "pae": round(float(m.pae), 3),
+            "pae_raw": round(float(m.pae_raw), 3), "per38": round(float(m.per38), 1),
+            "first10": None if m.first10 is None or pd.isna(m.first10)
+            else round(float(m.first10), 3)} for m in mgr_table.itertuples()],
     }
     args.out.mkdir(parents=True, exist_ok=True)
     size = write_bundle(bundle, args.out / config.BUNDLE_NAME)

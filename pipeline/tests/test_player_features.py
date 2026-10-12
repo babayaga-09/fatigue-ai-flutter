@@ -87,3 +87,18 @@ def test_display_population_uses_played_league_and_current_players():
                           "league": ["GB1", None, "ES1"]})
     players = pd.DataFrame({"player_id": [1, 2, 3], "last_season": [2025, 2025, 2023]})
     assert list(display_population(stats, players, 2025).player_id) == [1]
+def test_league_season_stats_picks_main_league_and_share():
+    from touchline.features.players import league_season_stats
+    games = pd.DataFrame({
+        "game_id": [1, 2, 3], "competition_id": ["NL1", "NL1", "GB1"], "season": [2024] * 3,
+        "home_club_id": [10, 11, 20], "away_club_id": [11, 10, 21],
+        "home_club_name": ["a"] * 3, "away_club_name": ["b"] * 3})
+    apps = pd.DataFrame({
+        "game_id": [1, 2, 3], "player_id": [7, 7, 7], "club_id": [10, 10, 20],
+        "date": pd.to_datetime(["2024-08-10", "2024-08-17", "2025-02-01"]),
+        "competition_id": ["NL1", "NL1", "GB1"], "goals": [1, 0, 0], "assists": [0, 1, 0],
+        "minutes": [90, 90, 30], "yellow_cards": [0] * 3, "red_cards": [0] * 3})
+    from touchline.features.players import enrich_appearances
+    s = league_season_stats(enrich_appearances(apps, games), games, ["NL1", "GB1"]).iloc[0]
+    assert s.league == "NL1" and s.club_id == 10 and s.minutes == 180
+    assert s.team_games == 2 and abs(s.minutes_share - 1.0) < 1e-9 and abs(s.ga90 - 1.0) < 1e-9

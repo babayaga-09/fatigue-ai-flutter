@@ -14,7 +14,7 @@ void main() {
     expect(find.byType(NavigationBar), findsOneWidget);
     await tester.tap(find.text('Clubs').last);
     await tester.pump();
-    expect(find.widgetWithText(AppBar, 'Clubs'), findsOneWidget);
+    expect(find.widgetWithText(AppBar, 'CLUBS'), findsOneWidget);
     await tester.binding.handlePopRoute();
     await tester.pump();
     expect(find.text('TOUCHLINE'), findsOneWidget);
@@ -33,9 +33,11 @@ void main() {
 
   testWidgets('about sheet states the honest numbers and switches theme', (tester) async {
     final s = await pumpApp(tester, const Scaffold(body: AboutSheet()));
-    expect(find.text('How this works'), findsOneWidget);
+    expect(find.text('HOW THIS WORKS'), findsOneWidget);
     expect(find.text('Who wins'), findsOneWidget);
     expect(find.textContaining('Not an injury prediction'), findsOneWidget);
+    await tester.scrollUntilVisible(find.textContaining('The price won'), 200);
+    expect(find.textContaining('The price won'), findsOneWidget);
     await tester.scrollUntilVisible(find.text('Dark'), 200);
     await tester.ensureVisible(find.text('Dark'));
     await tester.pumpAndSettle();

@@ -1,40 +1,35 @@
-"""Draw Touchline's launcher and web icons from a 16x16 stitch grid (run from app/)."""
+"""Draws Touchline's app icons: a programme-cover T in Archivo (narrowest, heaviest) on
+turnstile red, over a sponsor-strip yellow band. Run from app/: python tool/make_icons.py"""
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
-PITCH, PINK = (15, 61, 46, 255), (242, 167, 195, 255)
-STRIPE = "PPGGPPGGPPGGPPGG"
-GRID = [STRIPE, STRIPE, "G" * 16,
-        "GGPPPPPPPPPPPPGG", "GGPPPPPPPPPPPPGG"] + ["GGGGGGGPPGGGGGGG"] * 8 + [
-        "G" * 16, STRIPE, STRIPE]
+RED, WHITE, YELLOW = (215, 38, 45), (255, 255, 255), (242, 194, 0)
+FONT = Path("assets/fonts/Archivo.ttf")
 
 
-def stitch(size: int, inset: float = 0.0) -> Image.Image:
-    cell = 16
-    img = Image.new("RGBA", (cell, cell), PITCH)
-    for y, row in enumerate(GRID):
-        for x, ch in enumerate(row):
-            img.putpixel((x, y), PINK if ch == "P" else PITCH)
-    if inset:
-        inner = round(size * (1 - 2 * inset))
-        canvas = Image.new("RGBA", (size, size), PITCH)
-        canvas.paste(img.resize((inner, inner), Image.NEAREST), ((size - inner) // 2,) * 2)
-        return canvas
-    return img.resize((size, size), Image.NEAREST)
+def icon(size: int, safe: float = 1.0) -> Image.Image:
+    """safe < 1 shrinks the mark into the centre (Android/web maskable safe zone)."""
+    big = size * 4  # draw large, downsample for clean edges
+    im = Image.new("RGB", (big, big), RED)
+    d = ImageDraw.Draw(im)
+    band = round(big * (0.5 - 0.5 * safe + 0.16 * safe))
+    d.rectangle([0, big - band, big, big], fill=YELLOW)
+    f = ImageFont.truetype(str(FONT), round(big * 0.78 * safe))
+    f.set_variation_by_axes([900, 62])  # wght, wdth
+    box = d.textbbox((0, 0), "T", font=f)
+    w, h = box[2] - box[0], box[3] - box[1]
+    top = (big - band - h) / 2 - box[1]
+    d.text(((big - w) / 2 - box[0], top), "T", font=f, fill=WHITE)
+    return im.resize((size, size), Image.LANCZOS)
 
 
-def main() -> None:
-    res = Path("android/app/src/main/res")
-    for folder, px in {"mdpi": 48, "hdpi": 72, "xhdpi": 96, "xxhdpi": 144, "xxxhdpi": 192}.items():
-        stitch(px).save(res / f"mipmap-{folder}" / "ic_launcher.png")
-    web = Path("web")
-    stitch(64).save(web / "favicon.png")
-    stitch(192).save(web / "icons" / "Icon-192.png")
-    stitch(512).save(web / "icons" / "Icon-512.png")
-    stitch(192, inset=0.1).save(web / "icons" / "Icon-maskable-192.png")
-    stitch(512, inset=0.1).save(web / "icons" / "Icon-maskable-512.png")
-
-
-if __name__ == "__main__":
-    main()
+res = Path("android/app/src/main/res")
+for folder, px in {"mdpi": 48, "hdpi": 72, "xhdpi": 96, "xxhdpi": 144, "xxxhdpi": 192}.items():
+    icon(px).save(res / f"mipmap-{folder}" / "ic_launcher.png")
+icon(192).save("web/icons/Icon-192.png")
+icon(512).save("web/icons/Icon-512.png")
+icon(192, safe=0.8).save("web/icons/Icon-maskable-192.png")
+icon(512, safe=0.8).save("web/icons/Icon-maskable-512.png")
+icon(64).save("web/favicon.png")
+print("icons written")
