@@ -7,9 +7,10 @@ import 'seed.dart';
 BundleIo platformBundleIo() => BundleIo(
       readSeed: readSeedAsset,
       fetchRemote: () async {
-        final r = await http
-            .get(Uri.base.resolve('data/touchline-bundle.json.gz'))
-            .timeout(const Duration(seconds: 20));
+        // the browser would otherwise keep serving its cached copy after a weekly refresh
+        final url = Uri.base.resolve('data/touchline-bundle.json.gz').replace(
+            queryParameters: {'v': '${DateTime.now().millisecondsSinceEpoch ~/ 60000}'});
+        final r = await http.get(url).timeout(const Duration(seconds: 20));
         return r.statusCode == 200 ? r.bodyBytes : null;
       },
     );
