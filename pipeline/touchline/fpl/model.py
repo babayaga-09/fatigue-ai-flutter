@@ -4,8 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from touchline import config
-from touchline.fpl.features import fixture_strength, gw_table, player_gw_features, \
-    position_priors
+from touchline.fpl.features import fixture_strength, gw_table, player_gw_features, position_priors
 from touchline.fpl.fetch import load_archive, load_fixtures, teams
 from touchline.models import elo, match_model
 
