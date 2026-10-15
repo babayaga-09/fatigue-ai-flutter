@@ -94,10 +94,11 @@ def fixture_strength(fixtures: pd.DataFrame, team_names: dict, elo_history: pd.D
     """Per (fixture, FPL team): expected goals for/against and clean-sheet chance from the Elo
     rating each club held just before kickoff."""
     fx = fixtures.dropna(subset=["kickoff_time"]).copy()
+    fx["kickoff_time"] = pd.to_datetime(fx.kickoff_time, utc=True).astype("datetime64[ns, UTC]")
     fx["club_h"] = fx.team_h.map(lambda t: club_id(team_names[int(t)]))
     fx["club_a"] = fx.team_a.map(lambda t: club_id(team_names[int(t)]))
     h = elo_history.rename(columns={"date": "kickoff_time", "rating": "r"}).copy()
-    h["kickoff_time"] = pd.to_datetime(h.kickoff_time, utc=True)
+    h["kickoff_time"] = pd.to_datetime(h.kickoff_time, utc=True).astype("datetime64[ns, UTC]")
     h = h.sort_values("kickoff_time")
     fx = fx.sort_values("kickoff_time")
     for side in ("h", "a"):
