@@ -12,6 +12,8 @@ FPL_TO_TM: dict[str, int] = {
     "Spurs": 148, "Sunderland": 289, "Watford": 1010, "West Brom": 984, "West Ham": 379,
     "Wolves": 543, "Middlesbrough": 641, "Hull": 3008, "Stoke": 512, "Swansea": 2288,
     "Cardiff": 603, "Huddersfield": 1110, "QPR": 1039, "Reading": 1032, "Wigan": 1071,
+    # the live API sometimes uses full names for newly promoted clubs
+    "Coventry City": 990, "Coventry": 990, "Hull City": 3008, "Ipswich Town": 677,
 }
 
 
