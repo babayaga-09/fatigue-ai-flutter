@@ -83,3 +83,8 @@ def test_fixture_strength_prefers_stronger_side():
     assert s.loc[1, "lam_for"] > s.loc[2, "lam_for"]
     assert s.loc[1, "p_cs"] > s.loc[2, "p_cs"]
     assert np.isclose(s.loc[1, "lam_against"], s.loc[2, "lam_for"])
+
+
+def test_dc_prior_uses_default_when_no_season_scored_dc():
+    pri = position_priors(gw_table(_arch()))  # 2024-25: no defensive-contribution rule
+    assert pri["DEF"]["dc"] == pytest.approx(0.20)

@@ -16,6 +16,9 @@ RATES = {  # event column -> prior strength in 90-minute units
 }
 PREV_WEIGHT = 0.5
 DC_K = 5.0
+# Defensive-contribution points exist only from 2025-26, so earlier seasons cannot inform them.
+# Starting beliefs per 60-minute appearance, updated by each player's own games as they come.
+DC_DEFAULT = {"DEF": 0.20, "MID": 0.10, "FWD": 0.02}
 
 
 def gw_table(arch: pd.DataFrame) -> pd.DataFrame:
@@ -41,7 +44,9 @@ def position_priors(gwt: pd.DataFrame) -> dict:
     for pos, d in gwt[gwt.minutes > 0].groupby("position"):
         n90 = d.minutes.sum() / 90.0
         pri[pos] = {c: d[c].sum() / n90 for c in RATES}
-        pri[pos]["dc"] = d.dc_hit.sum() / max(d.apps60.sum(), 1)
+        dc = d[d.season.map(lambda x: bool(RULES[x].dc_threshold))]
+        pri[pos]["dc"] = (dc.dc_hit.sum() / dc.apps60.sum() if dc.apps60.sum() >= 200
+                          else DC_DEFAULT.get(pos, 0.0))
     return pri
 
 
@@ -75,9 +80,12 @@ def player_gw_features(gwt: pd.DataFrame, priors: dict) -> pd.DataFrame:
         ev = before(col) + PREV_WEIGHT * prev[col]
         f[col + "_90"] = (ev + k * prior) / (mins / 90.0 + k)
     dc_prior = f.position.map(lambda p: priors.get(p, {}).get("dc", 0.0))
-    apps = before("apps60") + PREV_WEIGHT * prev["apps60"]
-    f["dc_rate"] = (before("dc_hit") + PREV_WEIGHT * prev["dc_hit"] + DC_K * dc_prior) \
-        / (apps + DC_K)
+    # last season only informs defensive contributions if it scored them
+    prev_season = f.season.map(prev_of)
+    w = PREV_WEIGHT * prev_season.map(
+        lambda x: isinstance(x, str) and bool(RULES[x].dc_threshold)).astype(float)
+    apps = before("apps60") + w * prev["apps60"]
+    f["dc_rate"] = (before("dc_hit") + w * prev["dc_hit"] + DC_K * dc_prior) / (apps + DC_K)
     return f
 
 
