@@ -15,10 +15,13 @@ class FplGameweek {
 }
 
 class FplTeam {
-  const FplTeam(this.id, this.name, this.short, this.clubId);
+  const FplTeam(this.id, this.name, this.short, this.clubId, [this.fix = const []]);
   final int id;
   final String name, short;
   final int clubId;
+
+  /// Opponents per gameweek in the horizon: "IPS (H)", "" for a blank, comma-joined doubles.
+  final List<String> fix;
 }
 
 class FplPlayer {
@@ -69,7 +72,8 @@ class FplBundle {
             DateTime.parse(g['deadline'] as String))],
       teams: [for (final t in maps(j['teams']))
         FplTeam((t['id'] as num).toInt(), t['name'] as String, t['short'] as String,
-            (t['club_id'] as num).toInt())],
+            (t['club_id'] as num).toInt(),
+            [for (final f in t['fix'] as List? ?? const []) f as String])],
       players: [for (final p in maps(j['players']))
         FplPlayer(
           id: (p['id'] as num).toInt(), name: p['name'] as String,

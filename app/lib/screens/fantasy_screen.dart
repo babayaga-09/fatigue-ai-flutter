@@ -7,6 +7,7 @@ import '../theme/theme.dart';
 import '../theme/tokens.dart';
 import '../widgets/brand.dart';
 import '../widgets/empty_note.dart';
+import '../widgets/fpl_pitch.dart';
 import '../widgets/print.dart';
 import '../widgets/section.dart';
 import 'squad_picker_screen.dart';
@@ -159,8 +160,8 @@ class _Week extends StatelessWidget {
         const Padding(padding: EdgeInsets.all(16),
             child: EmptyNote('Your squad needs 15 known players for advice.'))
       else ...[
-        _moves(context, a, sq),
         _xi(context, a),
+        _moves(context, a, sq),
         _chips(context, a),
       ],
     ]);
@@ -168,29 +169,11 @@ class _Week extends StatelessWidget {
 
   Widget _xi(BuildContext context, FplAdvice a) {
     final x = a.xi!;
-    final tt = Theme.of(context).textTheme;
-    Widget row(int id, int n, {bool bench = false}) {
-      final p = bundle.byId[id]!;
-      final tag = id == x.captain ? ' (C)' : id == x.vice ? ' (V)' : '';
-      return TeamSheetRow(
-        number: n,
-        title: '${p.name}$tag',
-        subtitle: '${bundle.teamById[p.team]?.short ?? ''} · ${p.pos} · ${_m(p.price)}'
-            '${p.flagged && p.news != null ? ' · ${p.news}' : ''}',
-        trailing: Text(_pts(p.next * (id == x.captain ? 2 : 1)),
-            style: tabular(tt.titleMedium!)),
-        onTap: () => showFplPlayer(context, bundle, p),
-      );
-    }
-
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       SectionHeading('Your XI · ${_pts(x.points)} pts',
           note: 'Expected points for ${bundle.nextGameweek?.name ?? 'the next gameweek'}, '
-              'captain counted twice.'),
-      for (final (i, id) in x.xi.indexed) row(id, i + 1),
-      Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
-          child: Text('BENCH', style: tt.labelLarge)),
-      for (final (i, id) in x.bench.indexed) row(id, 12 + i, bench: true),
+              'captain counted twice. Tap a player for his forecast.'),
+      FplPitch(bundle: bundle, xi: x, onTap: (p) => showFplPlayer(context, bundle, p)),
     ]);
   }
 

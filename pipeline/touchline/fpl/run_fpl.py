@@ -173,11 +173,25 @@ def score_live(raw: Path, out: Path, tm: dict, now: datetime, live: dict | None 
     rows["season"] = season
     pred = per_gameweek(predict_points(rows, mm))
     source = metrics.get("source", "fpl")
-    return build_bundle(boot, nxt, gws, pred, metrics, source, now, season)
+    return build_bundle(boot, nxt, gws, pred, metrics, source, now, season, fixtures)
 
 
-def build_bundle(boot, nxt, gws, pred, metrics, source, now, season) -> dict:
+def fixture_labels(teams: dict, fixtures: list[dict], gws: list[int]) -> dict[int, list[str]]:
+    """Per team, per gameweek: "IPS (H)", "" for a blank, "IPS (H), CHE (A)" for a double."""
+    out = {t: [[] for _ in gws] for t in teams}
+    for f in sorted(fixtures, key=lambda f: f.get("kickoff_time") or ""):
+        if f.get("event") not in gws:
+            continue
+        k = gws.index(f["event"])
+        h, a = f["team_h"], f["team_a"]
+        out[h][k].append(f"{teams[a]['short_name']} (H)")
+        out[a][k].append(f"{teams[h]['short_name']} (A)")
+    return {t: [", ".join(x) for x in v] for t, v in out.items()}
+
+
+def build_bundle(boot, nxt, gws, pred, metrics, source, now, season, fixtures=()) -> dict:
     teams = {t["id"]: t for t in boot["teams"]}
+    fix = fixture_labels(teams, list(fixtures), gws)
     by = {(r.element, r.gw): r for r in pred.itertuples()}
     players, xmap = [], {}
     for e in boot["elements"]:
@@ -219,7 +233,8 @@ def build_bundle(boot, nxt, gws, pred, metrics, source, now, season) -> dict:
         "gameweeks": [{"id": e["id"], "name": e["name"], "deadline": e["deadline_time"]}
                       for e in boot["events"] if e["id"] in gws],
         "teams": [{"id": t["id"], "name": t["name"], "short": t["short_name"],
-                   "club_id": club_id(t["name"])} for t in teams.values()],
+                   "club_id": club_id(t["name"]), "fix": fix[t["id"]]}
+                  for t in teams.values()],
         "players": players, "wildcard": wildcard, "free_hit": free_hit, "models": metrics,
     }
 

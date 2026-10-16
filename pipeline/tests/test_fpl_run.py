@@ -69,3 +69,14 @@ def test_fpl_source_ships_ep_next_without_our_breakdown():
                      datetime(2026, 10, 15, tzinfo=UTC), "2026-27")
     p = b["players"][0]
     assert p["xpts"] == [3.5, 3.5] and p["why"] is None
+
+
+def test_fixture_labels_cover_blanks_and_doubles():
+    from touchline.fpl.run_fpl import fixture_labels
+    teams = {1: {"short_name": "ARS"}, 2: {"short_name": "CHE"}, 3: {"short_name": "LIV"}}
+    fx = [{"event": 7, "team_h": 1, "team_a": 2, "kickoff_time": "a"},
+          {"event": 8, "team_h": 3, "team_a": 1, "kickoff_time": "b"},
+          {"event": 8, "team_h": 1, "team_a": 2, "kickoff_time": "c"}]
+    f = fixture_labels(teams, fx, [7, 8])
+    assert f[1] == ["CHE (H)", "LIV (A), CHE (H)"]
+    assert f[3] == ["", "ARS (H)"]
