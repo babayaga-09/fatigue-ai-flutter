@@ -15,6 +15,7 @@ Football, read in seconds: match odds, fair values and form, from models tested 
 - **Clubs**: live tables for the top five leagues, title, top-four and bottom-three odds from 10,000 simulations, and luck-adjusted manager records. Club pages show who the team leans on.
 - **Players**: 2,600+ players with search, filters, fair value against market price and the reasons behind it, a five-game forecast, a career curve (value 1–3 seasons out, with its range), a workload index and lookalikes.
 - **Scouting**: feeder-league players ready for the Big Five, ranked honestly; give it a budget and positions and it picks the best set of signings, solved exactly on the phone. Or start from a player and find a cheaper version.
+- **Fantasy**: an FPL assistant. Import your team by ID (Android) or pick your 15 (web), then get expected points for every player over the next six gameweeks, your best XI and captain, the transfers worth making (a −4 hit only when it pays back with a point to spare), and when to play each chip.
 
 ## How it works
 
@@ -45,6 +46,18 @@ Every number is measured on the **2025/26 season, held out from training** (time
 | 0/1 integer programme | Best signings for a budget | Exact optimum (matches between Python and Dart) | Greedy value-per-euro |
 
 The GRU's edge over a well-built Poisson GLM is small (about 3% on deviance). Sequence modelling helps a bit with football scoring, not a lot, and the README says so rather than leaning on a weak baseline. Details: [`pipeline/README.md`](pipeline/README.md).
+
+### Fantasy: does our expected-points model beat FPL's own?
+
+Trained on 2022/23–2024/25, tested on every player-gameweek of **2025/26** against FPL's published expected points (xP). If ours ever loses, the app ships FPL's numbers instead and says so.
+
+| Measure | Touchline | FPL xP |
+|---|---|---|
+| Average miss per player-gameweek (MAE) | **1.85** | 2.15 (gain 95% CI 0.16–0.44) |
+| Rank correlation with actual points | **0.51** | 0.14 |
+| Season of captain picks (15 most-owned) | **518** | 506 |
+
+The model is built from parts: a LightGBM chance-of-playing model (Brier 0.251 vs 0.328 for "same as last week"), shrunk per-90 goal and assist rates, fixture strength from the Elo-Poisson match model, and each season's scoring rules (including 2025/26 defensive contributions). The captaincy edge is small. Transfers are searched exhaustively up to two moves; Wildcard and Free Hit squads are solved exactly as integer programmes, and a daily Action re-scores with the latest injury news. Details: [`pipeline/README.md`](pipeline/README.md).
 
 ### v2: four new questions, tested honestly
 
@@ -83,4 +96,5 @@ The visual idea is the matchday programme you buy at the turnstile. Players are 
 - Market values are crowd estimates, not transfer fees. Player stats show the latest complete season in the open dataset, labelled in the app.
 - There are no injury records, so workload is a risk index only.
 - Club colours are hand-picked approximations of traditional colours, not official brand assets. Not affiliated with any club or league.
+- Fantasy data: the official [FPL API](https://fantasy.premierleague.com/api/bootstrap-static/) and the [vaastav/Fantasy-Premier-League](https://github.com/vaastav/Fantasy-Premier-League) archive (MIT). Selling prices are private to each manager, so current prices stand in. Not affiliated with the Premier League.
 - Code: MIT. Archivo typeface: SIL Open Font License (`app/assets/fonts/Archivo-OFL.txt`).
