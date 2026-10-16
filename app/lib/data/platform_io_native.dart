@@ -9,20 +9,26 @@ import 'seed.dart';
 /// Set at build time: `--dart-define=BUNDLE_URL=https://github.com/<owner>/<repo>/releases/download/data-latest/touchline-bundle.json.gz`
 const bundleUrl = String.fromEnvironment('BUNDLE_URL');
 
-BundleIo platformBundleIo() {
+const canImportFplTeam = true;
+
+/// [name] is a file in the same release as BUNDLE_URL (e.g. fpl-bundle.json.gz).
+BundleIo platformBundleIo([String name = 'touchline-bundle.json.gz']) {
   Future<File> cacheFile() async =>
-      File('${(await getApplicationSupportDirectory()).path}/touchline-bundle.json.gz');
+      File('${(await getApplicationSupportDirectory()).path}/$name');
+  final url = bundleUrl.isEmpty
+      ? ''
+      : bundleUrl.substring(0, bundleUrl.lastIndexOf('/') + 1) + name;
   return BundleIo(
-    readSeed: readSeedAsset,
+    readSeed: () => readSeedAsset(name),
     readCache: () async {
       final f = await cacheFile();
       return await f.exists() ? f.readAsBytes() : null;
     },
     writeCache: (bytes) async => (await cacheFile()).writeAsBytes(bytes, flush: true),
-    fetchRemote: bundleUrl.isEmpty
+    fetchRemote: url.isEmpty
         ? null
         : () async {
-            final r = await http.get(Uri.parse(bundleUrl)).timeout(const Duration(seconds: 20));
+            final r = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 20));
             return r.statusCode == 200 ? r.bodyBytes : null;
           },
   );
