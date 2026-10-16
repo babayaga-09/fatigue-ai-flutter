@@ -69,7 +69,7 @@ class Squad {
 /// Why this squad can't be saved, in plain words; empty when it is legal.
 List<String> validateSquad(List<int> ids, int bank, FplBundle b, {int budget = 1000}) {
   final problems = <String>[];
-  final players = [for (final id in ids) if (b.byId[id] case final p?) p];
+  final players = [for (final id in ids) ?b.byId[id]];
   final missing = ids.length - players.length;
   if (missing > 0) problems.add('$missing player${missing == 1 ? '' : 's'} not in our data');
   for (final MapEntry(key: pos, value: need) in squadSlots.entries) {

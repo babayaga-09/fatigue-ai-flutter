@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'fpl/fpl_state.dart';
 import 'screens/clubs_screen.dart';
+import 'screens/fantasy_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/players_screen.dart';
 import 'screens/scout_screen.dart';
@@ -9,13 +11,14 @@ import 'theme/theme.dart';
 import 'widgets/empty_note.dart';
 
 class TouchlineApp extends StatelessWidget {
-  const TouchlineApp({super.key, required this.state});
+  const TouchlineApp({super.key, required this.state, required this.fpl});
   final AppState state;
+  final FplState fpl;
 
   @override
   Widget build(BuildContext context) => AppScope(
         state: state,
-        child: Builder(
+        child: FplScope(state: fpl, child: Builder(
           builder: (context) => MaterialApp(
             title: 'Touchline',
             debugShowCheckedModeBanner: false,
@@ -25,7 +28,7 @@ class TouchlineApp extends StatelessWidget {
             builder: (context, child) => _PageWidth(child: child!),
             home: const Shell(),
           ),
-        ),
+        )),
       );
 }
 
@@ -43,6 +46,7 @@ class _ShellState extends State<Shell> {
     (Icons.shield_outlined, Icons.shield_rounded, 'Clubs'),
     (Icons.person_search_outlined, Icons.person_search_rounded, 'Players'),
     (Icons.travel_explore_outlined, Icons.travel_explore_rounded, 'Scouting'),
+    (Icons.emoji_events_outlined, Icons.emoji_events_rounded, 'Fantasy'),
   ];
 
   @override
@@ -60,7 +64,7 @@ class _ShellState extends State<Shell> {
       );
     }
     final body = IndexedStack(index: index, children: const [
-      HomeScreen(), ClubsScreen(), PlayersScreen(), ScoutScreen(),
+      HomeScreen(), ClubsScreen(), PlayersScreen(), ScoutScreen(), FantasyScreen(),
     ]);
     final wide = MediaQuery.sizeOf(context).width >= 840;
     return PopScope(

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:touchline/app.dart';
+import 'package:touchline/fpl/fpl_state.dart';
 import 'package:touchline/screens/about_sheet.dart';
 import 'package:touchline/state/app_state.dart';
 
+import 'fpl_core_test.dart' show fplFixture;
 import 'helpers.dart';
 
 void main() {
   testWidgets('bottom navigation switches tabs; Back returns Home first', (tester) async {
     final s = AppState.preloaded(fixtureBundle(), clock: () => fixtureNow);
-    await tester.pumpWidget(TouchlineApp(state: s));
+    await tester.pumpWidget(TouchlineApp(state: s, fpl: FplState.preloaded(fplFixture())));
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(NavigationDestination), findsNWidgets(5));
     await tester.tap(find.text('Clubs').last);
     await tester.pump();
     expect(find.widgetWithText(AppBar, 'CLUBS'), findsOneWidget);
@@ -25,7 +28,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
     final s = AppState.preloaded(fixtureBundle(), clock: () => fixtureNow);
-    await tester.pumpWidget(TouchlineApp(state: s));
+    await tester.pumpWidget(TouchlineApp(state: s, fpl: FplState.preloaded(fplFixture())));
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.byType(NavigationRail), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
