@@ -259,7 +259,9 @@ class _Week extends StatelessWidget {
     String verdict(ChipAdvice c) => switch (c.chip) {
           'wildcard' => c.recommend
               ? 'Play it now: a rebuild adds ${_pts(c.gain)} pts over five gameweeks.'
-              : 'Hold. A rebuild would add ${_pts(c.gain)} pts, below the 12 that justifies it.',
+              : c.gain < 0.5
+                  ? 'Hold. A rebuild would not beat the squad you have.'
+                  : 'Hold. A rebuild would add ${_pts(c.gain)} pts, below the 12 that justifies it.',
           'freehit' => c.recommend
               ? 'GW${c.gw}: a one-week team beats yours by ${_pts(c.gain)}.'
               : 'Hold. Best week is GW${c.gw} at +${_pts(c.gain)}, below the 15 that justifies it.',

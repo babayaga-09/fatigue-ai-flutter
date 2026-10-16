@@ -42,7 +42,8 @@ class FplAdvice {
 
   /// The plan to show: the best one that is worth making, else rolling the transfer.
   TransferPlan? get bestPlan {
-    final worth = plans.skip(1).where((p) => p.worthIt && p.gain > 0).toList();
+    // A free move worth under a point is noise: rolling the transfer is worth more.
+    final worth = plans.skip(1).where((p) => p.worthIt && p.gain >= 1).toList();
     if (worth.isEmpty) return plans.isEmpty ? null : plans.first;
     worth.sort((a, b) => (b.gain - b.hits).compareTo(a.gain - a.hits));
     return worth.first;
