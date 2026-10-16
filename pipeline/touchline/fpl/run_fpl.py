@@ -23,6 +23,7 @@ from touchline.fpl.minutes import baseline_last_gw, brier_multi, fit_minutes, mi
 from touchline.fpl.model import model_rows, strength_context
 from touchline.fpl.points import PARTS, per_gameweek, predict_points
 from touchline.fpl.teams import club_id
+from touchline.ingest.download import download_tables
 from touchline.ingest.load import load_tm
 
 log = logging.getLogger("touchline.fpl")
@@ -246,6 +247,7 @@ def main(argv=None) -> None:
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     raw = config.DATA_DIR / "raw" / "fpl"
+    download_tables()  # Transfermarkt match history for fixture strength; skips files already here
     tm = load_tm()
     if args.train:
         train(raw, args.out, tm)
