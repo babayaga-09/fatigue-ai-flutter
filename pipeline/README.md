@@ -69,6 +69,43 @@ tests. Career forecasts are capped at the highest valuation on record and not ma
 €200k (outside the training range). F4 has a hard publishing gate; F1 falls back to the price
 model automatically.
 
+## Fantasy Premier League suggester
+
+`python -m touchline.fpl.run_fpl [--train]` builds `fpl-bundle.json.gz`: expected FPL points for
+every player over the next six gameweeks, pre-solved Wildcard and Free Hit squads, and the model's
+evaluation. Retrained weekly; re-scored daily from live FPL data (prices, injury news, fixtures).
+
+**Model (component expected points).** A LightGBM classifier predicts minutes (none / 1-59 / 60+)
+from recent minutes and starts. Goals and assists come from each player's xG and xA per 90, shrunk
+toward his position's average and scaled by fixture strength from Touchline's Elo and match model.
+Clean sheets and goals conceded come from the match model; saves, bonus, defensive contributions
+and cards from shrunk per-90 rates. FPL's scoring rules for the season turn these into points.
+Every feature for a gameweek uses only earlier gameweeks.
+
+**Data.** Training: 2022/23-2024/25 from the open
+[vaastav/Fantasy-Premier-League](https://github.com/vaastav/Fantasy-Premier-League) archive (MIT).
+Test: 2025/26, held out. Live: the public FPL API.
+
+**Result on 2025/26** (13,533 player-gameweeks of players with recent minutes, 37 gameweeks), against
+FPL's own expected points (`xP`) from the same archive:
+
+| | Touchline | FPL's own |
+|---|---|---|
+| Average miss (points per player-gameweek) | **1.84** | 2.15 |
+| Rank correlation with actual points | **0.51** | 0.14 |
+| Captain backtest (15 most-owned players each week, points × 2) | **518** | 506 |
+| Minutes model (Brier, lower is better) | **0.251** | 0.328 ("same as last week") |
+
+The accuracy gain holds up: the 95% interval for the improvement in average miss is +0.16 to +0.44
+points. The captaincy edge is small (12 points over a season), so it is reported as "slightly
+better", not as a reliable advantage. If a future retrain stops beating FPL on both measures, the
+bundle ships FPL's own numbers and says so.
+
+**Limits.** The archive has no injury flags, so live availability (`chance_of_playing`) caps the
+minutes prediction at forecast time. Defensive-contribution points only exist from 2025/26, so they
+start from stated priors and learn from each player's games. Transfermarkt data stops at July 2026,
+so fixture strength uses end-of-2025/26 Elo ratings until it updates.
+
 ## Layout
 
 ```

@@ -24,10 +24,12 @@ jobs:
         env:
           FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
         run: python -m touchline.run
+      - name: Retrain and evaluate the FPL model, build the FPL bundle
+        run: python -m touchline.fpl.run_fpl --train
       - name: Publish to data-latest release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release view data-latest >/dev/null 2>&1 || \
             gh release create data-latest --title "Latest data" --notes "Auto-refreshed weekly." --prerelease
-          gh release upload data-latest data/out/touchline-bundle.json.gz data/out/metrics.json --clobber
+          gh release upload data-latest data/out/touchline-bundle.json.gz data/out/metrics.json             data/out/fpl-bundle.json.gz data/out/fpl_metrics.json             data/out/fpl_models/minutes.pkl --clobber

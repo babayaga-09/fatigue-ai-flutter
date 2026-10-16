@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
   workflow_run:
-    workflows: [refresh-data]
+    workflows: [refresh-data, refresh-fpl]
     types: [completed]
   workflow_dispatch:
 permissions:
@@ -33,6 +33,7 @@ jobs:
           mkdir -p app/build/web/data
           gh release download data-latest -p touchline-bundle.json.gz -D app/build/web/data \
             || cp app/assets/data/touchline-bundle.json.gz app/build/web/data/
+          gh release download data-latest -p fpl-bundle.json.gz -D app/build/web/data             || cp app/assets/data/fpl-bundle.json.gz app/build/web/data/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: app/build/web

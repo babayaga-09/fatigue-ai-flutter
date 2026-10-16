@@ -1,0 +1,35 @@
+name: refresh-fpl
+on:
+  schedule:
+    - cron: "0 6 * * *"   # daily: prices, injury news and fixtures move every day
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -e .
+      - name: Fetch the weekly-trained FPL model
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p data/out/fpl_models
+          gh release download data-latest -p minutes.pkl -D data/out/fpl_models
+          gh release download data-latest -p fpl_metrics.json -D data/out
+      - name: Score the next six gameweeks from live FPL data
+        run: python -m touchline.fpl.run_fpl
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload data-latest data/out/fpl-bundle.json.gz --clobber
